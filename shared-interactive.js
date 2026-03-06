@@ -5,7 +5,8 @@
  *
  * V3 changes:
  * - Fixed initTabSwitching: skip elements that have data-tab-panel (panels, not tab bars)
- * - Added initUnifiedSidebar: replaces per-page sidebars with a consistent nav
+ * - V4: Role-based sidebar — each page shows the correct role's navigation
+ *   Team Lead (6 tabs), Trader (4), Senior Trader (4), Risk Manager (4), Admin (10)
  */
 (function() {
   'use strict';
@@ -28,37 +29,128 @@
   }
 
   // ============================================================
-  // 0. UNIFIED SIDEBAR — Same nav on every page
+  // 0. ROLE-BASED SIDEBAR — Each role gets its own navigation
   // ============================================================
   function initUnifiedSidebar() {
-    const sidebar = document.querySelector('.sidebar');
+    var sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
     // Don't touch role-workspaces.html or pages with .role-preview-sidebar
     if (document.querySelector('.role-preview-sidebar')) return;
 
-    const currentFile = window.location.pathname.split('/').pop() || 'index.html';
+    var currentFile = window.location.pathname.split('/').pop() || 'index.html';
 
-    const navItems = [
-      { icon: '📊', label: 'Analytics',       href: 'team-analytics.html' },
-      { icon: '📈', label: 'Trading',         href: 'trading-terminal.html' },
-      { icon: '🛡️', label: 'Risk Management', href: 'risk-management.html' },
-      { icon: '👤', label: 'My Workspace',    href: 'trader-workspace.html' },
-      { icon: '🏗️', label: 'Org Structure',   href: 'org-structure.html' },
-      { icon: '💰', label: 'Investing',       href: 'invest-program.html' },
-    ];
+    // --- Role definitions (from role-workspaces.html spec) ---
+    var roles = {
+      'team-lead': {
+        label: 'Team Lead', color: '#12CCFF',
+        items: [
+          { icon: '\u{1F4CA}', label: 'Analytics',       href: 'team-analytics.html' },
+          { icon: '\u{1F4C8}', label: 'Trading',         href: 'trading-terminal.html' },
+          { icon: '\u{1F3C6}', label: 'Performance',     href: 'team-analytics.html' },
+          { icon: '\u{1F6E1}\uFE0F', label: 'Risk Management', href: 'risk-management.html' },
+          { icon: '\u{1F3D7}\uFE0F', label: 'Org Structure',   href: 'org-structure.html' },
+          { icon: '\u{1F4B0}', label: 'Investing',       href: 'invest-program.html' }
+        ]
+      },
+      'trader': {
+        label: 'Trader', color: '#81E70B',
+        items: [
+          { icon: '\u{1F3E0}', label: 'Overview',    href: 'trader-workspace.html' },
+          { icon: '\u{1F4C8}', label: 'Trading',     href: 'trading-terminal.html' },
+          { icon: '\u{1F3C6}', label: 'Performance', href: 'reports.html' },
+          { icon: '\u{1F4D3}', label: 'Journal',     href: 'trader-workspace.html' }
+        ]
+      },
+      'senior-trader': {
+        label: 'Senior Trader', color: '#AF33FF',
+        items: [
+          { icon: '\u{1F465}', label: 'Team',            href: 'team-analytics.html' },
+          { icon: '\u{1F4C8}', label: 'Trading',         href: 'trading-terminal.html' },
+          { icon: '\u{1F3C6}', label: 'Performance',     href: 'reports.html' },
+          { icon: '\u{1F6E1}\uFE0F', label: 'Risk Management', href: 'risk-management.html' }
+        ]
+      },
+      'risk-manager': {
+        label: 'Risk Manager', color: '#FF4D6A',
+        items: [
+          { icon: '\u{1F6E1}\uFE0F', label: 'Risk Management', href: 'risk-management.html' },
+          { icon: '\u{1F4CA}', label: 'Analytics',       href: 'team-analytics.html' },
+          { icon: '\u{1F4C8}', label: 'Trading',         href: 'trading-terminal.html' },
+          { icon: '\u{1F3C6}', label: 'Performance',     href: 'reports.html' }
+        ]
+      },
+      'admin': {
+        label: 'Admin', color: '#FFB020',
+        items: [
+          { icon: '\u{1F4CA}', label: 'Dashboard',        href: 'dashboard.html' },
+          { icon: '\u{1F465}', label: 'Members',           href: 'members.html' },
+          { icon: '\u{1F50D}', label: 'Monitoring',        href: 'monitoring.html' },
+          { icon: '\u{1F4CB}', label: 'Reports',           href: 'admin-reports.html' },
+          { icon: '\u{1F4B3}', label: 'Wallet',            href: 'wallet-management.html' },
+          { icon: '\u{2696}\uFE0F', label: 'Fee Config',   href: 'fee-config.html' },
+          { icon: '\u{2705}', label: 'Approve Trades',     href: 'approve-trades.html' },
+          { icon: '\u{1F4B0}', label: 'Balance',           href: 'balance.html' },
+          { icon: '\u{1F4DC}', label: 'Policy',            href: 'policy.html' },
+          { icon: '\u{1F4DD}', label: 'Audit Log',         href: 'audit-log.html' }
+        ]
+      }
+    };
 
-    let navHtml = '';
-    navHtml += '<div style="padding:16px 20px 16px;">';
+    // --- Map each page to its primary role ---
+    var pageRole = {
+      // Team Lead pages
+      'team-analytics.html': 'team-lead',
+      'org-structure.html':  'team-lead',
+      'invest-program.html': 'team-lead',
+      // Trader pages
+      'trader-workspace.html': 'trader',
+      // Shared pages — default to Team Lead (most comprehensive role)
+      'trading-terminal.html': 'team-lead',
+      'risk-management.html':  'team-lead',
+      // Analytics sub-pages (embedded in Trading tab)
+      'coinmarketcap.html': 'team-lead',
+      'long-short.html':    'team-lead',
+      'greed.html':         'team-lead',
+      'news.html':          'team-lead',
+      // Admin pages
+      'dashboard.html':        'admin',
+      'members.html':          'admin',
+      'monitoring.html':       'admin',
+      'admin-reports.html':    'admin',
+      'wallet-management.html':'admin',
+      'fee-config.html':       'admin',
+      'approve-trades.html':   'admin',
+      'balance.html':          'admin',
+      'policy.html':           'admin',
+      'ddp.html':              'admin',
+      'audit-log.html':        'admin',
+      // Shared utility pages
+      'settings.html': 'team-lead',
+      'reports.html':  'trader',
+      'wiki.html':     'team-lead',
+      'legal.html':    'team-lead'
+    };
+
+    var roleName = pageRole[currentFile] || 'team-lead';
+    var role = roles[roleName];
+    var navItems = role.items;
+
+    var navHtml = '';
+    // Logo + brand
+    navHtml += '<div style="padding:16px 20px 8px;">';
     navHtml += '  <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;">';
     navHtml += '    <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#12CCFF,#AF33FF);flex-shrink:0;"></div>';
     navHtml += '    <span style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.92);">TrigonumTrade</span>';
     navHtml += '  </a>';
+    // Role badge
+    navHtml += '  <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:' + role.color + ';margin-top:8px;font-weight:600;">' + role.label + '</div>';
     navHtml += '</div>';
-    navHtml += '<div style="padding:8px 12px;">';
 
-    navItems.forEach(item => {
-      const isActive = currentFile === item.href;
-      const activeStyle = isActive
+    // Nav items
+    navHtml += '<div style="padding:8px 12px;">';
+    navItems.forEach(function(item) {
+      var isActive = (currentFile === item.href);
+      var activeStyle = isActive
         ? 'color:rgba(255,255,255,0.92);background:rgba(255,255,255,0.05);'
         : 'color:rgba(255,255,255,0.55);';
       navHtml += '<a href="' + item.href + '" class="nav-item' + (isActive ? ' active' : '') + '" '
@@ -66,7 +158,12 @@
         + item.icon + ' ' + item.label
         + '</a>';
     });
+    navHtml += '</div>';
 
+    // Bottom: Settings + Logout
+    navHtml += '<div style="position:absolute;bottom:0;width:240px;border-top:1px solid rgba(255,255,255,0.08);padding:8px 12px;">';
+    navHtml += '  <a href="settings.html" class="nav-item" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:12px;text-decoration:none;cursor:pointer;color:rgba(255,255,255,0.35);">\u2699\uFE0F Settings</a>';
+    navHtml += '  <a href="auth.html" class="nav-item" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:12px;text-decoration:none;cursor:pointer;color:rgba(255,255,255,0.35);">\u{1F6AA} Logout</a>';
     navHtml += '</div>';
 
     // Apply consistent sidebar styling
@@ -75,16 +172,18 @@
     sidebar.style.borderRight = '1px solid rgba(255,255,255,0.08)';
     sidebar.style.padding = '24px 0';
     sidebar.style.flexShrink = '0';
+    sidebar.style.position = 'relative';
+    sidebar.style.minHeight = '100vh';
     sidebar.innerHTML = navHtml;
 
     // Add hover effects
-    sidebar.querySelectorAll('.nav-item:not(.active)').forEach(item => {
+    sidebar.querySelectorAll('.nav-item:not(.active)').forEach(function(item) {
       item.addEventListener('mouseenter', function() {
         this.style.color = 'rgba(255,255,255,0.75)';
         this.style.background = 'rgba(255,255,255,0.03)';
       });
       item.addEventListener('mouseleave', function() {
-        this.style.color = 'rgba(255,255,255,0.55)';
+        this.style.color = (this.closest('[style*="bottom"]')) ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.55)';
         this.style.background = 'none';
       });
     });
