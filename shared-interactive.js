@@ -285,16 +285,23 @@
   // 7. TABLE ROW CLICKS
   // ============================================================
   function initTableRows() {
-    document.querySelectorAll('table tbody tr:not(.expandable):not(.nested)').forEach(row => {
+    document.querySelectorAll('table tbody tr:not(.expandable):not(.nested):not(.row-parent):not(.row-child)').forEach(row => {
       row.style.cursor = 'pointer';
       row.addEventListener('click', function(e) {
         if (e.target.closest('button, a, select, input, .btn')) return;
         if (e.defaultPrevented) return;
         const firstCell = this.querySelector('td');
         const name = firstCell ? firstCell.textContent.trim() : 'Row';
+        // Try to open a specific data-modal-target on the row or a named modal
+        const posModal = document.getElementById('modal-position-detail');
+        if (posModal && this.closest('.data-table') && !this.closest('[data-tab-panel="trade-history"]') && !this.closest('[data-tab-panel="tw-journal"]')) {
+          posModal.style.display = 'flex';
+          toast('Position: ' + name);
+          return;
+        }
         toast('Details: ' + name);
-        // Try to show a modal
-        const overlays = document.querySelectorAll('.modal-overlay');
+        // Try to show a modal (legacy)
+        const overlays = document.querySelectorAll('.modal-overlay:not([data-modal])');
         if (overlays.length > 0) {
           overlays[overlays.length - 1].style.display = 'flex';
         }
@@ -388,10 +395,34 @@
   }
 
   // ============================================================
-  // 12. SUB-TAB BARS — .sub-tab-bar > buttons
+  // 12. SUB-TAB BARS — data-tab-target driven switching
   // ============================================================
   function initSubTabs() {
-    document.querySelectorAll('.sub-tab-bar, .sub-tabs, .tab-bar, .report-tabs').forEach(bar => {
+    // NEW: data-tab-target driven tab switching (primary mechanism)
+    document.querySelectorAll('[data-tab-group]').forEach(bar => {
+      const groupName = bar.dataset.tabGroup;
+      const btns = bar.querySelectorAll('[data-tab-target]');
+      btns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          // Toggle active class
+          btns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          // Remove ::after underline from others
+          btns.forEach(b => { b.style.position = 'relative'; });
+          // Show/hide panels
+          const targetId = this.dataset.tabTarget;
+          document.querySelectorAll('[data-tab-panel-group="' + groupName + '"]').forEach(panel => {
+            panel.style.display = (panel.dataset.tabPanel === targetId) ? '' : 'none';
+          });
+          toast('Tab: ' + this.textContent.trim());
+        });
+      });
+    });
+
+    // Legacy: .sub-tab-bar, .sub-tabs without data-tab-group
+    document.querySelectorAll('.sub-tab-bar, .sub-tabs:not([data-tab-group]), .tab-bar, .report-tabs').forEach(bar => {
       const btns = bar.querySelectorAll('button, .sub-tab, .tab-btn, .report-tab-btn');
       btns.forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -408,6 +439,36 @@
             if (panel) panel.style.display = '';
           }
           toast('Tab: ' + this.textContent.trim());
+        });
+      });
+    });
+  }
+
+  // ============================================================
+  // 12b. MODAL TRIGGERS — data-modal-trigger opens modals
+  // ============================================================
+  function initModalTriggers() {
+    document.querySelectorAll('[data-modal-trigger]').forEach(trigger => {
+      trigger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const modalId = this.dataset.modalTrigger;
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'flex';
+        }
+      });
+    });
+    // Close modals on backdrop click or close button
+    document.querySelectorAll('.modal-overlay[data-modal]').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+      });
+      overlay.querySelectorAll('.modal-close-btn, [data-modal-close]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          overlay.style.display = 'none';
         });
       });
     });
@@ -559,6 +620,7 @@
     initTree();
     initModals();
     initSubTabs();
+    initModalTriggers();
     initAllButtons();
     initTableRows();
     initForms();

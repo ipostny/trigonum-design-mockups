@@ -430,10 +430,14 @@ body {
 
   <div class="main">
     <!-- Sub-tabs -->
-    <div class="sub-tabs">
-      <button class="sub-tab active">Team</button>
-      <button class="sub-tab">Policies</button>
+    <div class="sub-tabs" data-tab-group="rm-tabs">
+      <button class="sub-tab active" data-tab-target="rm-team">Team</button>
+      <button class="sub-tab" data-tab-target="rm-policies">Policies</button>
+      <button class="sub-tab" data-tab-target="rm-analytics">RM Analytics</button>
     </div>
+
+    <!-- TAB PANEL: Team -->
+    <div data-tab-panel="rm-team" data-tab-panel-group="rm-tabs">
 
     <!-- Summary Panel -->
     <div class="summary-panel">
@@ -544,10 +548,10 @@ body {
           <td><span class="counter-link info">4</span></td>
           <td>
             <div class="action-group">
-              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn meeting" data-modal-trigger="modal-meeting">Meeting</button>
               <button class="action-btn testing">Test</button>
-              <button class="action-btn ban">Ban</button>
-              <button class="action-btn coins">Coins</button>
+              <button class="action-btn ban" data-modal-trigger="modal-ban">Ban</button>
+              <button class="action-btn coins" data-modal-trigger="modal-coins">Coins</button>
             </div>
           </td>
         </tr>
@@ -576,10 +580,10 @@ body {
           <td><span class="counter-link info">3</span></td>
           <td>
             <div class="action-group">
-              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn meeting" data-modal-trigger="modal-meeting">Meeting</button>
               <button class="action-btn testing active">Testing</button>
-              <button class="action-btn ban">Ban</button>
-              <button class="action-btn coins">Coins</button>
+              <button class="action-btn ban" data-modal-trigger="modal-ban">Ban</button>
+              <button class="action-btn coins" data-modal-trigger="modal-coins">Coins</button>
             </div>
           </td>
         </tr>
@@ -608,7 +612,7 @@ body {
           <td><span class="counter-link info">6</span></td>
           <td>
             <div class="action-group">
-              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn meeting" data-modal-trigger="modal-meeting">Meeting</button>
               <button class="action-btn testing">Test</button>
               <button class="action-btn ban active">Banned</button>
               <button class="action-btn coins">BTC, ETH</button>
@@ -640,10 +644,10 @@ body {
           <td><span class="counter-link info">2</span></td>
           <td>
             <div class="action-group">
-              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn meeting" data-modal-trigger="modal-meeting">Meeting</button>
               <button class="action-btn testing">Test</button>
-              <button class="action-btn ban">Ban</button>
-              <button class="action-btn coins">Coins</button>
+              <button class="action-btn ban" data-modal-trigger="modal-ban">Ban</button>
+              <button class="action-btn coins" data-modal-trigger="modal-coins">Coins</button>
             </div>
           </td>
         </tr>
@@ -672,10 +676,10 @@ body {
           <td><span class="counter-link info">3</span></td>
           <td>
             <div class="action-group">
-              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn meeting" data-modal-trigger="modal-meeting">Meeting</button>
               <button class="action-btn testing">Test</button>
-              <button class="action-btn ban">Ban</button>
-              <button class="action-btn coins">Coins</button>
+              <button class="action-btn ban" data-modal-trigger="modal-ban">Ban</button>
+              <button class="action-btn coins" data-modal-trigger="modal-coins">Coins</button>
             </div>
           </td>
         </tr>
@@ -695,13 +699,10 @@ body {
       <a href="#">View RM Action Log &rarr;</a>
     </div>
 
-    <!-- ============================================================
-         POLICIES TAB CONTENT (when "Policies" sub-tab is active)
-         ============================================================ -->
+    </div><!-- /TAB PANEL: Team -->
 
-    <div class="section-divider">
-      <div class="section-divider-label">Below: Policies Sub-Tab Content</div>
-    </div>
+    <!-- TAB PANEL: Policies -->
+    <div data-tab-panel="rm-policies" data-tab-panel-group="rm-tabs" style="display:none;">
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <div style="font-size:18px;font-weight:700;">Risk Management Policies</div>
@@ -816,14 +817,10 @@ body {
       </div>
     </div>
 
-    <!-- ============================================================
-         RM ANALYTICS SECTION (Risk Manager → Analytics tab)
-         Issue #8: This section was completely missing
-         ============================================================ -->
+    </div><!-- /TAB PANEL: Policies -->
 
-    <div class="section-divider">
-      <div class="section-divider-label">Below: Risk Manager &rarr; Analytics Tab (separate view)</div>
-    </div>
+    <!-- TAB PANEL: RM Analytics -->
+    <div data-tab-panel="rm-analytics" data-tab-panel-group="rm-tabs" style="display:none;">
 
     <!-- Period pills -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
@@ -844,12 +841,12 @@ body {
         <div class="value">$845,200</div>
       </div>
       <div class="summary-card">
-        <div class="label">Change Today</div>
+        <div class="label">Realized PnL (Day)</div>
         <div class="value">+$4,230</div>
         <div class="sub" style="color:var(--green);">+0.50%</div>
       </div>
       <div class="summary-card">
-        <div class="label">Change This Week</div>
+        <div class="label">Realized PnL (Week)</div>
         <div class="value">+$18,400</div>
         <div class="sub" style="color:var(--green);">+2.22%</div>
       </div>
@@ -906,114 +903,100 @@ body {
       </tbody>
     </table>
 
-    <!-- ============================================================
-         POPUPS — Shown as modal overlays when triggered by actions
-         ============================================================ -->
+    </div><!-- /TAB PANEL: RM Analytics -->
 
-    <!-- POPUP 1: Assign Meeting (shown as modal overlay) -->
-    <div class="section-divider">
-      <div class="section-divider-label">Popup: Assign Meeting (renders as modal overlay)</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL POPUPS — Hidden by default, triggered by action buttons
+     ============================================================ -->
+
+<!-- MODAL 1: Assign Meeting -->
+<div class="modal-overlay" id="modal-meeting" data-modal>
+  <div class="meeting-popup">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Assign Meeting</div>
+    <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
+      Schedule a meeting with <strong style="color:var(--white-92);">Anna Sokolova</strong>
     </div>
-
-    <div style="position:relative;width:100%;height:400px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <div class="meeting-popup" style="position:relative;top:auto;left:auto;transform:none;">
-        <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Assign Meeting</div>
-        <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
-          Schedule a meeting with <strong style="color:var(--white-92);">Anna Sokolova</strong>
-        </div>
-        <div class="form-field">
-          <div class="label">Date & Time</div>
-          <input type="datetime-local" value="2026-03-07T10:00" />
-        </div>
-        <div class="form-field">
-          <div class="label">Notes</div>
-          <textarea placeholder="Reason for meeting, topics to discuss...">Review recent forced closures and discuss risk limits adjustment.</textarea>
-        </div>
-        <div style="display:flex;gap:10px;justify-content:flex-end;">
-          <button class="btn-confirm secondary">Cancel</button>
-          <button class="btn-confirm primary">Schedule Meeting</button>
-        </div>
-      </div>
+    <div class="form-field">
+      <div class="label">Date & Time</div>
+      <input type="datetime-local" value="2026-03-07T10:00" />
     </div>
-
-    <!-- POPUP 2: Ban Confirmation (modal overlay) -->
-    <div class="section-divider">
-      <div class="section-divider-label">Popup: Ban Trading Confirmation (renders as modal overlay)</div>
+    <div class="form-field">
+      <div class="label">Notes</div>
+      <textarea placeholder="Reason for meeting, topics to discuss...">Review recent forced closures and discuss risk limits adjustment.</textarea>
     </div>
-
-    <div style="position:relative;width:100%;height:360px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <div class="confirm-popup" style="position:relative;top:auto;left:auto;transform:none;">
-        <div class="title">Ban Trading</div>
-        <div class="desc">
-          Are you sure you want to <strong style="color:var(--red);">ban trading</strong> for <strong>Igor Morozov</strong>?
-          <br><br>
-          This will immediately prevent the trader from opening new positions. Existing positions will NOT be closed automatically.
-        </div>
-        <div class="actions">
-          <button class="btn-confirm secondary">Cancel</button>
-          <button class="btn-confirm danger">Ban Trading</button>
-        </div>
-      </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn-confirm secondary modal-close-btn">Cancel</button>
+      <button class="btn-confirm primary modal-close-btn">Schedule Meeting</button>
     </div>
+  </div>
+</div>
 
-    <!-- POPUP 3: Ban Coins (modal overlay) -->
-    <div class="section-divider">
-      <div class="section-divider-label">Popup: Ban Specific Coins (renders as modal overlay)</div>
+<!-- MODAL 2: Ban Trading Confirmation -->
+<div class="modal-overlay" id="modal-ban" data-modal>
+  <div class="confirm-popup">
+    <div class="title">Ban Trading</div>
+    <div class="desc">
+      Are you sure you want to <strong style="color:var(--red);">ban trading</strong> for <strong>Igor Morozov</strong>?
+      <br><br>
+      This will immediately prevent the trader from opening new positions. Existing positions will NOT be closed automatically.
     </div>
-
-    <div style="position:relative;width:100%;height:400px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <div class="meeting-popup" style="position:relative;top:auto;left:auto;transform:none;">
-        <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Ban Coins — Igor Morozov</div>
-        <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
-          Select coins the trader is NOT allowed to trade:
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
-          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,77,106,0.1);border:1px solid rgba(255,77,106,0.3);border-radius:var(--r-full);font-size:12px;color:var(--red);cursor:pointer;">
-            <input type="checkbox" checked style="accent-color:var(--red);"> BTC
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,77,106,0.1);border:1px solid rgba(255,77,106,0.3);border-radius:var(--r-full);font-size:12px;color:var(--red);cursor:pointer;">
-            <input type="checkbox" checked style="accent-color:var(--red);"> ETH
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
-            <input type="checkbox"> SOL
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
-            <input type="checkbox"> AVAX
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
-            <input type="checkbox"> DOGE
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
-            <input type="checkbox"> XRP
-          </label>
-        </div>
-        <div style="display:flex;gap:10px;justify-content:flex-end;">
-          <button class="btn-confirm secondary">Cancel</button>
-          <button class="btn-confirm primary">Save Coin Bans</button>
-        </div>
-      </div>
+    <div class="actions">
+      <button class="btn-confirm secondary modal-close-btn">Cancel</button>
+      <button class="btn-confirm danger modal-close-btn">Ban Trading</button>
     </div>
+  </div>
+</div>
 
-    <!-- POPUP 4: Policy Change Confirmation (modal overlay) -->
-    <div class="section-divider">
-      <div class="section-divider-label">Popup: Policy Change Confirmation (renders as modal overlay)</div>
+<!-- MODAL 3: Ban Coins -->
+<div class="modal-overlay" id="modal-coins" data-modal>
+  <div class="meeting-popup">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Ban Coins — Igor Morozov</div>
+    <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
+      Select coins the trader is NOT allowed to trade:
     </div>
-
-    <div style="position:relative;width:100%;height:320px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <div class="confirm-popup" style="position:relative;top:auto;left:auto;transform:none;">
-        <div class="title">Change RM Policy</div>
-        <div class="desc">
-          Change policy for <strong>Dmitry Volkov</strong> from <strong>Conservative</strong> to <strong>Moderate</strong>?
-          <br><br>
-          This will immediately apply the new risk limits.
-        </div>
-        <div class="actions">
-          <button class="btn-confirm secondary">Cancel</button>
-          <button class="btn-confirm primary">Apply Policy</button>
-        </div>
-      </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+      <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,77,106,0.1);border:1px solid rgba(255,77,106,0.3);border-radius:var(--r-full);font-size:12px;color:var(--red);cursor:pointer;">
+        <input type="checkbox" checked style="accent-color:var(--red);"> BTC
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,77,106,0.1);border:1px solid rgba(255,77,106,0.3);border-radius:var(--r-full);font-size:12px;color:var(--red);cursor:pointer;">
+        <input type="checkbox" checked style="accent-color:var(--red);"> ETH
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+        <input type="checkbox"> SOL
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+        <input type="checkbox"> AVAX
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+        <input type="checkbox"> DOGE
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+        <input type="checkbox"> XRP
+      </label>
     </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn-confirm secondary modal-close-btn">Cancel</button>
+      <button class="btn-confirm primary modal-close-btn">Save Coin Bans</button>
+    </div>
+  </div>
+</div>
 
+<!-- MODAL 4: Policy Change Confirmation -->
+<div class="modal-overlay" id="modal-policy-change" data-modal>
+  <div class="confirm-popup">
+    <div class="title">Change RM Policy</div>
+    <div class="desc">
+      Change policy for <strong>Dmitry Volkov</strong> from <strong>Conservative</strong> to <strong>Moderate</strong>?
+      <br><br>
+      This will immediately apply the new risk limits.
+    </div>
+    <div class="actions">
+      <button class="btn-confirm secondary modal-close-btn">Cancel</button>
+      <button class="btn-confirm primary modal-close-btn">Apply Policy</button>
+    </div>
   </div>
 </div>
 

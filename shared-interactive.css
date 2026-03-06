@@ -231,6 +231,39 @@ table tbody tr:hover {
   border-radius: 4px;
 }
 
+/* ===== MODAL OVERLAY (shared) ===== */
+.modal-overlay[data-modal] {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+/* ===== CUSTOM TOOLTIP (chart dots) ===== */
+.chart-dot-wrap .chart-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(13,13,36,0.95);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+}
+.chart-dot-wrap:hover .chart-tooltip {
+  display: block;
+}
+
 /* ===== PROTOTYPE BADGE ===== */
 .prototype-badge {
   position: fixed;

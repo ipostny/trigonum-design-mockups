@@ -347,7 +347,16 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
   </div>
 
   <div class="main">
-    <div class="content-header">
+    <!-- Overview / Journal sub-tabs -->
+    <div class="sub-tabs" data-tab-group="tw-tabs" style="margin-bottom:0;">
+      <button class="sub-tab active" data-tab-target="tw-overview" style="padding:12px 24px;font-size:13px;font-weight:600;color:var(--white-92);background:none;border:none;cursor:pointer;position:relative;">Overview<span style="position:absolute;bottom:-1px;left:12px;right:12px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:2px;"></span></button>
+      <button class="sub-tab" data-tab-target="tw-journal" style="padding:12px 24px;font-size:13px;font-weight:600;color:var(--white-55);background:none;border:none;cursor:pointer;">Journal</button>
+    </div>
+
+    <!-- TAB PANEL: Overview -->
+    <div data-tab-panel="tw-overview" data-tab-panel-group="tw-tabs">
+
+    <div class="content-header" style="margin-top:24px;">
       <div class="page-title">Overview</div>
       <div class="period-pills">
         <button class="period-pill">Day</button>
@@ -364,7 +373,7 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
         <div class="value">$320,000</div>
       </div>
       <div class="summary-card">
-        <div class="label">Change This Week</div>
+        <div class="label">Realized PnL (Week)</div>
         <div class="value">+$7,200</div>
         <div class="delta up">+2.30%</div>
       </div>
@@ -375,32 +384,39 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       <div class="chart-line"></div>
       <!-- Data points with tooltips -->
       <div style="position:absolute;bottom:0;left:0;right:0;height:140px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 40px 20px;">
-        <div style="position:relative;cursor:pointer;">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:42px;" title="Mon: $312,800"></div>
+        <div style="position:relative;cursor:pointer;" class="chart-dot-wrap">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:42px;"></div>
+          <span class="chart-tooltip">Mon: $312,800</span>
           <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Mon</span>
         </div>
-        <div style="position:relative;cursor:pointer;">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:56px;" title="Tue: $314,200"></div>
+        <div style="position:relative;cursor:pointer;" class="chart-dot-wrap">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:56px;"></div>
+          <span class="chart-tooltip">Tue: $314,200</span>
           <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Tue</span>
         </div>
-        <div style="position:relative;cursor:pointer;">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:48px;" title="Wed: $313,500"></div>
+        <div style="position:relative;cursor:pointer;" class="chart-dot-wrap">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:48px;"></div>
+          <span class="chart-tooltip">Wed: $313,500</span>
           <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Wed</span>
         </div>
-        <div style="position:relative;cursor:pointer;">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:84px;" title="Thu: $317,100"></div>
+        <div style="position:relative;cursor:pointer;" class="chart-dot-wrap">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:84px;"></div>
+          <span class="chart-tooltip">Thu: $317,100</span>
           <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Thu</span>
         </div>
-        <div style="position:relative;cursor:pointer;">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:72px;" title="Fri: $315,900"></div>
+        <div style="position:relative;cursor:pointer;" class="chart-dot-wrap">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:72px;"></div>
+          <span class="chart-tooltip">Fri: $315,900</span>
           <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Fri</span>
         </div>
-        <div style="position:relative;cursor:pointer;">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:96px;" title="Sat: $318,400"></div>
+        <div style="position:relative;cursor:pointer;" class="chart-dot-wrap">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:96px;"></div>
+          <span class="chart-tooltip">Sat: $318,400</span>
           <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Sat</span>
         </div>
-        <div style="position:relative;cursor:pointer;">
-          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);box-shadow:0 0 8px rgba(0,230,138,0.5);position:relative;bottom:108px;" title="Sun: $320,000"></div>
+        <div style="position:relative;cursor:pointer;" class="chart-dot-wrap">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);box-shadow:0 0 8px rgba(0,230,138,0.5);position:relative;bottom:108px;"></div>
+          <span class="chart-tooltip">Sun: $320,000</span>
           <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Sun</span>
         </div>
       </div>
@@ -491,59 +507,10 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       </tbody>
     </table>
 
-    <!-- Position Detail Popup (shown when clicking a row in Open Positions table) -->
-    <div class="section-divider">
-      <div class="section-divider-label">Popup: Position Detail (click row to open)</div>
-    </div>
+    </div><!-- /TAB PANEL: Overview -->
 
-    <div style="position:relative;width:100%;height:360px;background:rgba(0,0,0,0.6);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <div style="background:var(--navy-800);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:24px;width:520px;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <div>
-            <div style="font-size:16px;font-weight:700;">BTCUSDT — LONG</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-top:4px;">Open since 03/05 14:20 &middot; Duration: 4h 23m</div>
-          </div>
-          <button style="font-size:20px;color:rgba(255,255,255,0.35);background:none;border:none;cursor:pointer;">&times;</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
-            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Entry Price</div>
-            <div style="font-size:15px;font-weight:700;">$67,240</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
-            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Current Price</div>
-            <div style="font-size:15px;font-weight:700;">$67,890</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
-            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Unrealized PnL</div>
-            <div style="font-size:15px;font-weight:700;color:var(--green);">+$325 (+0.97%)</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
-            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Volume</div>
-            <div style="font-size:15px;font-weight:700;">0.5 BTC</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
-            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Leverage</div>
-            <div style="font-size:15px;font-weight:700;">10x Cross</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
-            <div style="font-size:11px;color:rgba(255,255,255,0.55);">SL / TP</div>
-            <div style="font-size:15px;font-weight:700;"><span style="color:var(--red);">$66,500</span> / <span style="color:var(--green);">$69,000</span></div>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
-          <button style="padding:8px 20px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:none;color:rgba(255,255,255,0.55);cursor:pointer;">Close</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================
-         VIEW 2: JOURNAL TAB — Trading System sub-tab
-         ============================================================ -->
-
-    <div class="section-divider">
-      <div class="section-divider-label">Below: Journal Tab &rarr; Trading System sub-tab</div>
-    </div>
+    <!-- TAB PANEL: Journal -->
+    <div data-tab-panel="tw-journal" data-tab-panel-group="tw-tabs" style="display:none;">
 
     <div class="sub-tabs">
       <button class="sub-tab active">Trading System</button>
@@ -619,9 +586,6 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
     </div>
 
     <!-- Read-only view (shown to TL/ST/RM — they can only view + download) -->
-    <div class="section-divider">
-      <div class="section-divider-label">Below: Read-only view for Team Lead / Senior Trader / Risk Manager</div>
-    </div>
 
     <div style="background:var(--navy-700);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:20px;margin-bottom:16px;opacity:0.85;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -649,9 +613,7 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
          VIEW 3: JOURNAL TAB — Trade History sub-tab
          ============================================================ -->
 
-    <div class="section-divider">
-      <div class="section-divider-label">Below: Journal Tab → Trade History sub-tab</div>
-    </div>
+    <div style="margin-top:32px;border-top:1px solid var(--white-08);padding-top:24px;"></div>
 
     <div class="sub-tabs">
       <button class="sub-tab">Trading System</button>
@@ -774,9 +736,6 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
          Trader can edit: Entry Reason, Comment, SL, TP, R:R, Risk
          ============================================================ -->
 
-    <div class="section-divider">
-      <div class="section-divider-label">Popup: Trade Detail / Edit (Trader can edit, others read-only)</div>
-    </div>
 
     <div style="max-width:520px;">
       <div class="trade-popup">
@@ -831,6 +790,50 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       </div>
     </div>
 
+    </div><!-- /TAB PANEL: Journal -->
+
+  </div>
+</div>
+
+<!-- MODAL: Position Detail (triggered by clicking a position row) -->
+<div class="modal-overlay" id="modal-position-detail" data-modal>
+  <div style="background:var(--navy-800);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:24px;width:520px;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div>
+        <div style="font-size:16px;font-weight:700;">BTCUSDT — LONG</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-top:4px;">Open since 03/05 14:20 &middot; Duration: 4h 23m</div>
+      </div>
+      <button class="modal-close-btn" style="font-size:20px;color:rgba(255,255,255,0.35);background:none;border:none;cursor:pointer;">&times;</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);">Entry Price</div>
+        <div style="font-size:15px;font-weight:700;">$67,240</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);">Current Price</div>
+        <div style="font-size:15px;font-weight:700;">$67,890</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);">Unrealized PnL</div>
+        <div style="font-size:15px;font-weight:700;color:var(--green);">+$325 (+0.97%)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);">Volume</div>
+        <div style="font-size:15px;font-weight:700;">0.5 BTC</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);">Leverage</div>
+        <div style="font-size:15px;font-weight:700;">10x Cross</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);">SL / TP</div>
+        <div style="font-size:15px;font-weight:700;"><span style="color:var(--red);">$66,500</span> / <span style="color:var(--green);">$69,000</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
+      <button class="modal-close-btn" style="padding:8px 20px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:none;color:rgba(255,255,255,0.55);cursor:pointer;">Close</button>
+    </div>
   </div>
 </div>
 
