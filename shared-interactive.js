@@ -1,487 +1,583 @@
 /**
- * TrigonumTrade Design Mockups — Shared Interactivity
- * Makes all mockups fully clickable/navigable for stakeholder review.
- *
- * Auto-detects and wires up:
- * - Tab switching (role workspace tabs, sub-tabs, report tabs)
- * - Modal open/close
- * - Expand/collapse (hierarchical tables, tree nodes)
- * - Toggle buttons (view toggles, pill groups)
- * - Sidebar navigation
- * - Dropdowns
- * - Search filtering
- * - Notifications/toasts
+ * TrigonumTrade Design Mockups — Shared Interactivity v2
+ * Aggressively wires up ALL clickable elements using broad selectors.
+ * Works with the actual class names used in mockups.
  */
-
 (function() {
   'use strict';
 
   // ============================================================
-  // 1. TAB SWITCHING
+  // TOAST
   // ============================================================
-  function initTabs() {
-    // Generic tab bars: .tab-bar > .tab-btn, .sub-tabs > .sub-tab, .pill-group > .pill
-    const tabGroups = document.querySelectorAll('.tab-bar, .sub-tabs, .pill-group, .report-tabs, .role-tabs, .workspace-tabs');
-    tabGroups.forEach(group => {
-      const buttons = group.querySelectorAll('.tab-btn, .sub-tab, .pill, .report-tab-btn, .role-tab, .workspace-tab');
-      buttons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+  let toastTimer;
+  function toast(msg) {
+    let el = document.getElementById('mockup-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'mockup-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  // ============================================================
+  // 1. PILL / PERIOD TOGGLES — .period-pill, .period-btn, .pill, etc.
+  // ============================================================
+  function initPills() {
+    // Find all pill-like groups
+    const groups = document.querySelectorAll('.period-pills, .pill-group, .period-selector, .view-toggle, .toggle-group');
+    groups.forEach(g => {
+      const pills = g.querySelectorAll('button, .period-pill, .period-btn, .pill, .toggle-btn');
+      pills.forEach(p => {
+        p.addEventListener('click', function(e) {
           e.preventDefault();
-          // Deactivate siblings
-          buttons.forEach(b => b.classList.remove('active'));
+          pills.forEach(x => x.classList.remove('active'));
+          this.classList.add('active');
+          toast('Period: ' + this.textContent.trim());
+        });
+      });
+    });
+  }
+
+  // ============================================================
+  // 2. SIDEBAR TABS — .preview-tab in role workspace previews
+  // ============================================================
+  function initPreviewTabs() {
+    // Each role-preview has a sidebar with .preview-tab items
+    document.querySelectorAll('.role-preview-sidebar, .sidebar').forEach(sidebar => {
+      const tabs = sidebar.querySelectorAll('.preview-tab, .nav-item, .nav-link, a[href]');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Don't toggle Settings/Logout
+          const text = this.textContent.trim();
+          if (text.includes('Logout')) { toast('Logging out...'); return; }
+          if (text.includes('Settings')) { toast('Opening Settings'); return; }
+
+          // Toggle active state within this sidebar
+          tabs.forEach(t => t.classList.remove('active'));
           this.classList.add('active');
 
-          // Find associated content panels
-          const targetId = this.getAttribute('data-tab') || this.getAttribute('data-target');
-          if (targetId) {
-            const parent = group.closest('.tab-container, .workspace-content, section, .demo-section, .page-container, body');
-            if (parent) {
-              const panels = parent.querySelectorAll('.tab-panel, .tab-content, .sub-tab-content');
-              panels.forEach(p => {
-                p.style.display = 'none';
-                p.classList.remove('active');
-              });
-              const target = parent.querySelector('#' + targetId) || document.getElementById(targetId);
-              if (target) {
-                target.style.display = '';
-                target.classList.add('active');
-              }
+          // Check for cross-mockup navigation
+          const tabText = text.replace(/[📊📈🏆🛡️🏗️💰👥📋🔍📰⚙️🚪]/g, '').trim();
+          const linkMap = {
+            'Analytics': 'team-analytics.html',
+            'Trading': 'trading-terminal.html',
+            'Performance': 'team-analytics.html',
+            'Risk Management': 'risk-management.html',
+            'Org Structure': 'org-structure.html',
+            'Investing': 'invest-program.html',
+            'Team': 'team-analytics.html',
+            'Overview': 'trader-workspace.html',
+            'Journal': 'trader-workspace.html',
+          };
+
+          if (linkMap[tabText]) {
+            toast('Tab: ' + tabText + ' → Click again to open full mockup');
+            // Double-click to navigate
+            if (this.dataset.lastClick && Date.now() - this.dataset.lastClick < 800) {
+              window.location.href = linkMap[tabText];
             }
+            this.dataset.lastClick = Date.now();
+          } else {
+            toast('Tab: ' + tabText);
           }
-
-          showToast('Switched to: ' + this.textContent.trim());
-        });
-      });
-    });
-
-    // Toggle buttons (List/Tree, etc.)
-    document.querySelectorAll('.view-toggle, .toggle-group').forEach(group => {
-      const buttons = group.querySelectorAll('.toggle-btn, button');
-      buttons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          buttons.forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          showToast('View: ' + this.textContent.trim());
         });
       });
     });
   }
 
   // ============================================================
-  // 2. MODALS / POPUPS
+  // 3. EXPANDABLE TABLE ROWS
   // ============================================================
-  function initModals() {
-    // Close buttons
-    document.querySelectorAll('.modal-close, [data-dismiss="modal"]').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const modal = this.closest('.modal-overlay, .modal-backdrop, .popup-overlay');
-        if (modal) modal.style.display = 'none';
-      });
-    });
+  function initExpandableRows() {
+    // .expandable rows with .expand-icon toggle .nested sibling rows
+    document.querySelectorAll('tr.expandable').forEach(row => {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', function(e) {
+        if (e.target.closest('button, a, select, input')) return;
+        const icon = this.querySelector('.expand-icon');
+        const isExpanding = icon && icon.textContent.includes('▶');
 
-    // Cancel buttons inside modals
-    document.querySelectorAll('.modal .btn:not(.btn-primary), .modal-actions .btn:not(.btn-primary)').forEach(btn => {
-      if (btn.textContent.trim().toLowerCase() === 'cancel') {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          const modal = this.closest('.modal-overlay, .modal-backdrop, .popup-overlay, .modal');
-          if (modal && modal.classList.contains('modal-overlay')) {
-            modal.style.display = 'none';
-          }
-          showToast('Cancelled');
-        });
-      }
-    });
-
-    // Primary action buttons inside modals (Save, Create, Confirm, etc.)
-    document.querySelectorAll('.modal .btn-primary, .modal-actions .btn-primary').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const modal = this.closest('.modal-overlay, .modal-backdrop, .popup-overlay, .modal');
-        if (modal && modal.classList.contains('modal-overlay')) {
-          modal.style.display = 'none';
-        }
-        showToast('Action: ' + this.textContent.trim() + ' (saved)');
-      });
-    });
-
-    // Clicking overlay backdrop closes modal
-    document.querySelectorAll('.modal-overlay, .popup-overlay').forEach(overlay => {
-      overlay.addEventListener('click', function(e) {
-        if (e.target === this) {
-          this.style.display = 'none';
-        }
-      });
-    });
-
-    // Wire up trigger buttons that open modals
-    document.querySelectorAll('[data-modal]').forEach(trigger => {
-      trigger.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('data-modal');
-        const modal = document.getElementById(targetId);
-        if (modal) modal.style.display = 'flex';
-      });
-    });
-  }
-
-  // ============================================================
-  // 3. EXPAND / COLLAPSE
-  // ============================================================
-  function initExpandCollapse() {
-    // Expand toggles (tree nodes, hierarchical table rows)
-    document.querySelectorAll('.expand-toggle, .row-toggle, [data-toggle="expand"]').forEach(toggle => {
-      toggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const isExpanded = this.classList.toggle('expanded');
-        // Toggle arrow direction
-        if (this.textContent.includes('\u25B6')) {
-          this.textContent = '\u25BC'; // down arrow
-        } else if (this.textContent.includes('\u25BC')) {
-          this.textContent = '\u25B6'; // right arrow
+        // Toggle all following .nested rows until next .expandable
+        let sibling = this.nextElementSibling;
+        while (sibling && sibling.classList.contains('nested')) {
+          sibling.style.display = isExpanding ? '' : 'none';
+          sibling = sibling.nextElementSibling;
         }
 
-        // Find and toggle child content
-        const parent = this.closest('.pair-group, .expandable-row, .tree-row, .senior-trader-row');
-        if (parent) {
-          const children = parent.querySelectorAll('.traders-list, .child-rows, .nested-rows, .trader-rows');
-          children.forEach(child => {
-            child.style.display = isExpanded ? '' : 'none';
-          });
+        if (icon) {
+          icon.textContent = isExpanding ? '▼' : '▶';
         }
+        toast(isExpanding ? 'Expanded' : 'Collapsed');
       });
     });
 
-    // Expand All / Collapse All buttons
-    document.querySelectorAll('.btn, button').forEach(btn => {
+    // Expand All / Collapse All buttons (found by text content)
+    document.querySelectorAll('button').forEach(btn => {
       const text = btn.textContent.trim().toLowerCase();
       if (text === 'expand all') {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
-          document.querySelectorAll('.traders-list, .child-rows, .nested-rows, .trader-rows').forEach(el => {
-            el.style.display = '';
-          });
-          document.querySelectorAll('.expand-toggle').forEach(t => {
-            t.classList.add('expanded');
-            if (t.innerHTML.includes('\u25B6')) t.innerHTML = t.innerHTML.replace('\u25B6', '\u25BC');
-          });
-          showToast('All sections expanded');
+          document.querySelectorAll('tr.nested').forEach(r => r.style.display = '');
+          document.querySelectorAll('.expand-icon').forEach(i => i.textContent = '▼');
+          // Also expand tree nodes
+          document.querySelectorAll('.traders-list, .child-rows, .nested-rows, .trader-rows').forEach(el => el.style.display = '');
+          document.querySelectorAll('.expand-toggle').forEach(t => t.textContent = '▼');
+          toast('All expanded');
         });
       }
       if (text === 'collapse all') {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
-          document.querySelectorAll('.traders-list, .child-rows, .nested-rows, .trader-rows').forEach(el => {
-            el.style.display = 'none';
-          });
-          document.querySelectorAll('.expand-toggle').forEach(t => {
-            t.classList.remove('expanded');
-            if (t.innerHTML.includes('\u25BC')) t.innerHTML = t.innerHTML.replace('\u25BC', '\u25B6');
-          });
-          showToast('All sections collapsed');
+          document.querySelectorAll('tr.nested').forEach(r => r.style.display = 'none');
+          document.querySelectorAll('.expand-icon').forEach(i => i.textContent = '▶');
+          document.querySelectorAll('.traders-list, .child-rows, .nested-rows, .trader-rows').forEach(el => el.style.display = 'none');
+          document.querySelectorAll('.expand-toggle').forEach(t => t.textContent = '▶');
+          toast('All collapsed');
         });
       }
     });
   }
 
   // ============================================================
-  // 4. SIDEBAR NAVIGATION
+  // 4. TREE VIEW EXPAND/COLLAPSE
   // ============================================================
-  function initSidebar() {
-    document.querySelectorAll('.sidebar .nav-item, .sidebar .nav-link, .sidebar a').forEach(link => {
-      link.addEventListener('click', function(e) {
+  function initTree() {
+    document.querySelectorAll('.expand-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function(e) {
         e.preventDefault();
-        // Deactivate all sidebar items
-        const sidebar = this.closest('.sidebar');
-        if (sidebar) {
-          sidebar.querySelectorAll('.nav-item, .nav-link, a').forEach(l => l.classList.remove('active'));
-        }
-        this.classList.add('active');
+        e.stopPropagation();
+        const pair = this.closest('.pair-group');
+        if (!pair) return;
+        const tradersList = pair.querySelector('.traders-list');
+        if (!tradersList) return;
+        const isHidden = tradersList.style.display === 'none';
+        tradersList.style.display = isHidden ? '' : 'none';
+        this.textContent = isHidden ? '▼' : '▶';
+        toast(isHidden ? 'Team expanded' : 'Team collapsed');
+      });
+    });
 
-        // Check if this links to another mockup
-        const href = this.getAttribute('href');
-        if (href && href.endsWith('.html')) {
-          window.location.href = href;
-          return;
-        }
+    // Tree node click → analytics popup
+    document.querySelectorAll('.tree-node.trader-node, .tree-node').forEach(node => {
+      if (node.classList.contains('trader-node') || node.querySelector('.node-role.trader')) {
+        node.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const name = this.querySelector('.node-name');
+          toast('Trader analytics: ' + (name ? name.textContent : 'Unknown'));
+          // Show analytics popup if exists
+          const popup = document.querySelector('.analytics-popup');
+          if (popup) {
+            popup.style.display = 'block';
+            popup.style.position = 'fixed';
+            popup.style.top = '50%';
+            popup.style.left = '50%';
+            popup.style.transform = 'translate(-50%, -50%)';
+            popup.style.zIndex = '1000';
+          }
+        });
+      }
+    });
+  }
 
-        showToast('Navigate to: ' + this.textContent.trim());
+  // ============================================================
+  // 5. MODALS — Find all modal-like elements and wire open/close
+  // ============================================================
+  function initModals() {
+    // Find static modals (shown inline in demo mockups) and make them togglable
+    const modals = document.querySelectorAll('.modal-overlay, .popup-overlay');
+    modals.forEach(m => {
+      // Backdrop click closes
+      m.addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+      });
+    });
+
+    // Cancel/Close buttons
+    document.querySelectorAll('.modal-close, .modal .btn, .modal-actions .btn, .analytics-popup .btn').forEach(btn => {
+      const text = btn.textContent.trim().toLowerCase();
+      if (text === 'cancel' || text === 'close' || text === '×') {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const modal = this.closest('.modal-overlay, .popup-overlay');
+          if (modal) modal.style.display = 'none';
+          // Also hide fixed-position popups
+          const popup = this.closest('.analytics-popup');
+          if (popup) popup.style.display = '';
+          toast('Closed');
+        });
+      }
+    });
+
+    // Primary action buttons in modals
+    document.querySelectorAll('.modal-actions .btn-primary, .modal .btn-primary').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const modal = this.closest('.modal-overlay, .popup-overlay');
+        if (modal) modal.style.display = 'none';
+        toast(this.textContent.trim() + ' — saved!');
       });
     });
   }
 
   // ============================================================
-  // 5. BUTTONS & ACTIONS
+  // 6. ALL BUTTONS — Generic click handler for any button/btn
   // ============================================================
-  function initButtons() {
-    // Generic button click feedback (for buttons not already wired)
-    document.querySelectorAll('.btn, button').forEach(btn => {
-      // Skip if already has a click handler from other init functions
-      if (btn.hasAttribute('data-wired')) return;
+  function initAllButtons() {
+    document.querySelectorAll('button, .btn, .add-trader-btn, .remove-btn, [role="button"]').forEach(btn => {
+      // Skip if already handled
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = '1';
 
-      const text = btn.textContent.trim().toLowerCase();
-
-      // Skip structural buttons (tab, toggle, expand/collapse — already wired)
-      if (btn.classList.contains('tab-btn') || btn.classList.contains('toggle-btn') ||
-          btn.classList.contains('sub-tab') || btn.classList.contains('pill') ||
-          btn.classList.contains('expand-toggle') || btn.classList.contains('modal-close')) {
-        return;
-      }
-
-      btn.setAttribute('data-wired', 'true');
       btn.addEventListener('click', function(e) {
+        // Don't double-fire if already handled by specific handlers
+        if (e.defaultPrevented) return;
         e.preventDefault();
 
-        // Action-specific behaviors
+        const text = this.textContent.trim().toLowerCase();
+
+        // Map button text to actions
         if (text.includes('export') || text.includes('csv')) {
-          showToast('Exported to CSV');
-        } else if (text.includes('invite') || text.includes('add') || text.includes('create') || text.includes('new')) {
-          // Try to show a related modal
-          const pageModals = document.querySelectorAll('.modal-overlay');
-          if (pageModals.length > 0) {
-            pageModals[0].style.display = 'flex';
+          toast('CSV exported');
+        } else if (text.includes('create') || text.includes('+ add') || text.includes('invite') || text.includes('new')) {
+          // Find a modal to show
+          const overlay = document.querySelector('.modal-overlay');
+          if (overlay) {
+            overlay.style.display = 'flex';
+            toast('Opening form...');
           } else {
-            showToast('Opening form: ' + this.textContent.trim());
+            toast('Action: ' + this.textContent.trim());
           }
         } else if (text.includes('save')) {
-          showToast('Changes saved successfully');
-        } else if (text.includes('delete') || text.includes('remove') || text.includes('reject')) {
-          showToast('Item removed');
+          toast('Saved successfully!');
+        } else if (text.includes('delete') || text.includes('remove')) {
+          toast('Removed');
         } else if (text.includes('approve') || text.includes('confirm')) {
-          showToast('Approved');
+          toast('Approved!');
+        } else if (text.includes('reject') || text.includes('ban')) {
+          toast('Status updated');
         } else if (text.includes('assign')) {
-          showToast('Assignment saved');
-        } else if (text.includes('ban')) {
-          showToast('Status updated');
-        } else if (text.includes('details') || text.includes('view')) {
-          const pageModals = document.querySelectorAll('.modal-overlay');
-          if (pageModals.length > 0) {
-            // Show the last modal (usually detail modal)
-            pageModals[pageModals.length - 1].style.display = 'flex';
-          } else {
-            showToast('Opening details...');
-          }
-        } else if (text.includes('filter') || text.includes('search')) {
-          showToast('Filters applied');
-        } else if (text.includes('refresh')) {
-          showToast('Data refreshed');
+          toast('Assignment saved');
+        } else if (text.includes('details') || text.includes('view') || text.includes('open')) {
+          toast('Opening details...');
         } else if (text.includes('download') || text.includes('скачать')) {
-          showToast('Download started');
+          toast('Download started');
         } else if (text.includes('edit')) {
-          showToast('Edit mode enabled');
-        } else {
-          showToast('Action: ' + this.textContent.trim());
+          toast('Edit mode');
+        } else if (text.includes('refresh')) {
+          toast('Refreshed');
+        } else if (text.includes('search') || text.includes('filter')) {
+          toast('Filters applied');
+        } else if (text.includes('upload') || text.includes('загрузить')) {
+          toast('File uploaded');
+        } else if (text.length > 0 && text.length < 50) {
+          toast(this.textContent.trim());
         }
       });
     });
+  }
 
-    // Clickable table rows
-    document.querySelectorAll('table tbody tr, .table-row').forEach(row => {
+  // ============================================================
+  // 7. TABLE ROW CLICKS
+  // ============================================================
+  function initTableRows() {
+    document.querySelectorAll('table tbody tr:not(.expandable):not(.nested)').forEach(row => {
       row.style.cursor = 'pointer';
       row.addEventListener('click', function(e) {
-        // Don't trigger if clicking a button or link inside the row
-        if (e.target.closest('button, a, .btn, select, input')) return;
-
-        // Try to show a detail modal
-        const pageModals = document.querySelectorAll('.modal-overlay');
-        if (pageModals.length > 0) {
-          pageModals[pageModals.length - 1].style.display = 'flex';
-        } else {
-          showToast('Opening details for this row...');
+        if (e.target.closest('button, a, select, input, .btn')) return;
+        if (e.defaultPrevented) return;
+        const firstCell = this.querySelector('td');
+        const name = firstCell ? firstCell.textContent.trim() : 'Row';
+        toast('Details: ' + name);
+        // Try to show a modal
+        const overlays = document.querySelectorAll('.modal-overlay');
+        if (overlays.length > 0) {
+          overlays[overlays.length - 1].style.display = 'flex';
         }
       });
     });
-
-    // Clickable count badges (warnings, closures)
-    document.querySelectorAll('.clickable-count, [data-click="popup"]').forEach(el => {
-      el.style.cursor = 'pointer';
-      el.addEventListener('click', function(e) {
-        e.preventDefault();
-        showToast('Showing filtered list: ' + this.textContent.trim() + ' items');
-      });
-    });
   }
 
   // ============================================================
-  // 6. DROPDOWNS & SELECTS
+  // 8. DROPDOWNS & FORM CONTROLS
   // ============================================================
-  function initDropdowns() {
-    document.querySelectorAll('select, .form-select, .inline-dropdown').forEach(select => {
-      select.addEventListener('change', function() {
-        showToast('Selected: ' + this.value);
+  function initForms() {
+    document.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', function() {
+        const label = this.closest('.form-group, td')?.querySelector('label, .form-label');
+        toast((label ? label.textContent.trim() + ': ' : 'Selected: ') + this.value);
       });
     });
-  }
 
-  // ============================================================
-  // 7. TOGGLES & SWITCHES
-  // ============================================================
-  function initToggles() {
-    document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
-      input.addEventListener('change', function() {
-        const label = this.closest('label, .checkbox-item, .toggle-item');
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const label = this.closest('label, .checkbox-item');
         const name = label ? label.textContent.trim() : this.name;
-        showToast((this.checked ? 'Enabled' : 'Disabled') + ': ' + name);
+        toast((this.checked ? '✓ ' : '✗ ') + name);
       });
     });
 
-    // Period selectors
-    document.querySelectorAll('.period-selector .period-btn, .period-pills .pill').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const group = this.closest('.period-selector, .period-pills');
-        if (group) {
-          group.querySelectorAll('.period-btn, .pill').forEach(b => b.classList.remove('active'));
-        }
-        this.classList.add('active');
-        showToast('Period: ' + this.textContent.trim());
-      });
-    });
-  }
-
-  // ============================================================
-  // 8. SEARCH
-  // ============================================================
-  function initSearch() {
-    document.querySelectorAll('.search-bar input, input[type="search"], .search-input').forEach(input => {
-      let debounce;
+    // Search inputs
+    document.querySelectorAll('input[type="text"], input[type="search"]').forEach(input => {
+      let timer;
       input.addEventListener('input', function() {
-        clearTimeout(debounce);
-        debounce = setTimeout(() => {
-          if (this.value.length > 0) {
-            showToast('Searching: "' + this.value + '"');
-          }
-        }, 500);
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          if (this.value.length > 0) toast('Searching: "' + this.value + '"');
+        }, 600);
       });
     });
   }
 
   // ============================================================
-  // 9. NAVIGATION BETWEEN MOCKUPS
-  // ============================================================
-  function initNavigation() {
-    // Create a floating navigation menu for jumping between mockups
-    const nav = document.createElement('div');
-    nav.id = 'mockup-nav';
-    nav.innerHTML = `
-      <div class="mockup-nav-toggle" title="Browse all mockups">&#9776;</div>
-      <div class="mockup-nav-panel">
-        <div class="mockup-nav-title">Design Mockups</div>
-        <div class="mockup-nav-section">Role Workspaces (NEW)</div>
-        <a href="role-workspaces.html" class="mockup-nav-link">Role Workspaces</a>
-        <a href="team-analytics.html" class="mockup-nav-link">Team Analytics</a>
-        <a href="risk-management.html" class="mockup-nav-link">Risk Management</a>
-        <a href="trader-workspace.html" class="mockup-nav-link">Trader Workspace</a>
-        <a href="org-structure.html" class="mockup-nav-link">Org Structure</a>
-        <div class="mockup-nav-section">Core Pages</div>
-        <a href="home.html" class="mockup-nav-link">Home</a>
-        <a href="auth.html" class="mockup-nav-link">Auth (Login/Signup)</a>
-        <a href="dashboard.html" class="mockup-nav-link">Dashboard</a>
-        <a href="trading-terminal.html" class="mockup-nav-link">Trading Terminal</a>
-        <a href="reports.html" class="mockup-nav-link">Reports</a>
-        <a href="monitoring.html" class="mockup-nav-link">Monitoring</a>
-        <div class="mockup-nav-section">Analytics Sub-tabs</div>
-        <a href="coinmarketcap.html" class="mockup-nav-link">CoinMarketCap</a>
-        <a href="long-short.html" class="mockup-nav-link">Long/Short</a>
-        <a href="greed.html" class="mockup-nav-link">Fear & Greed</a>
-        <a href="news.html" class="mockup-nav-link">News</a>
-        <div class="mockup-nav-section">Management</div>
-        <a href="members.html" class="mockup-nav-link">Members</a>
-        <a href="policy.html" class="mockup-nav-link">Policy</a>
-        <a href="ddp.html" class="mockup-nav-link">DDP</a>
-        <a href="audit-log.html" class="mockup-nav-link">Audit Log</a>
-        <a href="balance.html" class="mockup-nav-link">Balance</a>
-        <a href="settings.html" class="mockup-nav-link">Settings</a>
-        <div class="mockup-nav-section">Admin</div>
-        <a href="fee-config.html" class="mockup-nav-link">Fee Config</a>
-        <a href="admin-reports.html" class="mockup-nav-link">Admin Reports</a>
-        <a href="wallet-management.html" class="mockup-nav-link">Wallet Management</a>
-        <a href="approve-trades.html" class="mockup-nav-link">Approve Trades</a>
-        <div class="mockup-nav-section">Investor</div>
-        <a href="invest-program.html" class="mockup-nav-link">Invest Programs</a>
-        <a href="investor-form.html" class="mockup-nav-link">Investor Form</a>
-        <a href="investor.html" class="mockup-nav-link">Investor Portal</a>
-        <div class="mockup-nav-section">Other</div>
-        <a href="wiki.html" class="mockup-nav-link">Wiki</a>
-        <a href="legal.html" class="mockup-nav-link">Legal</a>
-        <a href="_system.html" class="mockup-nav-link">Design System</a>
-      </div>
-    `;
-    document.body.appendChild(nav);
-
-    // Highlight current page
-    const currentFile = window.location.pathname.split('/').pop();
-    nav.querySelectorAll('.mockup-nav-link').forEach(link => {
-      if (link.getAttribute('href') === currentFile) {
-        link.classList.add('current');
-      }
-    });
-
-    // Toggle panel
-    const toggle = nav.querySelector('.mockup-nav-toggle');
-    const panel = nav.querySelector('.mockup-nav-panel');
-    toggle.addEventListener('click', () => {
-      panel.classList.toggle('open');
-    });
-  }
-
-  // ============================================================
-  // 10. TOAST NOTIFICATIONS
-  // ============================================================
-  let toastTimeout;
-  function showToast(message) {
-    let toast = document.getElementById('mockup-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'mockup-toast';
-      document.body.appendChild(toast);
-    }
-    toast.textContent = message;
-    toast.classList.add('show');
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2000);
-  }
-
-  // ============================================================
-  // 11. DEMO SECTION NAVIGATION (for multi-section mockups)
+  // 9. DEMO SECTION TABS — Click demo-label to jump
   // ============================================================
   function initDemoSections() {
     const sections = document.querySelectorAll('.demo-section');
     if (sections.length <= 1) return;
 
-    // Add section anchors and quick-jump
-    const jumpNav = document.createElement('div');
-    jumpNav.className = 'section-jump-nav';
+    // Add IDs for anchor links
+    sections.forEach((s, i) => { s.id = 'section-' + i; });
+
+    // Create section jump nav
+    const nav = document.createElement('div');
+    nav.className = 'section-jump-nav';
     let html = '<div class="section-jump-title">Sections</div>';
-    sections.forEach((section, i) => {
-      const label = section.querySelector('.demo-label');
-      const text = label ? label.textContent.trim() : 'Section ' + (i + 1);
-      section.id = 'section-' + i;
-      html += `<a href="#section-${i}" class="section-jump-link">${text}</a>`;
+    sections.forEach((s, i) => {
+      const label = s.querySelector('.demo-label');
+      const text = label ? label.textContent.replace(/^Section \d+ — /, '') : 'Section ' + (i+1);
+      html += '<a href="#section-' + i + '" class="section-jump-link">' + text + '</a>';
     });
-    jumpNav.innerHTML = html;
-    document.body.appendChild(jumpNav);
+    nav.innerHTML = html;
+    document.body.appendChild(nav);
   }
 
   // ============================================================
-  // INIT ALL
+  // 10. ROLE PREVIEW SECTIONS — Click preview-tab to highlight
+  // ============================================================
+  function initRolePreviews() {
+    document.querySelectorAll('.role-preview').forEach(preview => {
+      const tabs = preview.querySelectorAll('.preview-tab');
+      tabs.forEach(tab => {
+        tab.style.cursor = 'pointer';
+      });
+    });
+  }
+
+  // ============================================================
+  // 11. MEMBER CHIPS — removable
+  // ============================================================
+  function initChips() {
+    document.querySelectorAll('.member-chip .remove, .member-chip .close').forEach(x => {
+      x.style.cursor = 'pointer';
+      x.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const chip = this.closest('.member-chip');
+        if (chip) {
+          const name = chip.textContent.replace('×', '').trim();
+          chip.style.opacity = '0.3';
+          chip.style.pointerEvents = 'none';
+          toast('Removed: ' + name);
+        }
+      });
+    });
+  }
+
+  // ============================================================
+  // 12. SUB-TAB BARS — .sub-tab-bar > buttons
+  // ============================================================
+  function initSubTabs() {
+    document.querySelectorAll('.sub-tab-bar, .sub-tabs, .tab-bar, .report-tabs').forEach(bar => {
+      const btns = bar.querySelectorAll('button, .sub-tab, .tab-btn, .report-tab-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          btns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+
+          // Try to show/hide content panels
+          const target = this.dataset.tab || this.dataset.target;
+          if (target) {
+            const container = bar.closest('.tab-container, section, .demo-section, .page-container') || document;
+            container.querySelectorAll('.tab-panel, .tab-content, .sub-tab-content').forEach(p => p.style.display = 'none');
+            const panel = container.querySelector('#' + target) || document.getElementById(target);
+            if (panel) panel.style.display = '';
+          }
+          toast('Tab: ' + this.textContent.trim());
+        });
+      });
+    });
+  }
+
+  // ============================================================
+  // 13. FLOATING NAVIGATION MENU
+  // ============================================================
+  function initFloatingNav() {
+    const nav = document.createElement('div');
+    nav.id = 'mockup-nav';
+    const currentFile = window.location.pathname.split('/').pop() || 'index.html';
+
+    const pages = [
+      { section: 'Role Workspaces (NEW)', items: [
+        ['index.html', 'Home — All Mockups'],
+        ['role-workspaces.html', 'Role Workspaces'],
+        ['team-analytics.html', 'Team Analytics'],
+        ['risk-management.html', 'Risk Management'],
+        ['trader-workspace.html', 'Trader Workspace'],
+        ['org-structure.html', 'Org Structure'],
+      ]},
+      { section: 'Core', items: [
+        ['dashboard.html', 'Dashboard'],
+        ['trading-terminal.html', 'Trading Terminal'],
+        ['reports.html', 'Reports'],
+        ['monitoring.html', 'Monitoring'],
+      ]},
+      { section: 'Analytics', items: [
+        ['coinmarketcap.html', 'CoinMarketCap'],
+        ['long-short.html', 'Long/Short'],
+        ['greed.html', 'Fear & Greed'],
+        ['news.html', 'News'],
+      ]},
+      { section: 'Management', items: [
+        ['members.html', 'Members'],
+        ['policy.html', 'Policy'],
+        ['ddp.html', 'DDP'],
+        ['audit-log.html', 'Audit Log'],
+        ['balance.html', 'Balance'],
+        ['settings.html', 'Settings'],
+      ]},
+      { section: 'Admin', items: [
+        ['fee-config.html', 'Fee Config'],
+        ['admin-reports.html', 'Admin Reports'],
+        ['wallet-management.html', 'Wallet Mgmt'],
+        ['approve-trades.html', 'Approve Trades'],
+      ]},
+      { section: 'Investor', items: [
+        ['invest-program.html', 'Invest Programs'],
+        ['investor-form.html', 'Investor Form'],
+        ['investor.html', 'Investor Portal'],
+      ]},
+      { section: 'Other', items: [
+        ['home.html', 'Home Page'],
+        ['auth.html', 'Auth'],
+        ['wiki.html', 'Wiki'],
+        ['legal.html', 'Legal'],
+      ]},
+    ];
+
+    let linksHtml = '';
+    pages.forEach(group => {
+      linksHtml += '<div class="mockup-nav-section">' + group.section + '</div>';
+      group.items.forEach(([href, label]) => {
+        const cls = href === currentFile ? ' current' : '';
+        linksHtml += '<a href="' + href + '" class="mockup-nav-link' + cls + '">' + label + '</a>';
+      });
+    });
+
+    nav.innerHTML = `
+      <div class="mockup-nav-toggle" title="Browse all mockups">☰</div>
+      <div class="mockup-nav-panel">
+        <div class="mockup-nav-title">TrigonumTrade Mockups</div>
+        ${linksHtml}
+      </div>
+    `;
+    document.body.appendChild(nav);
+
+    const toggle = nav.querySelector('.mockup-nav-toggle');
+    const panel = nav.querySelector('.mockup-nav-panel');
+    toggle.addEventListener('click', () => panel.classList.toggle('open'));
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (!nav.contains(e.target)) panel.classList.remove('open');
+    });
+  }
+
+  // ============================================================
+  // 14. CLICKABLE COUNTS (warnings, forced closures)
+  // ============================================================
+  function initClickableCounts() {
+    // Numbers in table cells that look like counts
+    document.querySelectorAll('td').forEach(td => {
+      const text = td.textContent.trim();
+      if (/^\d+$/.test(text) && parseInt(text) > 0 && parseInt(text) < 100) {
+        td.style.cursor = 'pointer';
+        td.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toast('Showing ' + text + ' items...');
+          const overlays = document.querySelectorAll('.modal-overlay');
+          if (overlays.length > 0) {
+            overlays[overlays.length - 1].style.display = 'flex';
+          }
+        });
+      }
+    });
+  }
+
+  // ============================================================
+  // 15. PROGRESS BARS — tooltip on hover
+  // ============================================================
+  function initProgressBars() {
+    document.querySelectorAll('.progress-bar, .risk-bar, [class*="progress"]').forEach(bar => {
+      bar.style.cursor = 'pointer';
+      bar.addEventListener('click', function() {
+        const fill = this.querySelector('[class*="fill"], [class*="bar-fill"]');
+        const width = fill ? fill.style.width : 'N/A';
+        toast('Risk budget: ' + width + ' remaining');
+      });
+    });
+  }
+
+  // ============================================================
+  // 16. VIEW TOGGLE (List / Org Structure)
+  // ============================================================
+  function initViewToggles() {
+    document.querySelectorAll('.view-toggle').forEach(group => {
+      const btns = group.querySelectorAll('.toggle-btn, button');
+      btns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          btns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          toast('View: ' + this.textContent.trim());
+        });
+      });
+    });
+  }
+
+  // ============================================================
+  // INIT
   // ============================================================
   function init() {
-    initTabs();
+    initPills();
+    initPreviewTabs();
+    initExpandableRows();
+    initTree();
     initModals();
-    initExpandCollapse();
-    initSidebar();
-    initButtons();
-    initDropdowns();
-    initToggles();
-    initSearch();
-    initNavigation();
+    initSubTabs();
+    initAllButtons();
+    initTableRows();
+    initForms();
     initDemoSections();
+    initRolePreviews();
+    initChips();
+    initFloatingNav();
+    initClickableCounts();
+    initProgressBars();
+    initViewToggles();
+
+    // Add click sound/feedback to all interactive elements
+    document.addEventListener('click', function(e) {
+      const el = e.target.closest('button, .btn, .preview-tab, .toggle-btn, .period-pill, .tree-node, .expand-toggle, tr.expandable, .member-chip .remove, .add-trader-btn, .remove-btn, select, a.mockup-nav-link, a.section-jump-link, .group-card .btn, .assigned-trader .remove-btn');
+      if (el) {
+        el.style.transform = 'scale(0.96)';
+        setTimeout(() => { el.style.transform = ''; }, 150);
+      }
+    });
   }
 
   if (document.readyState === 'loading') {
