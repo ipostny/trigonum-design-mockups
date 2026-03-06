@@ -231,37 +231,141 @@ table tbody tr:hover {
   border-radius: 4px;
 }
 
-/* ===== MODAL OVERLAY (shared) ===== */
+/* ===== MODAL OVERLAYS (data-modal) ===== */
 .modal-overlay[data-modal] {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.7);
   display: none;
-  align-items: center;
-  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
   z-index: 5000;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
 }
 
-/* ===== CUSTOM TOOLTIP (chart dots) ===== */
-.chart-dot-wrap .chart-tooltip {
+.modal-overlay[data-modal] .modal-content {
+  background: #1a1a3e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 560px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.modal-overlay[data-modal] .modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  margin-bottom: 20px;
+}
+
+.modal-overlay[data-modal] .modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.modal-overlay[data-modal] .modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modal-overlay[data-modal] .modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.modal-overlay[data-modal] .btn-cancel {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.modal-overlay[data-modal] .btn-confirm {
+  background: rgba(18, 204, 255, 0.9);
+  border: none;
+  color: #0D0D24;
+  padding: 8px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== CHART TOOLTIPS ===== */
+.chart-point {
+  position: relative;
+  cursor: pointer;
+}
+
+.chart-point .chart-tooltip {
   display: none;
   position: absolute;
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(13,13,36,0.95);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 11px;
+  background: rgba(13, 13, 36, 0.95);
+  border: 1px solid rgba(18, 204, 255, 0.3);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
   font-weight: 600;
-  color: rgba(255,255,255,0.92);
+  color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
-  pointer-events: none;
   z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
-.chart-dot-wrap:hover .chart-tooltip {
+
+.chart-point .chart-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(18, 204, 255, 0.3);
+}
+
+.chart-point:hover .chart-tooltip {
   display: block;
+}
+
+/* ===== TAB SWITCHING (data-tab-group) ===== */
+[data-tab-group] [data-tab-target] {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+[data-tab-group] [data-tab-target].active {
+  color: #12CCFF;
+  border-bottom-color: #12CCFF;
+}
+
+/* ===== HIDE ANNOTATION / DEBUG LABELS ===== */
+.annotation {
+  display: none !important;
 }
 
 /* ===== PROTOTYPE BADGE ===== */
