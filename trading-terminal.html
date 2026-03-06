@@ -616,35 +616,34 @@ body {
 <div class="prototype-badge">PROTOTYPE</div>
 
 <div class="app-shell">
-  <aside class="sidebar" style="padding:24px 0;">
-    <div style="padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:8px;">
-      <a style="display:flex;align-items:center;gap:8px;text-decoration:none;color:rgba(255,255,255,0.92);">
-        <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:6px;"></div>
-        <span style="font-size:14px;font-weight:700;">TrigonumTrade</span>
+  <aside class="sidebar">
+    <div style="padding:16px 20px;">
+      <a class="logo" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--purple));"></div>
+        <span style="font-size:15px;font-weight:700;color:var(--white-92);">TrigonumTrade</span>
       </a>
-      <div style="display:inline-block;margin-top:10px;padding:4px 10px;border-radius:9999px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(175,51,255,0.2);color:var(--purple);border:1px solid rgba(175,51,255,0.3);">Team Lead</div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--cyan);margin-top:8px;font-weight:600;">Team Lead</div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);">&#128202; Analytics</div>
-    <div style="display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.92);background:rgba(255,255,255,0.08);position:relative;">
-      <span style="position:absolute;left:0;top:3px;bottom:3px;width:3px;border-radius:0 2px 2px 0;background:linear-gradient(180deg,var(--cyan),var(--purple));"></span>
-      &#128200; Trading
+    <div style="padding:8px 12px;">
+      <div class="nav-item" style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--white-55);cursor:pointer;">📊 Analytics</div>
+      <div class="nav-item active" style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--white-92);background:var(--white-05);cursor:pointer;">📈 Trading</div>
+      <div class="nav-item" style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--white-55);cursor:pointer;">🏆 Performance</div>
+      <div class="nav-item" style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--white-55);cursor:pointer;">🛡️ Risk Management</div>
+      <div class="nav-item" style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--white-55);cursor:pointer;">🏗️ Org Structure</div>
+      <div class="nav-item" style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--white-55);cursor:pointer;">💰 Investing</div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);">&#127942; Performance</div>
-    <div style="display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);">&#128737;&#65039; Risk Management</div>
-    <div style="display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);">&#127959;&#65039; Org Structure</div>
-    <div style="display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);">&#128176; Investing</div>
   </aside>
 
-  <div style="flex:1;display:flex;flex-direction:column;max-height:100vh;overflow:hidden;">
-    <!-- Trading sub-tabs: Terminal | Analytics -->
-    <div class="sub-tabs" data-tab-group="trading-tabs" style="border-bottom:1px solid rgba(255,255,255,0.08);background:var(--navy-800);padding:0 16px;margin-bottom:0;">
-      <button class="sub-tab active" data-tab-target="tt-terminal" style="padding:12px 24px;font-size:13px;font-weight:600;background:none;border:none;cursor:pointer;">Terminal</button>
-      <button class="sub-tab" data-tab-target="tt-analytics" style="padding:12px 24px;font-size:13px;font-weight:600;background:none;border:none;cursor:pointer;">Analytics</button>
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+    <!-- Terminal / Analytics sub-tabs -->
+    <div style="display:flex;border-bottom:1px solid var(--white-08);padding:0 20px;background:var(--navy-800);" data-tab-group="trading-tabs">
+      <button class="sub-tab active" data-tab-target="panel-terminal" style="padding:10px 16px;font-size:13px;font-weight:600;background:none;border:none;color:var(--white-92);cursor:pointer;border-bottom:2px solid var(--cyan);">Terminal</button>
+      <button class="sub-tab" data-tab-target="panel-analytics" style="padding:10px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--white-55);cursor:pointer;border-bottom:2px solid transparent;">Analytics</button>
     </div>
 
-  <!-- TAB PANEL: Terminal -->
-  <div data-tab-panel="tt-terminal" data-tab-panel-group="trading-tabs">
-  <div class="terminal-layout" style="flex:1;max-height:none;">
+    <!-- ====== PANEL: TERMINAL ====== -->
+    <div id="panel-terminal" data-tab-panel data-tab-group="trading-tabs" style="flex:1;overflow:hidden;">
+  <div class="terminal-layout">
     <!-- Top Bar -->
     <div class="terminal-top-bar">
       <div class="symbol-selector">
@@ -874,42 +873,81 @@ body {
       </table>
     </div>
   </div>
-  </div>
-  </div><!-- /TAB PANEL: Terminal -->
 
-  <!-- TAB PANEL: Analytics -->
-  <div data-tab-panel="tt-analytics" data-tab-panel-group="trading-tabs" style="display:none;flex:1;padding:24px 32px;">
-    <!-- Analytics category sub-tabs -->
-    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:24px;">
-      <button style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.92);background:none;border:none;cursor:pointer;position:relative;">
-        CMP
-        <span style="position:absolute;bottom:-1px;left:8px;right:8px;height:2px;background:var(--cyan);border-radius:2px;"></span>
-      </button>
-      <button style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;cursor:pointer;">Long/Short</button>
-      <button style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;cursor:pointer;">Fear &amp; Greed</button>
-      <button style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;cursor:pointer;">News</button>
-      <button style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;cursor:pointer;">Liquidation Map</button>
-    </div>
-    <div style="text-align:center;padding:80px 20px;color:rgba(255,255,255,0.35);font-size:14px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.15);border-radius:12px;">
-      <div style="font-size:36px;margin-bottom:12px;">&#128202;</div>
-      <div style="font-weight:600;margin-bottom:4px;">CoinMarketCap Widget Area</div>
-      <div style="font-size:12px;">Embeds existing CMP / Long-Short / Fear&amp;Greed / News / Liquidation Map pages</div>
-    </div>
-  </div><!-- /TAB PANEL: Analytics -->
+    </div><!-- /panel-terminal -->
 
-  </div><!-- /terminal + sub-tabs wrapper -->
-</div>
+    <!-- ====== PANEL: ANALYTICS ====== -->
+    <div id="panel-analytics" data-tab-panel data-tab-group="trading-tabs" style="display:none;padding:24px;overflow-y:auto;">
+      <!-- Analytics category tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;" data-tab-group="analytics-cats">
+        <button class="period-pill active" data-tab-target="panel-analytics-cmp" style="padding:8px 16px;border-radius:var(--r-full);border:1px solid var(--white-15);background:var(--cyan);color:var(--navy-900);font-size:12px;font-weight:600;cursor:pointer;">CMP</button>
+        <button class="period-pill" data-tab-target="panel-analytics-ls" style="padding:8px 16px;border-radius:var(--r-full);border:1px solid var(--white-15);background:var(--white-05);color:var(--white-75);font-size:12px;font-weight:600;cursor:pointer;">Long/Short</button>
+        <button class="period-pill" data-tab-target="panel-analytics-greed" style="padding:8px 16px;border-radius:var(--r-full);border:1px solid var(--white-15);background:var(--white-05);color:var(--white-75);font-size:12px;font-weight:600;cursor:pointer;">Fear & Greed</button>
+        <button class="period-pill" data-tab-target="panel-analytics-news" style="padding:8px 16px;border-radius:var(--r-full);border:1px solid var(--white-15);background:var(--white-05);color:var(--white-75);font-size:12px;font-weight:600;cursor:pointer;">News</button>
+        <button class="period-pill" data-tab-target="panel-analytics-liq" style="padding:8px 16px;border-radius:var(--r-full);border:1px solid var(--white-15);background:var(--white-05);color:var(--white-75);font-size:12px;font-weight:600;cursor:pointer;">Liquidation Map</button>
+      </div>
 
-<!-- ===== Tab states reference ===== -->
-<div style="margin:0 32px 48px;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;">
-  <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px;">Tab Button States</div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;">
-    <div style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;">Default</div>
-    <div style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:8px;">Hover</div>
-    <div style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.92);background:rgba(255,255,255,0.08);border:1px solid var(--cyan);border-radius:8px;box-shadow:0 0 8px rgba(18,204,255,0.2);">Active</div>
-    <div style="padding:10px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.25);background:none;border:1px dashed rgba(255,255,255,0.08);border-radius:8px;cursor:not-allowed;">Disabled</div>
-  </div>
-</div>
+      <!-- CMP Panel -->
+      <div id="panel-analytics-cmp" data-tab-panel data-tab-group="analytics-cats">
+        <div style="font-size:18px;font-weight:700;margin-bottom:16px;">CoinMarketCap — Basic Info</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+          <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:16px;">
+            <div style="font-size:11px;color:var(--white-55);">BTC Market Cap</div>
+            <div style="font-size:18px;font-weight:700;margin-top:4px;">$1.68T</div>
+          </div>
+          <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:16px;">
+            <div style="font-size:11px;color:var(--white-55);">BTC Dominance</div>
+            <div style="font-size:18px;font-weight:700;margin-top:4px;">54.2%</div>
+          </div>
+          <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:16px;">
+            <div style="font-size:11px;color:var(--white-55);">Total Crypto MC</div>
+            <div style="font-size:18px;font-weight:700;margin-top:4px;">$3.1T</div>
+          </div>
+          <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:16px;">
+            <div style="font-size:11px;color:var(--white-55);">24h Volume</div>
+            <div style="font-size:18px;font-weight:700;margin-top:4px;">$142B</div>
+          </div>
+        </div>
+        <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;color:var(--white-55);font-size:13px;text-align:center;height:200px;display:flex;align-items:center;justify-content:center;">
+          [CoinMarketCap data integration — see coinmarketcap.html for full view]
+        </div>
+      </div>
+
+      <!-- Long/Short Panel -->
+      <div id="panel-analytics-ls" data-tab-panel data-tab-group="analytics-cats" style="display:none;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Long/Short Ratio</div>
+        <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;color:var(--white-55);font-size:13px;text-align:center;height:300px;display:flex;align-items:center;justify-content:center;">
+          [Long/Short ratio charts — see long-short.html for full view]
+        </div>
+      </div>
+
+      <!-- Fear & Greed Panel -->
+      <div id="panel-analytics-greed" data-tab-panel data-tab-group="analytics-cats" style="display:none;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Fear & Greed Index</div>
+        <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;color:var(--white-55);font-size:13px;text-align:center;height:300px;display:flex;align-items:center;justify-content:center;">
+          [Fear & Greed gauge — see greed.html for full view]
+        </div>
+      </div>
+
+      <!-- News Panel -->
+      <div id="panel-analytics-news" data-tab-panel data-tab-group="analytics-cats" style="display:none;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Crypto News Feed</div>
+        <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;color:var(--white-55);font-size:13px;text-align:center;height:300px;display:flex;align-items:center;justify-content:center;">
+          [News aggregation — see news.html for full view]
+        </div>
+      </div>
+
+      <!-- Liquidation Map Panel -->
+      <div id="panel-analytics-liq" data-tab-panel data-tab-group="analytics-cats" style="display:none;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Liquidation Map</div>
+        <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;color:var(--white-55);font-size:13px;text-align:center;height:300px;display:flex;align-items:center;justify-content:center;">
+          [Liquidation heatmap — Coinglass integration]
+        </div>
+      </div>
+    </div><!-- /panel-analytics -->
+
+  </div><!-- /flex column -->
+</div><!-- /app-shell -->
 
 <!-- ===== ORDER CONFIRMATION DIALOG ===== -->
 <!--
