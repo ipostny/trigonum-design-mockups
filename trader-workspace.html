@@ -370,9 +370,40 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       </div>
     </div>
 
-    <div class="chart-area">
-      <div class="chart-label">My Capital — Last 7 Days</div>
+    <div class="chart-area" style="position:relative;">
+      <div class="chart-label">My Capital &mdash; Last 7 Days</div>
       <div class="chart-line"></div>
+      <!-- Data points with tooltips -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:140px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 40px 20px;">
+        <div style="position:relative;cursor:pointer;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:42px;" title="Mon: $312,800"></div>
+          <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Mon</span>
+        </div>
+        <div style="position:relative;cursor:pointer;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:56px;" title="Tue: $314,200"></div>
+          <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Tue</span>
+        </div>
+        <div style="position:relative;cursor:pointer;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:48px;" title="Wed: $313,500"></div>
+          <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Wed</span>
+        </div>
+        <div style="position:relative;cursor:pointer;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:84px;" title="Thu: $317,100"></div>
+          <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Thu</span>
+        </div>
+        <div style="position:relative;cursor:pointer;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:72px;" title="Fri: $315,900"></div>
+          <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Fri</span>
+        </div>
+        <div style="position:relative;cursor:pointer;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);position:relative;bottom:96px;" title="Sat: $318,400"></div>
+          <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Sat</span>
+        </div>
+        <div style="position:relative;cursor:pointer;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--navy-700);box-shadow:0 0 8px rgba(0,230,138,0.5);position:relative;bottom:108px;" title="Sun: $320,000"></div>
+          <span style="font-size:10px;color:var(--white-35);position:absolute;bottom:0;">Sun</span>
+        </div>
+      </div>
     </div>
 
     <!-- Open Positions -->
@@ -384,18 +415,39 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       </div>
     </div>
 
+    <!-- Filters (Issue #7) -->
+    <div class="filters-bar" style="margin-bottom:16px;">
+      <select class="filter-select">
+        <option>All Instruments</option>
+        <option>BTCUSDT</option>
+        <option>ETHUSDT</option>
+        <option>SOLUSDT</option>
+      </select>
+      <select class="filter-select">
+        <option>Direction</option>
+        <option>LONG</option>
+        <option>SHORT</option>
+      </select>
+      <select class="filter-select">
+        <option>Leverage</option>
+        <option>1-3x</option>
+        <option>5-10x</option>
+        <option>10x+</option>
+      </select>
+    </div>
+
     <table class="data-table">
       <thead>
         <tr>
-          <th>Instrument</th>
-          <th>Direction</th>
-          <th>Volume</th>
-          <th>Entry Price</th>
-          <th>Current Price</th>
-          <th>P&L ($)</th>
-          <th>P&L (%)</th>
-          <th>Leverage</th>
-          <th>Duration</th>
+          <th style="cursor:pointer;">Instrument <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">Direction <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">Volume <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">Entry Price <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">Current Price <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">P&amp;L ($) <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">P&amp;L (%) <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">Leverage <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
+          <th style="cursor:pointer;">Duration <span style="font-size:10px;opacity:0.4;">&varr;</span></th>
           <th>SL / TP</th>
         </tr>
       </thead>
@@ -439,12 +491,58 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       </tbody>
     </table>
 
+    <!-- Position Detail Popup (shown when clicking a row in Open Positions table) -->
+    <div class="section-divider">
+      <div class="section-divider-label">Popup: Position Detail (click row to open)</div>
+    </div>
+
+    <div style="position:relative;width:100%;height:360px;background:rgba(0,0,0,0.6);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <div style="background:var(--navy-800);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:24px;width:520px;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div>
+            <div style="font-size:16px;font-weight:700;">BTCUSDT — LONG</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-top:4px;">Open since 03/05 14:20 &middot; Duration: 4h 23m</div>
+          </div>
+          <button style="font-size:20px;color:rgba(255,255,255,0.35);background:none;border:none;cursor:pointer;">&times;</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Entry Price</div>
+            <div style="font-size:15px;font-weight:700;">$67,240</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Current Price</div>
+            <div style="font-size:15px;font-weight:700;">$67,890</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Unrealized PnL</div>
+            <div style="font-size:15px;font-weight:700;color:var(--green);">+$325 (+0.97%)</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Volume</div>
+            <div style="font-size:15px;font-weight:700;">0.5 BTC</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.55);">Leverage</div>
+            <div style="font-size:15px;font-weight:700;">10x Cross</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.55);">SL / TP</div>
+            <div style="font-size:15px;font-weight:700;"><span style="color:var(--red);">$66,500</span> / <span style="color:var(--green);">$69,000</span></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
+          <button style="padding:8px 20px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,0.15);border-radius:8px;background:none;color:rgba(255,255,255,0.55);cursor:pointer;">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ============================================================
          VIEW 2: JOURNAL TAB — Trading System sub-tab
          ============================================================ -->
 
     <div class="section-divider">
-      <div class="section-divider-label">Below: Journal Tab → Trading System sub-tab</div>
+      <div class="section-divider-label">Below: Journal Tab &rarr; Trading System sub-tab</div>
     </div>
 
     <div class="sub-tabs">
@@ -455,10 +553,13 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
     <div class="strategy-section">
       <div class="strategy-header">
         <div class="title">My Trading Strategy</div>
-        <div class="meta">Last updated: 03/04/2026 14:30 by Dmitry Volkov</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="meta">Last updated: 03/04/2026 14:30 by Dmitry Volkov</div>
+          <button class="btn-sm" style="color:var(--cyan);border-color:rgba(18,204,255,0.3);">Edit</button>
+        </div>
       </div>
 
-      <!-- Editor toolbar -->
+      <!-- Editor toolbar (visible in edit mode) -->
       <div class="editor-toolbar">
         <button class="toolbar-btn" title="Bold"><b>B</b></button>
         <button class="toolbar-btn" title="Italic"><i>I</i></button>
@@ -514,6 +615,33 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       <div class="editor-actions">
         <button class="btn secondary">Cancel</button>
         <button class="btn primary">Save Strategy</button>
+      </div>
+    </div>
+
+    <!-- Read-only view (shown to TL/ST/RM — they can only view + download) -->
+    <div class="section-divider">
+      <div class="section-divider-label">Below: Read-only view for Team Lead / Senior Trader / Risk Manager</div>
+    </div>
+
+    <div style="background:var(--navy-700);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:20px;margin-bottom:16px;opacity:0.85;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:600;">Dmitry Volkov's Trading Strategy</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.35);">Last updated: 03/04/2026 14:30</div>
+      </div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.8;pointer-events:none;">
+        <strong>Momentum Breakout Strategy</strong><br>
+        I focus on high-timeframe breakouts (4H/Daily) on major pairs with strong volume confirmation...
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;margin-top:16px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;">
+        <span style="font-size:18px;">&#128196;</span>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;">Trading_Strategy_v2.pdf</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.35);">248 KB</div>
+        </div>
+        <button class="btn-sm primary">Download</button>
+      </div>
+      <div style="margin-top:12px;padding:8px 12px;background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.2);border-radius:8px;font-size:12px;color:var(--amber);">
+        &#128274; You are viewing this strategy in read-only mode. Only the trader can edit.
       </div>
     </div>
 
@@ -632,7 +760,13 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
     </table>
 
     <div class="pagination">
-      <div>Showing 1–4 of 28 trades</div>
+      <div>Showing 1&ndash;4 of 28 trades</div>
+    </div>
+
+    <!-- Empty state (shown when no trades match filters) -->
+    <div style="display:none;text-align:center;padding:60px 20px;color:rgba(255,255,255,0.35);font-size:14px;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.15);border-radius:12px;margin-top:16px;">
+      <div style="font-size:32px;margin-bottom:12px;">&#128203;</div>
+      No trades for the selected period
     </div>
 
     <!-- ============================================================

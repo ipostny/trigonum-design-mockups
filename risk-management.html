@@ -464,7 +464,7 @@ body {
       </div>
     </div>
 
-    <!-- Filters -->
+    <!-- Filters (includes Senior Trader and Coin/Market per ТЗ) -->
     <div class="filters-row">
       <select class="filter-select">
         <option>Period: Week</option>
@@ -474,10 +474,23 @@ body {
         <option>Year</option>
       </select>
       <select class="filter-select">
+        <option>All Senior Traders</option>
+        <option>A. Petrov</option>
+        <option>M. Kuznetsova</option>
+        <option>N. Orlov</option>
+      </select>
+      <select class="filter-select">
         <option>All Policies</option>
         <option>Conservative</option>
         <option>Moderate</option>
         <option>Aggressive</option>
+      </select>
+      <select class="filter-select">
+        <option>All Coins / Markets</option>
+        <option>BTC</option>
+        <option>ETH</option>
+        <option>SOL</option>
+        <option>AVAX</option>
       </select>
       <select class="filter-select">
         <option>All Statuses</option>
@@ -496,13 +509,13 @@ body {
     <table class="risk-table">
       <thead>
         <tr>
-          <th>Trader</th>
+          <th style="cursor:pointer;">Trader <span style="font-size:10px;opacity:0.4;">⇅</span></th>
           <th>RM Policy</th>
-          <th>Risk Now (to SL)</th>
-          <th>Risk Budget</th>
-          <th>Warnings</th>
-          <th>Forced Close</th>
-          <th>Positions</th>
+          <th style="cursor:pointer;">Risk Now (to SL) <span style="font-size:10px;opacity:0.4;">⇅</span></th>
+          <th style="cursor:pointer;">Risk Budget <span style="font-size:10px;opacity:0.4;">⇅</span></th>
+          <th style="cursor:pointer;">Warnings <span style="font-size:10px;opacity:0.4;">⇅</span></th>
+          <th style="cursor:pointer;">Forced Close <span style="font-size:10px;opacity:0.4;">⇅</span></th>
+          <th style="cursor:pointer;">Positions <span style="font-size:10px;opacity:0.4;">⇅</span></th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -669,20 +682,240 @@ body {
       </tbody>
     </table>
 
+    <div class="pagination">
+      <div>Showing 1–5 of 12 traders</div>
+      <div style="display:flex;gap:4px;">
+        <button style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--white-15);border:1px solid var(--white-08);color:var(--white-92);cursor:pointer;font-size:12px;">1</button>
+        <button style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:none;border:1px solid var(--white-08);color:var(--white-55);cursor:pointer;font-size:12px;">2</button>
+        <button style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:none;border:1px solid var(--white-08);color:var(--white-55);cursor:pointer;font-size:12px;">3</button>
+      </div>
+    </div>
+
     <div class="action-log-link">
-      <a href="#">View RM Action Log →</a>
+      <a href="#">View RM Action Log &rarr;</a>
     </div>
 
     <!-- ============================================================
-         POPUPS — Shown when triggered by actions
+         POLICIES TAB CONTENT (when "Policies" sub-tab is active)
          ============================================================ -->
 
-    <!-- POPUP 1: Assign Meeting -->
     <div class="section-divider">
-      <div class="section-divider-label">Popup: Assign Meeting</div>
+      <div class="section-divider-label">Below: Policies Sub-Tab Content</div>
     </div>
 
-    <div style="max-width:440px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:18px;font-weight:700;">Risk Management Policies</div>
+      <button style="background:var(--cyan);color:var(--navy-900);border:none;border-radius:var(--r-sm);padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;">+ Create Policy</button>
+    </div>
+
+    <!-- Policy Cards -->
+    <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;margin-bottom:24px;">
+      <!-- Conservative -->
+      <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
+          <div>
+            <div style="font-size:16px;font-weight:700;">Conservative</div>
+            <div style="font-size:11px;color:var(--white-35);margin-top:2px;">3 traders assigned</div>
+          </div>
+          <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r-full);background:rgba(0,230,138,0.1);color:var(--green);">Active</span>
+        </div>
+        <div style="font-size:12px;color:var(--white-55);line-height:1.8;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Position Size</span><span style="color:var(--white-92);font-weight:600;">$10,000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Leverage</span><span style="color:var(--white-92);font-weight:600;">5x</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Daily Loss</span><span style="color:var(--white-92);font-weight:600;">2%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Weekly Loss</span><span style="color:var(--white-92);font-weight:600;">5%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Open Positions</span><span style="color:var(--white-92);font-weight:600;">3</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;">
+            <span>Allowed Coins</span><span style="color:var(--white-92);font-weight:600;">BTC, ETH only</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button style="flex:1;padding:6px;font-size:11px;font-weight:600;border:1px solid var(--white-15);border-radius:var(--r-sm);background:none;color:var(--white-55);cursor:pointer;">Edit</button>
+          <button style="flex:1;padding:6px;font-size:11px;font-weight:600;border:1px solid var(--white-15);border-radius:var(--r-sm);background:none;color:var(--white-55);cursor:pointer;">Duplicate</button>
+        </div>
+      </div>
+
+      <!-- Moderate -->
+      <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
+          <div>
+            <div style="font-size:16px;font-weight:700;">Moderate</div>
+            <div style="font-size:11px;color:var(--white-35);margin-top:2px;">2 traders assigned</div>
+          </div>
+          <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r-full);background:rgba(0,230,138,0.1);color:var(--green);">Active</span>
+        </div>
+        <div style="font-size:12px;color:var(--white-55);line-height:1.8;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Position Size</span><span style="color:var(--white-92);font-weight:600;">$25,000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Leverage</span><span style="color:var(--white-92);font-weight:600;">10x</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Daily Loss</span><span style="color:var(--white-92);font-weight:600;">5%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Weekly Loss</span><span style="color:var(--white-92);font-weight:600;">10%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Open Positions</span><span style="color:var(--white-92);font-weight:600;">5</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;">
+            <span>Allowed Coins</span><span style="color:var(--white-92);font-weight:600;">All majors</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button style="flex:1;padding:6px;font-size:11px;font-weight:600;border:1px solid var(--white-15);border-radius:var(--r-sm);background:none;color:var(--white-55);cursor:pointer;">Edit</button>
+          <button style="flex:1;padding:6px;font-size:11px;font-weight:600;border:1px solid var(--white-15);border-radius:var(--r-sm);background:none;color:var(--white-55);cursor:pointer;">Duplicate</button>
+        </div>
+      </div>
+
+      <!-- Aggressive -->
+      <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;">
+          <div>
+            <div style="font-size:16px;font-weight:700;">Aggressive</div>
+            <div style="font-size:11px;color:var(--white-35);margin-top:2px;">1 trader assigned</div>
+          </div>
+          <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r-full);background:rgba(255,176,32,0.1);color:var(--amber);">Caution</span>
+        </div>
+        <div style="font-size:12px;color:var(--white-55);line-height:1.8;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Position Size</span><span style="color:var(--white-92);font-weight:600;">$50,000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Leverage</span><span style="color:var(--white-92);font-weight:600;">25x</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Daily Loss</span><span style="color:var(--white-92);font-weight:600;">10%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Weekly Loss</span><span style="color:var(--white-92);font-weight:600;">20%</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--white-05);">
+            <span>Max Open Positions</span><span style="color:var(--white-92);font-weight:600;">10</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;">
+            <span>Allowed Coins</span><span style="color:var(--white-92);font-weight:600;">All</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button style="flex:1;padding:6px;font-size:11px;font-weight:600;border:1px solid var(--white-15);border-radius:var(--r-sm);background:none;color:var(--white-55);cursor:pointer;">Edit</button>
+          <button style="flex:1;padding:6px;font-size:11px;font-weight:600;border:1px solid var(--white-15);border-radius:var(--r-sm);background:none;color:var(--white-55);cursor:pointer;">Duplicate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         RM ANALYTICS SECTION (Risk Manager → Analytics tab)
+         Issue #8: This section was completely missing
+         ============================================================ -->
+
+    <div class="section-divider">
+      <div class="section-divider-label">Below: Risk Manager &rarr; Analytics Tab (separate view)</div>
+    </div>
+
+    <!-- Period pills -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div style="font-size:28px;font-weight:800;">Analytics</div>
+      <div style="display:flex;background:rgba(255,255,255,0.05);border-radius:9999px;padding:3px;">
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;border-radius:9999px;cursor:pointer;">Day</button>
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.92);background:rgba(255,255,255,0.15);border:none;border-radius:9999px;cursor:pointer;">Week</button>
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;border-radius:9999px;cursor:pointer;">Month</button>
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;border-radius:9999px;cursor:pointer;">Quarter</button>
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);background:none;border:none;border-radius:9999px;cursor:pointer;">Year</button>
+      </div>
+    </div>
+
+    <!-- Summary cards (RM Analytics) -->
+    <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;margin-bottom:24px;">
+      <div class="summary-card">
+        <div class="label">Capital Under Management</div>
+        <div class="value">$845,200</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Change Today</div>
+        <div class="value">+$4,230</div>
+        <div class="sub" style="color:var(--green);">+0.50%</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Change This Week</div>
+        <div class="value">+$18,400</div>
+        <div class="sub" style="color:var(--green);">+2.22%</div>
+      </div>
+    </div>
+
+    <!-- Chart (RM Analytics) -->
+    <div style="background:var(--navy-700);border:1px solid rgba(255,255,255,0.08);border-radius:12px;height:200px;margin-bottom:24px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:20px;">
+      <div style="position:absolute;top:16px;left:20px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.55);">Capital Change — Last 7 Days</div>
+      <div style="width:100%;height:120px;background:linear-gradient(180deg, rgba(0,230,138,0.15), transparent);border-top:2px solid var(--green);mask:polygon(0% 60%, 14% 45%, 28% 55%, 42% 25%, 57% 35%, 71% 15%, 85% 20%, 100% 10%, 100% 100%, 0% 100%);-webkit-mask:polygon(0% 60%, 14% 45%, 28% 55%, 42% 25%, 57% 35%, 71% 15%, 85% 20%, 100% 10%, 100% 100%, 0% 100%);"></div>
+    </div>
+
+    <!-- Flat traders table (RM Analytics — no hierarchy, only assigned traders) -->
+    <div style="font-size:18px;font-weight:700;margin-bottom:16px;">My Traders</div>
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th style="cursor:pointer;">Trader <span style="font-size:10px;opacity:0.4;">&#8645;</span></th>
+          <th style="cursor:pointer;">Capital <span style="font-size:10px;opacity:0.4;">&#8645;</span></th>
+          <th style="cursor:pointer;">Unrealized PnL <span style="font-size:10px;opacity:0.4;">&#8645;</span></th>
+          <th style="cursor:pointer;">Realized PnL (Day) <span style="font-size:10px;opacity:0.4;">&#8645;</span></th>
+          <th style="cursor:pointer;">Realized PnL (Week) <span style="font-size:10px;opacity:0.4;">&#8645;</span></th>
+          <th style="cursor:pointer;">Trades <span style="font-size:10px;opacity:0.4;">&#8645;</span></th>
+          <th style="cursor:pointer;">Max DD (Week) <span style="font-size:10px;opacity:0.4;">&#8645;</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a class="trader-name" href="#" target="_blank">Dmitry Volkov</a></td>
+          <td>$320,000</td>
+          <td style="color:var(--green);font-weight:600;">+$1,840 (+0.58%)</td>
+          <td style="color:var(--green);font-weight:600;">+$920 (+0.29%)</td>
+          <td style="color:var(--green);font-weight:600;">+$7,200 (+2.30%)</td>
+          <td>14</td>
+          <td style="color:var(--red);font-weight:600;">-2.1%</td>
+        </tr>
+        <tr>
+          <td><a class="trader-name" href="#" target="_blank">Anna Sokolova</a></td>
+          <td>$280,000</td>
+          <td style="color:var(--red);font-weight:600;">-$620 (-0.22%)</td>
+          <td style="color:var(--green);font-weight:600;">+$1,450 (+0.52%)</td>
+          <td style="color:var(--green);font-weight:600;">+$5,100 (+1.86%)</td>
+          <td>9</td>
+          <td style="color:var(--red);font-weight:600;">-1.4%</td>
+        </tr>
+        <tr>
+          <td><a class="trader-name" href="#" target="_blank">Igor Morozov</a></td>
+          <td>$245,200</td>
+          <td style="color:var(--green);font-weight:600;">+$3,010 (+1.23%)</td>
+          <td style="color:var(--green);font-weight:600;">+$750 (+0.31%)</td>
+          <td style="color:var(--green);font-weight:600;">+$6,100 (+2.55%)</td>
+          <td>11</td>
+          <td style="color:var(--red);font-weight:600;">-3.2%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ============================================================
+         POPUPS — Shown as modal overlays when triggered by actions
+         ============================================================ -->
+
+    <!-- POPUP 1: Assign Meeting (shown as modal overlay) -->
+    <div class="section-divider">
+      <div class="section-divider-label">Popup: Assign Meeting (renders as modal overlay)</div>
+    </div>
+
+    <div style="position:relative;width:100%;height:400px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
       <div class="meeting-popup" style="position:relative;top:auto;left:auto;transform:none;">
         <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Assign Meeting</div>
         <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
@@ -703,12 +936,12 @@ body {
       </div>
     </div>
 
-    <!-- POPUP 2: Ban Confirmation -->
+    <!-- POPUP 2: Ban Confirmation (modal overlay) -->
     <div class="section-divider">
-      <div class="section-divider-label">Popup: Ban Trading Confirmation</div>
+      <div class="section-divider-label">Popup: Ban Trading Confirmation (renders as modal overlay)</div>
     </div>
 
-    <div style="max-width:420px;">
+    <div style="position:relative;width:100%;height:360px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
       <div class="confirm-popup" style="position:relative;top:auto;left:auto;transform:none;">
         <div class="title">Ban Trading</div>
         <div class="desc">
@@ -723,12 +956,12 @@ body {
       </div>
     </div>
 
-    <!-- POPUP 3: Ban Coins (multi-select) -->
+    <!-- POPUP 3: Ban Coins (modal overlay) -->
     <div class="section-divider">
-      <div class="section-divider-label">Popup: Ban Specific Coins</div>
+      <div class="section-divider-label">Popup: Ban Specific Coins (renders as modal overlay)</div>
     </div>
 
-    <div style="max-width:440px;">
+    <div style="position:relative;width:100%;height:400px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
       <div class="meeting-popup" style="position:relative;top:auto;left:auto;transform:none;">
         <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Ban Coins — Igor Morozov</div>
         <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
@@ -761,12 +994,12 @@ body {
       </div>
     </div>
 
-    <!-- POPUP 4: Policy Change Confirmation -->
+    <!-- POPUP 4: Policy Change Confirmation (modal overlay) -->
     <div class="section-divider">
-      <div class="section-divider-label">Popup: Policy Change Confirmation</div>
+      <div class="section-divider-label">Popup: Policy Change Confirmation (renders as modal overlay)</div>
     </div>
 
-    <div style="max-width:420px;">
+    <div style="position:relative;width:100%;height:320px;background:rgba(0,0,0,0.6);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;overflow:hidden;">
       <div class="confirm-popup" style="position:relative;top:auto;left:auto;transform:none;">
         <div class="title">Change RM Policy</div>
         <div class="desc">
