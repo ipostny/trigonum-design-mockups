@@ -322,10 +322,10 @@ body {
 }
 
 .dashed-line {
-  width: 60px;
+  width: 40px;
   height: 0;
-  border-top: 3px dashed var(--amber);
-  opacity: 0.6;
+  border-top: 2px dashed var(--amber);
+  opacity: 0.4;
 }
 
 .investors-group {
@@ -869,7 +869,7 @@ body {
 }
 
 .demo-label {
-  display: none; /* Hidden — these were debug section markers */
+  display: inline-block;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -882,7 +882,14 @@ body {
 }
 
 .annotation {
-  display: none; /* Hidden — these are developer implementation notes */
+  font-size: 12px;
+  color: var(--white-35);
+  font-style: italic;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--white-03);
+  border-radius: var(--r-sm);
+  border-left: 2px solid var(--cyan);
 }
 </style>
 <link rel="stylesheet" href="shared-interactive.css">
@@ -891,7 +898,9 @@ body {
 <div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
 <div class="prototype-badge">PROTOTYPE</div>
 
-<div class="page-container">
+<div class="app-shell" style="display:flex;min-height:100vh;">
+  <aside class="sidebar"></aside>
+  <div class="page-container" style="flex:1;overflow:auto;">
 
   <!-- ========== SECTION 1: TREE VIEW ========== -->
   <div class="demo-sections">
@@ -1491,6 +1500,7 @@ body {
   </div><!-- /demo-sections -->
 
 </div><!-- /page-container -->
+</div><!-- /app-shell -->
 
 <script src="shared-interactive.js"></script>
 </body>
