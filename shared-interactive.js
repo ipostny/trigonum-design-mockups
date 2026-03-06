@@ -1,7 +1,11 @@
 /**
- * TrigonumTrade Design Mockups — Shared Interactivity v2
+ * TrigonumTrade Design Mockups — Shared Interactivity v3
  * Aggressively wires up ALL clickable elements using broad selectors.
  * Works with the actual class names used in mockups.
+ *
+ * V3 changes:
+ * - Fixed initTabSwitching: skip elements that have data-tab-panel (panels, not tab bars)
+ * - Added initUnifiedSidebar: replaces per-page sidebars with a consistent nav
  */
 (function() {
   'use strict';
@@ -24,6 +28,69 @@
   }
 
   // ============================================================
+  // 0. UNIFIED SIDEBAR — Same nav on every page
+  // ============================================================
+  function initUnifiedSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    // Don't touch role-workspaces.html or pages with .role-preview-sidebar
+    if (document.querySelector('.role-preview-sidebar')) return;
+
+    const currentFile = window.location.pathname.split('/').pop() || 'index.html';
+
+    const navItems = [
+      { icon: '📊', label: 'Analytics',       href: 'team-analytics.html' },
+      { icon: '📈', label: 'Trading',         href: 'trading-terminal.html' },
+      { icon: '🛡️', label: 'Risk Management', href: 'risk-management.html' },
+      { icon: '👤', label: 'My Workspace',    href: 'trader-workspace.html' },
+      { icon: '🏗️', label: 'Org Structure',   href: 'org-structure.html' },
+      { icon: '💰', label: 'Investing',       href: 'invest-program.html' },
+    ];
+
+    let navHtml = '';
+    navHtml += '<div style="padding:16px 20px 16px;">';
+    navHtml += '  <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;">';
+    navHtml += '    <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#12CCFF,#AF33FF);flex-shrink:0;"></div>';
+    navHtml += '    <span style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.92);">TrigonumTrade</span>';
+    navHtml += '  </a>';
+    navHtml += '</div>';
+    navHtml += '<div style="padding:8px 12px;">';
+
+    navItems.forEach(item => {
+      const isActive = currentFile === item.href;
+      const activeStyle = isActive
+        ? 'color:rgba(255,255,255,0.92);background:rgba(255,255,255,0.05);'
+        : 'color:rgba(255,255,255,0.55);';
+      navHtml += '<a href="' + item.href + '" class="nav-item' + (isActive ? ' active' : '') + '" '
+        + 'style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;text-decoration:none;cursor:pointer;transition:all 0.15s;' + activeStyle + '">'
+        + item.icon + ' ' + item.label
+        + '</a>';
+    });
+
+    navHtml += '</div>';
+
+    // Apply consistent sidebar styling
+    sidebar.style.width = '240px';
+    sidebar.style.background = '#161638';
+    sidebar.style.borderRight = '1px solid rgba(255,255,255,0.08)';
+    sidebar.style.padding = '24px 0';
+    sidebar.style.flexShrink = '0';
+    sidebar.innerHTML = navHtml;
+
+    // Add hover effects
+    sidebar.querySelectorAll('.nav-item:not(.active)').forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        this.style.color = 'rgba(255,255,255,0.75)';
+        this.style.background = 'rgba(255,255,255,0.03)';
+      });
+      item.addEventListener('mouseleave', function() {
+        this.style.color = 'rgba(255,255,255,0.55)';
+        this.style.background = 'none';
+      });
+    });
+  }
+
+  // ============================================================
   // 1. PILL / PERIOD TOGGLES
   // ============================================================
   function initPills() {
@@ -42,10 +109,10 @@
   }
 
   // ============================================================
-  // 2. SIDEBAR TABS
+  // 2. SIDEBAR TABS (legacy — kept for role-workspaces.html)
   // ============================================================
   function initPreviewTabs() {
-    document.querySelectorAll('.role-preview-sidebar, .sidebar').forEach(sidebar => {
+    document.querySelectorAll('.role-preview-sidebar').forEach(sidebar => {
       const tabs = sidebar.querySelectorAll('.preview-tab, .nav-item, .nav-link, a[href]');
       tabs.forEach(tab => {
         tab.addEventListener('click', function(e) {
@@ -56,26 +123,7 @@
           tabs.forEach(t => t.classList.remove('active'));
           this.classList.add('active');
           const tabText = text.replace(/[📊📈🏆🛡️🏗️💰👥📋🔍📰⚙️🚪]/g, '').trim();
-          const linkMap = {
-            'Analytics': 'team-analytics.html',
-            'Trading': 'trading-terminal.html',
-            'Performance': 'team-analytics.html',
-            'Risk Management': 'risk-management.html',
-            'Org Structure': 'org-structure.html',
-            'Investing': 'invest-program.html',
-            'Team': 'team-analytics.html',
-            'Overview': 'trader-workspace.html',
-            'Journal': 'trader-workspace.html',
-          };
-          if (linkMap[tabText]) {
-            toast('Tab: ' + tabText + ' → Click again to open full mockup');
-            if (this.dataset.lastClick && Date.now() - this.dataset.lastClick < 800) {
-              window.location.href = linkMap[tabText];
-            }
-            this.dataset.lastClick = Date.now();
-          } else {
-            toast('Tab: ' + tabText);
-          }
+          toast('Tab: ' + tabText);
         });
       });
     });
@@ -304,7 +352,7 @@
   }
 
   function initSubTabs() {
-    document.querySelectorAll('.sub-tab-bar, .sub-tabs, .tab-bar, .report-tabs').forEach(bar => {
+    document.querySelectorAll('.sub-tab-bar, .tab-bar, .report-tabs').forEach(bar => {
       const btns = bar.querySelectorAll('button, .sub-tab, .tab-btn, .report-tab-btn');
       btns.forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -390,9 +438,18 @@
 
   // ============================================================
   // 17. TAB SWITCHING — data-tab-group driven content panels
+  //
+  // V3 FIX: Skip elements that have data-tab-panel attribute.
+  // These are panels, not tab bars. Previously, a panel with
+  // data-tab-group would be treated as a tab bar, find nested
+  // child buttons from a different group, and hide everything.
   // ============================================================
   function initTabSwitching() {
     document.querySelectorAll('[data-tab-group]').forEach(tabBar => {
+      // CRITICAL FIX: panels have both data-tab-panel AND data-tab-group.
+      // Only process actual tab bars (containers with buttons), not panels.
+      if (tabBar.hasAttribute('data-tab-panel')) return;
+
       const groupName = tabBar.dataset.tabGroup;
       const buttons = tabBar.querySelectorAll('[data-tab-target]');
       buttons.forEach(btn => {
@@ -409,9 +466,10 @@
           toast('Tab: ' + this.textContent.trim());
         });
       });
+      // Set initial state: show the active tab's panel, hide others
       if (buttons.length > 0) {
-        let activeBtn = tabBar.querySelector('[data-tab-target].active') || buttons[0];
-        const activeTarget = activeBtn.dataset.tabTarget;
+        var activeBtn = tabBar.querySelector('[data-tab-target].active') || buttons[0];
+        var activeTarget = activeBtn.dataset.tabTarget;
         document.querySelectorAll('[data-tab-panel][data-tab-group="' + groupName + '"]').forEach(panel => {
           panel.style.display = panel.id === activeTarget ? '' : 'none';
         });
@@ -465,6 +523,7 @@
   // INIT
   // ============================================================
   function init() {
+    initUnifiedSidebar();
     initTabSwitching();
     initModalTriggers();
     initRowModalTriggers();
