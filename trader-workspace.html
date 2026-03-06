@@ -38,82 +38,301 @@
 
 body { font-family: var(--font); background: var(--navy-900); color: var(--white-92); min-height: 100vh; }
 
+/*
+ * TRADER WORKSPACE — Overview and Journal tabs
+ *
+ * OVERVIEW TAB:
+ * - Summary cards: My Capital, Change for period ($ + %)
+ * - Capital change line chart
+ * - Open Positions table (self only): Instrument, Direction, Volume,
+ *   Entry Price, Current Price (live), P&L $, P&L %, Leverage/Margin,
+ *   Duration, SL/TP
+ * - Summary above table: "Open: N | Floating P&L: $ / %"
+ * - Sort, filter by instrument/direction/leverage
+ * - Click row → trade detail (same modal as team-analytics.html)
+ *
+ * JOURNAL TAB (two sub-tabs):
+ * Sub-tab 1 — "Trading System":
+ *   - Rich text editor (headings, lists, links) for strategy description
+ *   - File upload (DOC/DOCX/PDF) with download card
+ *   - "Last updated" timestamp + author
+ *   - Trader: edit mode. Others viewing: read-only
+ *
+ * Sub-tab 2 — "Trade History":
+ *   - Filters: Period, Instrument, Direction, Status, Leverage
+ *   - Trade table with "Reasons" column (filled/empty indicator)
+ *   - Click row → editable popup: Entry Reason, Comment, SL, TP, R:R, Risk
+ *   - Trader: can edit. Others: view-only
+ *
+ * APIs:
+ * - useGetMyPositionsQuery()
+ * - useGetMyCapitalHistoryQuery({ period })
+ * - useGetTradingStrategyQuery()
+ * - useUpdateTradingStrategyMutation()
+ * - useUploadStrategyFileMutation()
+ * - useGetMyTradesQuery({ filters })
+ * - useUpdateTradeJournalMutation({ tradeId, data })
+ */
+
 .workspace { display: flex; min-height: 100vh; }
-.sidebar { width: 260px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+
+.sidebar {
+  width: 260px; background: var(--navy-800);
+  border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0;
+}
+
 .sidebar-brand { padding: 0 20px 20px; border-bottom: 1px solid var(--white-08); margin-bottom: 8px; }
 .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--white-92); }
 .logo-box { width: 28px; height: 28px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border-radius: 6px; }
 .logo-text { font-size: 14px; font-weight: 700; }
-.role-tag { display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: var(--r-full); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: rgba(0,230,138,0.15); color: var(--green); border: 1px solid rgba(0,230,138,0.25); }
-.nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 20px; font-size: 13px; font-weight: 500; color: var(--white-55); position: relative; }
+
+.role-tag {
+  display: inline-block; margin-top: 10px;
+  padding: 4px 10px; border-radius: var(--r-full);
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  background: rgba(0,230,138,0.15); color: var(--green); border: 1px solid rgba(0,230,138,0.25);
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px; font-size: 13px; font-weight: 500;
+  color: var(--white-55); position: relative;
+}
 .nav-item.active { color: var(--white-92); background: var(--white-08); }
-.nav-item.active::before { content: ''; position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px; border-radius: 0 2px 2px 0; background: linear-gradient(180deg, var(--cyan), var(--purple)); }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px;
+  border-radius: 0 2px 2px 0; background: linear-gradient(180deg, var(--cyan), var(--purple));
+}
+
 .main { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+/* Header */
 .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .page-title { font-size: 28px; font-weight: 800; }
+
 .period-pills { display: flex; background: var(--white-05); border-radius: var(--r-full); padding: 3px; }
-.period-pill { padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--white-55); background: none; border: none; border-radius: var(--r-full); cursor: pointer; }
+.period-pill {
+  padding: 6px 14px; font-size: 12px; font-weight: 600;
+  color: var(--white-55); background: none; border: none; border-radius: var(--r-full); cursor: pointer;
+}
 .period-pill.active { background: var(--white-15); color: var(--white-92); }
+
+/* Summary */
 .summary-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
-.summary-card { background: var(--card-gradient); border: 1px solid var(--white-08); border-radius: var(--r-md); padding: 20px; }
+.summary-card {
+  background: var(--card-gradient); border: 1px solid var(--white-08);
+  border-radius: var(--r-md); padding: 20px;
+}
 .summary-card .label { font-size: 12px; color: var(--white-55); margin-bottom: 6px; }
 .summary-card .value { font-size: 28px; font-weight: 800; }
 .summary-card .delta { font-size: 14px; font-weight: 600; margin-top: 4px; }
 .delta.up { color: var(--green); }
 .delta.down { color: var(--red); }
-.chart-area { background: var(--navy-700); border: 1px solid var(--white-08); border-radius: var(--r-md); height: 200px; margin-bottom: 24px; position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 20px; }
+
+/* Chart */
+.chart-area {
+  background: var(--navy-700); border: 1px solid var(--white-08); border-radius: var(--r-md);
+  height: 200px; margin-bottom: 24px; position: relative; overflow: hidden;
+  display: flex; align-items: flex-end; padding: 20px;
+}
 .chart-area .chart-label { position: absolute; top: 16px; left: 20px; font-size: 13px; font-weight: 600; color: var(--white-55); }
-.chart-line { width: 100%; height: 120px; background: linear-gradient(180deg, rgba(0,230,138,0.15), transparent); border-top: 2px solid var(--green); mask: polygon(0% 70%, 14% 55%, 28% 60%, 42% 30%, 57% 40%, 71% 20%, 85% 25%, 100% 15%, 100% 100%, 0% 100%); -webkit-mask: polygon(0% 70%, 14% 55%, 28% 60%, 42% 30%, 57% 40%, 71% 20%, 85% 25%, 100% 15%, 100% 100%, 0% 100%); }
-.position-summary { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.chart-line {
+  width: 100%; height: 120px;
+  background: linear-gradient(180deg, rgba(0,230,138,0.15), transparent);
+  border-top: 2px solid var(--green);
+  mask: polygon(0% 70%, 14% 55%, 28% 60%, 42% 30%, 57% 40%, 71% 20%, 85% 25%, 100% 15%, 100% 100%, 0% 100%);
+  -webkit-mask: polygon(0% 70%, 14% 55%, 28% 60%, 42% 30%, 57% 40%, 71% 20%, 85% 25%, 100% 15%, 100% 100%, 0% 100%);
+}
+
+/* Position summary */
+.position-summary {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
 .position-summary .title { font-size: 18px; font-weight: 700; }
 .position-summary .stats { font-size: 13px; color: var(--white-55); }
 .position-summary .stats strong { color: var(--white-92); }
+
+/* Table */
 .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.data-table th { text-align: left; padding: 12px 12px; font-size: 11px; font-weight: 600; color: var(--white-55); letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 1px solid var(--white-08); background: var(--white-03); white-space: nowrap; }
+.data-table th {
+  text-align: left; padding: 12px 12px; font-size: 11px; font-weight: 600;
+  color: var(--white-55); letter-spacing: 0.5px; text-transform: uppercase;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03); white-space: nowrap;
+}
 .data-table td { padding: 12px 12px; border-bottom: 1px solid var(--white-05); color: var(--white-75); white-space: nowrap; }
 .data-table tr:hover > td { background: var(--white-03); cursor: pointer; }
+
 .direction-long { color: var(--green); font-weight: 600; }
 .direction-short { color: var(--red); font-weight: 600; }
 .pnl-up { color: var(--green); font-weight: 600; }
 .pnl-down { color: var(--red); font-weight: 600; }
+
+/* Sub-tabs */
 .sub-tabs { display: flex; border-bottom: 1px solid var(--white-08); margin-bottom: 24px; }
-.sub-tab { padding: 12px 24px; font-size: 13px; font-weight: 600; color: var(--white-55); background: none; border: none; cursor: pointer; position: relative; }
+.sub-tab {
+  padding: 12px 24px; font-size: 13px; font-weight: 600;
+  color: var(--white-55); background: none; border: none; cursor: pointer; position: relative;
+}
 .sub-tab:hover { color: var(--white-75); }
 .sub-tab.active { color: var(--white-92); }
-.sub-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px; background: linear-gradient(90deg, var(--cyan), var(--purple)); border-radius: 2px; }
+.sub-tab.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple)); border-radius: 2px;
+}
+
+/* Section divider */
+.section-divider { margin: 48px 0; border-top: 2px dashed var(--white-15); padding-top: 32px; }
+.section-divider-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--white-35); text-align: center; margin-bottom: 24px;
+}
+
+/* ============================================================
+   JOURNAL — Trading System Editor
+   ============================================================ */
+
 .strategy-section { margin-bottom: 32px; }
-.strategy-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+
+.strategy-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
 .strategy-header .title { font-size: 18px; font-weight: 700; }
 .strategy-header .meta { font-size: 12px; color: var(--white-35); }
-.editor-toolbar { display: flex; gap: 4px; padding: 8px 12px; background: var(--navy-700); border: 1px solid var(--white-15); border-bottom: none; border-radius: var(--r-sm) var(--r-sm) 0 0; }
-.toolbar-btn { width: 32px; height: 28px; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 4px; color: var(--white-55); cursor: pointer; font-size: 13px; font-weight: 700; }
+
+/* Editor toolbar */
+.editor-toolbar {
+  display: flex; gap: 4px; padding: 8px 12px;
+  background: var(--navy-700); border: 1px solid var(--white-15);
+  border-bottom: none; border-radius: var(--r-sm) var(--r-sm) 0 0;
+}
+
+.toolbar-btn {
+  width: 32px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; border-radius: 4px;
+  color: var(--white-55); cursor: pointer; font-size: 13px; font-weight: 700;
+}
 .toolbar-btn:hover { background: var(--white-08); color: var(--white-75); }
-.editor-area { background: var(--navy-700); border: 1px solid var(--white-15); border-radius: 0 0 var(--r-sm) var(--r-sm); padding: 20px; min-height: 200px; font-size: 14px; color: var(--white-75); line-height: 1.8; }
+.toolbar-btn.active { background: var(--white-15); color: var(--white-92); }
+
+/* Editor area */
+.editor-area {
+  background: var(--navy-700);
+  border: 1px solid var(--white-15);
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
+  padding: 20px;
+  min-height: 200px;
+  font-size: 14px;
+  color: var(--white-75);
+  line-height: 1.8;
+}
+
 .editor-area h3 { font-size: 16px; color: var(--white-92); margin-bottom: 8px; }
 .editor-area ul { padding-left: 20px; margin-bottom: 12px; }
 .editor-area li { margin-bottom: 4px; }
-.file-card { background: var(--white-03); border: 1px solid var(--white-08); border-radius: var(--r-md); padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-top: 16px; }
-.file-icon { width: 44px; height: 44px; background: rgba(18,204,255,0.1); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--cyan); }
+.editor-area a { color: var(--cyan); text-decoration: underline; }
+
+/* File upload card */
+.file-card {
+  background: var(--white-03); border: 1px solid var(--white-08);
+  border-radius: var(--r-md); padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 16px;
+}
+
+.file-icon {
+  width: 44px; height: 44px;
+  background: rgba(18,204,255,0.1); border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--cyan);
+}
+
 .file-info { flex: 1; }
 .file-info .name { font-size: 14px; font-weight: 600; }
 .file-info .meta { font-size: 12px; color: var(--white-35); margin-top: 2px; }
-.btn-sm { padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: var(--r-sm); cursor: pointer; border: 1px solid var(--white-15); background: none; color: var(--white-55); }
-.editor-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
+
+.file-actions { display: flex; gap: 8px; }
+
+.btn-sm {
+  padding: 6px 14px; font-size: 12px; font-weight: 600;
+  border-radius: var(--r-sm); cursor: pointer; border: 1px solid var(--white-15);
+  background: none; color: var(--white-55);
+}
+.btn-sm:hover { color: var(--white-75); border-color: var(--white-35); }
+.btn-sm.primary { background: var(--cyan); color: var(--navy-900); border: none; }
+
+/* Action buttons row */
+.editor-actions {
+  display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end;
+}
+
+/* ============================================================
+   JOURNAL — Trade History with Editable Popup
+   ============================================================ */
+
 .filters-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-.filter-select { background: var(--navy-700); color: var(--white-75); border: 1px solid var(--white-15); border-radius: var(--r-sm); padding: 8px 12px; font-size: 12px; font-family: var(--font); }
-.reasons-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: var(--r-full); }
+.filter-select {
+  background: var(--navy-700); color: var(--white-75);
+  border: 1px solid var(--white-15); border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 12px; font-family: var(--font);
+}
+
+/* Reasons indicator */
+.reasons-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; padding: 3px 8px; border-radius: var(--r-full);
+}
 .reasons-badge.filled { background: rgba(0,230,138,0.1); color: var(--green); }
 .reasons-badge.empty { background: rgba(255,255,255,0.05); color: var(--white-35); }
+
+/* Trade Edit Popup */
+.trade-popup {
+  background: var(--navy-800);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  max-width: 520px;
+  box-shadow: var(--shadow-elevated);
+}
+
+.trade-popup .header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px;
+}
+.trade-popup .header .title { font-size: 16px; font-weight: 700; }
+.trade-popup .close { font-size: 20px; color: var(--white-35); background: none; border: none; cursor: pointer; }
+
+.form-group { margin-bottom: 16px; }
+.form-group .label { font-size: 12px; color: var(--white-55); margin-bottom: 6px; }
+.form-group input, .form-group textarea {
+  width: 100%; background: var(--navy-700); color: var(--white-75);
+  border: 1px solid var(--white-15); border-radius: var(--r-sm);
+  padding: 10px 14px; font-size: 13px; font-family: var(--font);
+}
+.form-group textarea { height: 100px; resize: vertical; }
+.form-group .inline-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.popup-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
 .btn { padding: 8px 20px; font-size: 13px; font-weight: 600; border-radius: var(--r-sm); border: none; cursor: pointer; }
 .btn.primary { background: var(--cyan); color: var(--navy-900); }
 .btn.secondary { background: none; border: 1px solid var(--white-15); color: var(--white-55); }
-.pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 12px; color: var(--white-55); }
+
+/* Pagination */
+.pagination {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 16px; font-size: 12px; color: var(--white-55);
+}
 </style>
 <link rel="stylesheet" href="shared-interactive.css">
 </head>
 <body>
 <div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
 <div class="prototype-badge">PROTOTYPE</div>
+
+<!-- ============================================================
+     VIEW 1: OVERVIEW TAB
+     ============================================================ -->
 
 <div class="workspace">
   <div class="sidebar">
@@ -165,17 +384,67 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       <div class="chart-line"></div>
     </div>
 
+    <!-- Open Positions -->
     <div class="position-summary">
       <div class="title">Open Positions</div>
-      <div class="stats">Open: <strong>3</strong> &nbsp;|&nbsp; Floating P&L: <strong style="color:var(--green);">+$1,840 (+0.58%)</strong></div>
+      <div class="stats">
+        Open: <strong>3</strong> &nbsp;|&nbsp;
+        Floating P&L: <strong style="color:var(--green);">+$1,840 (+0.58%)</strong>
+      </div>
     </div>
 
     <table class="data-table">
-      <thead><tr><th>Instrument</th><th>Direction</th><th>Volume</th><th>Entry Price</th><th>Current Price</th><th>P&L ($)</th><th>P&L (%)</th><th>Leverage</th><th>Duration</th><th>SL / TP</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Instrument</th>
+          <th>Direction</th>
+          <th>Volume</th>
+          <th>Entry Price</th>
+          <th>Current Price</th>
+          <th>P&L ($)</th>
+          <th>P&L (%)</th>
+          <th>Leverage</th>
+          <th>Duration</th>
+          <th>SL / TP</th>
+        </tr>
+      </thead>
       <tbody>
-        <tr><td><strong>BTCUSDT</strong></td><td class="direction-long">LONG</td><td>0.5 BTC</td><td>$67,240</td><td>$67,890</td><td class="pnl-up">+$325</td><td class="pnl-up">+0.97%</td><td>10x Cross</td><td>4h 23m</td><td><span style="color:var(--red);">$66,500</span> / <span style="color:var(--green);">$69,000</span></td></tr>
-        <tr><td><strong>ETHUSDT</strong></td><td class="direction-long">LONG</td><td>5.0 ETH</td><td>$3,420</td><td>$3,485</td><td class="pnl-up">+$325</td><td class="pnl-up">+1.90%</td><td>5x Isolated</td><td>1d 2h</td><td><span style="color:var(--red);">$3,350</span> / <span style="color:var(--green);">$3,600</span></td></tr>
-        <tr><td><strong>SOLUSDT</strong></td><td class="direction-short">SHORT</td><td>100 SOL</td><td>$142.50</td><td>$145.20</td><td class="pnl-down">-$270</td><td class="pnl-down">-1.89%</td><td>3x Cross</td><td>45m</td><td><span style="color:var(--red);">$148.00</span> / <span style="color:var(--green);">$138.00</span></td></tr>
+        <tr>
+          <td><strong>BTCUSDT</strong></td>
+          <td class="direction-long">LONG</td>
+          <td>0.5 BTC</td>
+          <td>$67,240</td>
+          <td>$67,890</td>
+          <td class="pnl-up">+$325</td>
+          <td class="pnl-up">+0.97%</td>
+          <td>10x Cross</td>
+          <td>4h 23m</td>
+          <td><span style="color:var(--red);">$66,500</span> / <span style="color:var(--green);">$69,000</span></td>
+        </tr>
+        <tr>
+          <td><strong>ETHUSDT</strong></td>
+          <td class="direction-long">LONG</td>
+          <td>5.0 ETH</td>
+          <td>$3,420</td>
+          <td>$3,485</td>
+          <td class="pnl-up">+$325</td>
+          <td class="pnl-up">+1.90%</td>
+          <td>5x Isolated</td>
+          <td>1d 2h</td>
+          <td><span style="color:var(--red);">$3,350</span> / <span style="color:var(--green);">$3,600</span></td>
+        </tr>
+        <tr>
+          <td><strong>SOLUSDT</strong></td>
+          <td class="direction-short">SHORT</td>
+          <td>100 SOL</td>
+          <td>$142.50</td>
+          <td>$145.20</td>
+          <td class="pnl-down">-$270</td>
+          <td class="pnl-down">-1.89%</td>
+          <td>3x Cross</td>
+          <td>45m</td>
+          <td><span style="color:var(--red);">$148.00</span> / <span style="color:var(--green);">$138.00</span></td>
+        </tr>
       </tbody>
     </table>
 
@@ -184,17 +453,22 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
     <!-- ====== PANEL: JOURNAL ====== -->
     <div id="panel-tw-journal" data-tab-panel data-tab-group="tw-tabs" style="display:none;">
 
+    <!-- Journal sub-tabs -->
     <div class="sub-tabs" data-tab-group="journal-tabs">
       <button class="sub-tab active" data-tab-target="panel-journal-system">Trading System</button>
       <button class="sub-tab" data-tab-target="panel-journal-history">Trade History</button>
     </div>
 
+    <!-- ====== SUB-PANEL: Trading System ====== -->
     <div id="panel-journal-system" data-tab-panel data-tab-group="journal-tabs">
+
     <div class="strategy-section">
       <div class="strategy-header">
         <div class="title">My Trading Strategy</div>
         <div class="meta">Last updated: 03/04/2026 14:30 by Dmitry Volkov</div>
       </div>
+
+      <!-- Editor toolbar -->
       <div class="editor-toolbar">
         <button class="toolbar-btn" title="Bold"><b>B</b></button>
         <button class="toolbar-btn" title="Italic"><i>I</i></button>
@@ -203,43 +477,166 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
         <button class="toolbar-btn" title="Numbered list">1.</button>
         <button class="toolbar-btn" title="Link">🔗</button>
       </div>
+
+      <!-- Editor content -->
       <div class="editor-area" contenteditable="true">
         <h3>Momentum Breakout Strategy</h3>
         <p>I focus on high-timeframe breakouts (4H/Daily) on major pairs with strong volume confirmation.</p>
+
         <h3>Entry Rules</h3>
-        <ul><li>Wait for a clear breakout above/below key support/resistance on 4H chart</li><li>Volume must be >150% of 20-period average</li><li>RSI between 40-65 for longs, 35-60 for shorts</li><li>Funding rate must be neutral or favorable</li><li>Enter on first pullback to the breakout level</li></ul>
+        <ul>
+          <li>Wait for a clear breakout above/below key support/resistance on 4H chart</li>
+          <li>Volume must be >150% of 20-period average</li>
+          <li>RSI between 40-65 for longs, 35-60 for shorts (not overbought/oversold)</li>
+          <li>Funding rate must be neutral or favorable</li>
+          <li>Enter on first pullback to the breakout level</li>
+        </ul>
+
         <h3>Exit Rules</h3>
-        <ul><li>TP at next major S/R level or 2-3x risk distance</li><li>SL below the breakout candle (longs) or above it (shorts)</li><li>Trail SL to breakeven after 1R move</li><li>Manual close if momentum fades near target zone</li></ul>
+        <ul>
+          <li>TP at next major S/R level or 2-3x risk distance</li>
+          <li>SL below the breakout candle (longs) or above it (shorts)</li>
+          <li>Trail SL to breakeven after 1R move</li>
+          <li>Manual close if momentum fades near target zone</li>
+        </ul>
+
         <h3>Risk Management</h3>
-        <ul><li>Max 1% risk per trade</li><li>Max 3 concurrent positions</li><li>Max 3x leverage on majors, 2x on alts</li></ul>
+        <ul>
+          <li>Max 1% risk per trade</li>
+          <li>Max 3 concurrent positions</li>
+          <li>Max 3x leverage on majors, 2x on alts</li>
+        </ul>
       </div>
+
+      <!-- Uploaded file -->
       <div class="file-card">
         <div class="file-icon">📄</div>
-        <div class="file-info"><div class="name">Trading_Strategy_v2.pdf</div><div class="meta">248 KB · Uploaded 03/01/2026</div></div>
-        <div style="display:flex;gap:8px;"><button class="btn-sm">Download</button><button class="btn-sm">Replace</button></div>
+        <div class="file-info">
+          <div class="name">Trading_Strategy_v2.pdf</div>
+          <div class="meta">248 KB · Uploaded 03/01/2026</div>
+        </div>
+        <div class="file-actions">
+          <button class="btn-sm">Download</button>
+          <button class="btn-sm">Replace</button>
+        </div>
       </div>
-      <div class="editor-actions"><button class="btn secondary">Cancel</button><button class="btn primary">Save Strategy</button></div>
+
+      <div class="editor-actions">
+        <button class="btn secondary">Cancel</button>
+        <button class="btn primary">Save Strategy</button>
+      </div>
     </div>
+
     </div><!-- /panel-journal-system -->
 
+    <!-- ====== SUB-PANEL: Trade History ====== -->
     <div id="panel-journal-history" data-tab-panel data-tab-group="journal-tabs" style="display:none;">
+
     <div class="filters-bar">
-      <select class="filter-select"><option>Period: This Week</option><option>Today</option><option>This Month</option></select>
-      <select class="filter-select"><option>All Instruments</option><option>BTCUSDT</option><option>ETHUSDT</option></select>
-      <select class="filter-select"><option>Direction</option><option>LONG</option><option>SHORT</option></select>
-      <select class="filter-select"><option>Status</option><option>Open</option><option>Closed</option></select>
-      <select class="filter-select"><option>Leverage</option><option>1-3x</option><option>5-10x</option><option>10x+</option></select>
+      <select class="filter-select">
+        <option>Period: This Week</option>
+        <option>Today</option>
+        <option>This Month</option>
+      </select>
+      <select class="filter-select">
+        <option>All Instruments</option>
+        <option>BTCUSDT</option>
+        <option>ETHUSDT</option>
+      </select>
+      <select class="filter-select">
+        <option>Direction</option>
+        <option>LONG</option>
+        <option>SHORT</option>
+      </select>
+      <select class="filter-select">
+        <option>Status</option>
+        <option>Open</option>
+        <option>Closed</option>
+      </select>
+      <select class="filter-select">
+        <option>Leverage</option>
+        <option>1-3x</option>
+        <option>5-10x</option>
+        <option>10x+</option>
+      </select>
     </div>
+
     <table class="data-table">
-      <thead><tr><th>Date/Time</th><th>Instrument</th><th>Direction</th><th>Volume</th><th>Entry Price</th><th>Exit Price</th><th>P&L ($)</th><th>P&L (%)</th><th>TP</th><th>SL</th><th>Reasons</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Date/Time</th>
+          <th>Instrument</th>
+          <th>Direction</th>
+          <th>Volume</th>
+          <th>Entry Price</th>
+          <th>Exit Price</th>
+          <th>P&L ($)</th>
+          <th>P&L (%)</th>
+          <th>TP</th>
+          <th>SL</th>
+          <th>Reasons</th>
+        </tr>
+      </thead>
       <tbody>
-        <tr><td style="color:var(--white-55);">03/05 14:20</td><td><strong>BTCUSDT</strong></td><td class="direction-long">LONG</td><td>0.5 BTC</td><td>$67,240</td><td style="color:var(--white-35);">— (open)</td><td class="pnl-up">+$325</td><td class="pnl-up">+0.97%</td><td>$69,000</td><td>$66,500</td><td><span class="reasons-badge filled">✓ Filled</span></td></tr>
-        <tr><td style="color:var(--white-55);">03/04 09:15</td><td><strong>BTCUSDT</strong></td><td class="direction-long">LONG</td><td>0.3 BTC</td><td>$66,800</td><td>$67,950</td><td class="pnl-up">+$345</td><td class="pnl-up">+1.72%</td><td>$68,500</td><td>$66,200</td><td><span class="reasons-badge filled">✓ Filled</span></td></tr>
-        <tr><td style="color:var(--white-55);">03/03 11:30</td><td><strong>SOLUSDT</strong></td><td class="direction-short">SHORT</td><td>200 SOL</td><td>$145.20</td><td>$141.80</td><td class="pnl-up">+$680</td><td class="pnl-up">+2.34%</td><td>$140.00</td><td>$148.00</td><td><span class="reasons-badge empty">— Empty</span></td></tr>
-        <tr><td style="color:var(--white-55);">03/02 14:00</td><td><strong>ETHUSDT</strong></td><td class="direction-long">LONG</td><td>3.0 ETH</td><td>$3,480</td><td>$3,390</td><td class="pnl-down">-$270</td><td class="pnl-down">-2.59%</td><td>$3,600</td><td>$3,350</td><td><span class="reasons-badge filled">✓ Filled</span></td></tr>
+        <tr>
+          <td style="color:var(--white-55);">03/05 14:20</td>
+          <td><strong>BTCUSDT</strong></td>
+          <td class="direction-long">LONG</td>
+          <td>0.5 BTC</td>
+          <td>$67,240</td>
+          <td style="color:var(--white-35);">— (open)</td>
+          <td class="pnl-up">+$325</td>
+          <td class="pnl-up">+0.97%</td>
+          <td>$69,000</td>
+          <td>$66,500</td>
+          <td><span class="reasons-badge filled">✓ Filled</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--white-55);">03/04 09:15</td>
+          <td><strong>BTCUSDT</strong></td>
+          <td class="direction-long">LONG</td>
+          <td>0.3 BTC</td>
+          <td>$66,800</td>
+          <td>$67,950</td>
+          <td class="pnl-up">+$345</td>
+          <td class="pnl-up">+1.72%</td>
+          <td>$68,500</td>
+          <td>$66,200</td>
+          <td><span class="reasons-badge filled">✓ Filled</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--white-55);">03/03 11:30</td>
+          <td><strong>SOLUSDT</strong></td>
+          <td class="direction-short">SHORT</td>
+          <td>200 SOL</td>
+          <td>$145.20</td>
+          <td>$141.80</td>
+          <td class="pnl-up">+$680</td>
+          <td class="pnl-up">+2.34%</td>
+          <td>$140.00</td>
+          <td>$148.00</td>
+          <td><span class="reasons-badge empty">— Empty</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--white-55);">03/02 14:00</td>
+          <td><strong>ETHUSDT</strong></td>
+          <td class="direction-long">LONG</td>
+          <td>3.0 ETH</td>
+          <td>$3,480</td>
+          <td>$3,390</td>
+          <td class="pnl-down">-$270</td>
+          <td class="pnl-down">-2.59%</td>
+          <td>$3,600</td>
+          <td>$3,350</td>
+          <td><span class="reasons-badge filled">✓ Filled</span></td>
+        </tr>
       </tbody>
     </table>
-    <div class="pagination"><div>Showing 1–4 of 28 trades</div></div>
+
+    <div class="pagination">
+      <div>Showing 1–4 of 28 trades</div>
+    </div>
+
     </div><!-- /panel-journal-history -->
 
     </div><!-- /panel-tw-journal -->
@@ -247,21 +644,51 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
   </div>
 </div>
 
-<!-- Trade Edit Modal -->
+<!-- ============================================================
+     TRADE EDIT MODAL (opens when clicking a trade row)
+     Trader can edit: Entry Reason, Comment, SL, TP, R:R, Risk
+     ============================================================ -->
 <div class="modal-overlay" id="modal-trade-edit" data-modal>
   <div class="modal-content">
     <button class="modal-close-btn" data-modal-close>&times;</button>
     <div class="modal-title">BTCUSDT LONG — 03/04 09:15</div>
-    <div style="font-size:12px;color:var(--white-55);margin-bottom:20px;">Closed · PnL: <span style="color:var(--green);font-weight:600;">+$345 (+1.72%)</span></div>
-    <div style="margin-bottom:16px;"><div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Entry Reason</div><textarea style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;min-height:80px;resize:vertical;">BTC broke through $66,500 resistance with strong volume. 4H RSI at 58 with room to run.</textarea></div>
-    <div style="margin-bottom:16px;"><div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Comment</div><textarea style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;min-height:60px;resize:vertical;">Closed manually at $67,950 — momentum fading near target.</textarea></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-      <div><div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Stop Loss</div><input type="text" value="$66,200" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" /></div>
-      <div><div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Take Profit</div><input type="text" value="$68,500" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" /></div>
-      <div><div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Risk : Reward</div><input type="text" value="1 : 2.83" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" /></div>
-      <div><div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Risk per Trade</div><input type="text" value="0.56%" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" /></div>
+    <div style="font-size:12px;color:var(--white-55);margin-bottom:20px;">
+      Closed · PnL: <span style="color:var(--green);font-weight:600;">+$345 (+1.72%)</span>
     </div>
-    <div class="modal-actions"><button class="btn-cancel" data-modal-close>Cancel</button><button class="btn-confirm">Save Changes</button></div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Entry Reason</div>
+      <textarea style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;min-height:80px;resize:vertical;">BTC broke through $66,500 resistance with strong volume. 4H RSI at 58 with room to run. Funding rates neutral. Entry on pullback to new support.</textarea>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Comment</div>
+      <textarea style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;min-height:60px;resize:vertical;">Closed manually at $67,950 — momentum fading near target. Good discipline not chasing the last few hundred.</textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Stop Loss</div>
+        <input type="text" value="$66,200" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" />
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Take Profit</div>
+        <input type="text" value="$68,500" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" />
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Risk : Reward</div>
+        <input type="text" value="1 : 2.83" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" />
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--white-55);margin-bottom:6px;">Risk per Trade</div>
+        <input type="text" value="0.56%" style="width:100%;padding:8px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);color:var(--white-92);font-size:13px;" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" data-modal-close>Cancel</button>
+      <button class="btn-confirm">Save Changes</button>
+    </div>
   </div>
 </div>
 
@@ -280,7 +707,9 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       <div><span style="color:var(--white-55);">SL:</span> <strong style="color:var(--red);">$66,500</strong></div>
       <div><span style="color:var(--white-55);">TP:</span> <strong style="color:var(--green);">$69,000</strong></div>
     </div>
-    <div class="modal-actions" style="margin-top:24px;"><button class="btn-cancel" data-modal-close>Close</button></div>
+    <div class="modal-actions" style="margin-top:24px;">
+      <button class="btn-cancel" data-modal-close>Close</button>
+    </div>
   </div>
 </div>
 

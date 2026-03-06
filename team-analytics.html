@@ -43,6 +43,44 @@ body {
   min-height: 100vh;
 }
 
+/*
+ * TEAM ANALYTICS — Used by Team Lead (hierarchical) and Senior Trader / Risk Manager (flat)
+ *
+ * CONTEXT: This is the content for:
+ *   - Team Lead → Analytics tab (hierarchical: Senior Traders → Traders)
+ *   - Team Lead → Performance → Team Analytics sub-tab (same + open trades drill-down)
+ *   - Senior Trader → Team tab (flat list, own team only)
+ *   - Risk Manager → Analytics tab (flat list, assigned traders only)
+ *
+ * VIEWS SHOWN IN THIS MOCKUP:
+ * 1. Summary cards + capital chart
+ * 2. Hierarchical expandable table (Team Lead view)
+ * 3. Trader open trades (drill-down when clicking a trader in Performance)
+ * 4. Trade detail modal (Lifecycle + Journal data)
+ * 5. Trade History sub-tab (Performance → Trade History)
+ *
+ * KEY BEHAVIORS:
+ * - Senior Trader rows expand to show their traders
+ * - "Expand All / Collapse All" buttons
+ * - Sort by any column
+ * - Period filter affects all metrics
+ * - Click trader name → opens their profile in new tab
+ * - Click trader row (in Performance) → shows open trades below
+ * - Click trade → opens Trade Detail modal
+ * - PnL conditional coloring: green (profit) → red (loss)
+ *
+ * SCOPE VARIANTS:
+ * - Team Lead: sees ALL senior traders and their traders
+ * - Senior Trader: sees only own traders (no hierarchy level, flat)
+ * - Risk Manager: sees only assigned traders (flat, no hierarchy)
+ *
+ * APIs:
+ * - useGetTeamAnalyticsQuery({ period, seniorTraderId? })
+ * - useGetTraderPositionsQuery({ traderId })
+ * - useGetTradeLifecycleQuery({ tradeId })
+ * - useGetJournalEntryQuery({ tradeId })
+ */
+
 .workspace { display: flex; min-height: 100vh; }
 
 .sidebar {
@@ -362,6 +400,12 @@ body {
 .direction-long { color: var(--green); font-weight: 600; }
 .direction-short { color: var(--red); font-weight: 600; }
 
+/* ============================================================
+   TRADE DETAIL MODAL
+   Shows when clicking a specific trade
+   Content: Trade Lifecycle + Journal data
+   ============================================================ */
+
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -503,6 +547,11 @@ body {
 .change-log .log-time { color: var(--white-35); font-size: 11px; min-width: 140px; }
 .change-log .log-action { color: var(--white-75); }
 
+/* ============================================================
+   SECTION 2: TRADE HISTORY SUB-TAB
+   Performance → Trade History
+   ============================================================ */
+
 .filters-bar {
   display: flex;
   gap: 10px;
@@ -594,6 +643,12 @@ body {
 <body>
 <div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
 <div class="prototype-badge">PROTOTYPE</div>
+
+<!-- ============================================================
+     VIEW 1: TEAM LEAD — PERFORMANCE TAB
+     Sub-tabs: Team Analytics | Trade History
+     Shows hierarchical table with drill-down to open trades
+     ============================================================ -->
 
 <div class="workspace">
   <!-- Sidebar -->
@@ -695,7 +750,7 @@ body {
           <td class="pnl-down">-3.2%</td>
         </tr>
 
-        <!-- Trader 1 under Alexei (SELECTED) -->
+        <!-- Trader 1 under Alexei (SELECTED — has drill-down) -->
         <tr class="row-child" style="background:rgba(18,204,255,0.05);">
           <td><a class="trader-link">Dmitry Volkov</a></td>
           <td>$320,000</td>
@@ -987,6 +1042,12 @@ body {
   </div>
 </div>
 
+<!-- ============================================================
+     TRADE DETAIL MODAL
+     Opens when clicking "Details" on any trade
+     Shows: Chart with markers + Trade params + Journal text + Change log
+     ============================================================ -->
+
 <div class="modal-overlay" id="modal-trade-detail" data-modal>
   <div class="modal-content">
     <div class="modal-header">
@@ -1062,7 +1123,7 @@ body {
         </div>
       </div>
 
-      <!-- Journal entry -->
+      <!-- Journal entry (from trader's journal) -->
       <div class="journal-section">
         <div class="section-label">Journal Entry (from Trader)</div>
         <div class="journal-text">
@@ -1074,7 +1135,7 @@ body {
         </div>
       </div>
 
-      <!-- Change log -->
+      <!-- Change log (Trade Lifecycle) -->
       <div class="journal-section">
         <div class="section-label">Trade Lifecycle</div>
         <div class="change-log">
