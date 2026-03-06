@@ -63,6 +63,32 @@ h1 {
   background: rgba(175,51,255,0.15); color: var(--purple);
   margin-top: 12px;
 }
+
+/* Role sections */
+.role-section {
+  margin-bottom: 48px;
+}
+.role-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 6px;
+}
+.role-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.role-name {
+  font-size: 20px; font-weight: 700;
+}
+.role-desc {
+  font-size: 13px; color: var(--white-55); margin-bottom: 16px;
+  padding-left: 48px;
+}
+.role-tabs-hint {
+  font-size: 11px; color: var(--white-35); margin-bottom: 14px;
+  padding-left: 48px; font-style: italic;
+}
+
 .section-title {
   font-size: 12px; font-weight: 600; text-transform: uppercase;
   letter-spacing: 1.5px; color: var(--cyan); margin-bottom: 16px;
@@ -70,7 +96,7 @@ h1 {
 }
 .grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px; margin-bottom: 40px;
+  gap: 12px; margin-bottom: 16px;
 }
 .card {
   background: rgba(28,28,69,0.6); border: 1px solid var(--white-08);
@@ -87,6 +113,11 @@ h1 {
 .card-desc {
   font-size: 12px; color: var(--white-55); line-height: 1.4;
 }
+.card .tab-badge {
+  display: inline-block; padding: 2px 6px; border-radius: 9999px;
+  font-size: 9px; font-weight: 700; margin-left: 6px; vertical-align: middle;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
 .card .new-badge {
   display: inline-block; padding: 2px 6px; border-radius: 9999px;
   font-size: 9px; font-weight: 700; background: rgba(0,230,138,0.15);
@@ -99,6 +130,45 @@ h1 {
   color: var(--amber); margin-left: 6px; vertical-align: middle;
   text-transform: uppercase; letter-spacing: 0.5px;
 }
+
+/* Tab number badges */
+.tab-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%;
+  font-size: 10px; font-weight: 700; margin-right: 6px;
+  flex-shrink: 0;
+}
+
+/* Role colors */
+.role-team-lead .role-icon { background: rgba(175,51,255,0.15); }
+.role-team-lead .role-name { color: var(--purple); }
+.role-team-lead .tab-num { background: rgba(175,51,255,0.2); color: var(--purple); }
+
+.role-senior-trader .role-icon { background: rgba(18,204,255,0.15); }
+.role-senior-trader .role-name { color: var(--cyan); }
+.role-senior-trader .tab-num { background: rgba(18,204,255,0.2); color: var(--cyan); }
+
+.role-trader .role-icon { background: rgba(0,230,138,0.15); }
+.role-trader .role-name { color: var(--green); }
+.role-trader .tab-num { background: rgba(0,230,138,0.2); color: var(--green); }
+
+.role-risk-manager .role-icon { background: rgba(255,176,32,0.15); }
+.role-risk-manager .role-name { color: var(--amber); }
+.role-risk-manager .tab-num { background: rgba(255,176,32,0.2); color: var(--amber); }
+
+.role-investor .role-icon { background: rgba(18,204,255,0.15); }
+.role-investor .role-name { color: var(--cyan); }
+.role-investor .tab-num { background: rgba(18,204,255,0.2); color: var(--cyan); }
+
+.role-admin .role-icon { background: rgba(255,77,106,0.15); }
+.role-admin .role-name { color: var(--red); }
+
+/* Divider */
+.divider {
+  border: none; border-top: 1px solid var(--white-08);
+  margin: 48px 0;
+}
+
 .footer {
   text-align: center; padding: 32px 0; border-top: 1px solid var(--white-08);
   font-size: 12px; color: var(--white-35); margin-top: 32px;
@@ -116,155 +186,311 @@ h1 {
   <div class="header">
     <div class="logo">Trigonum Trade</div>
     <h1>Frontend V2 Design Mockups</h1>
-    <div class="subtitle">Interactive prototypes for the new role-based workspace UI. Click through tabs, buttons, modals, and navigation to see how everything connects.</div>
+    <div class="subtitle">Interactive prototypes organized by user role. Click any card to open the mockup. Tabs are numbered in the order they appear in the sidebar.</div>
     <div class="badge">PROTOTYPE - For Review</div>
   </div>
 
-  <!-- Role Workspaces -->
-  <div class="section-title">Role Workspaces (NEW)</div>
-  <div class="grid">
-    <a href="role-workspaces.html" class="card">
-      <div class="card-title">Role Workspaces <span class="new-badge">New</span></div>
-      <div class="card-desc">Foundation layout for all 4 roles: Team Lead, Senior Trader, Trader, Risk Manager. Tab structures and routing.</div>
-    </a>
-    <a href="team-analytics.html" class="card">
-      <div class="card-title">Team Analytics <span class="new-badge">New</span></div>
-      <div class="card-desc">Hierarchical team table (ST &rarr; Traders), trade detail modal, capital chart.</div>
-    </a>
-    <a href="risk-management.html" class="card">
-      <div class="card-title">Risk Management <span class="new-badge">New</span></div>
-      <div class="card-desc">RM team table with policy dropdown, risk progress bars, action buttons + confirmation popups.</div>
-    </a>
-    <a href="trader-workspace.html" class="card">
-      <div class="card-title">Trader Workspace <span class="new-badge">New</span></div>
-      <div class="card-desc">Trader overview (positions table), journal (strategy editor + trade history with editable popups).</div>
-    </a>
-    <a href="org-structure.html" class="card">
-      <div class="card-title">Org Structure <span class="new-badge">New</span></div>
-      <div class="card-desc">Org tree view + hierarchy management (assign traders to pairs) + ad-hoc groups.</div>
-    </a>
+  <!-- ============================================================
+       TEAM LEAD
+       ============================================================ -->
+  <div class="role-section role-team-lead">
+    <div class="role-header">
+      <div class="role-icon">👑</div>
+      <div class="role-name">Team Lead</div>
+    </div>
+    <div class="role-desc">Sees ALL traders hierarchically. Full management: assign policies, ban trading, schedule meetings, manage org structure and investments.</div>
+    <div class="role-tabs-hint">Sidebar tabs: Analytics &rarr; Trading &rarr; Performance &rarr; Risk Management &rarr; Org Structure &rarr; Investing</div>
+    <div class="grid">
+      <a href="team-analytics.html" class="card">
+        <div class="card-title"><span class="tab-num">1</span> Analytics <span class="new-badge">New</span></div>
+        <div class="card-desc">Hierarchical team table (Senior Traders &rarr; Traders), capital metrics, performance chart. Expandable rows.</div>
+      </a>
+      <a href="trading-terminal.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Terminal</div>
+        <div class="card-desc">TradingView chart, order form (Market/Limit/Stop), positions panel, open orders table.</div>
+      </a>
+      <a href="coinmarketcap.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: CMP</div>
+        <div class="card-desc">CoinMarketCap crypto market overview. Sub-tab inside Trading &rarr; Analytics.</div>
+      </a>
+      <a href="long-short.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: Long/Short</div>
+        <div class="card-desc">Market sentiment ratios. Sub-tab inside Trading &rarr; Analytics.</div>
+      </a>
+      <a href="greed.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: Fear & Greed</div>
+        <div class="card-desc">Fear & Greed Index gauge + historical chart.</div>
+      </a>
+      <a href="news.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: News</div>
+        <div class="card-desc">Crypto news feed aggregation.</div>
+      </a>
+      <a href="team-analytics.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Performance <span class="new-badge">New</span></div>
+        <div class="card-desc">Team Analytics + Trade History sub-tabs. Same page as Analytics with Performance tab active.</div>
+      </a>
+      <a href="risk-management.html" class="card">
+        <div class="card-title"><span class="tab-num">4</span> Risk Management <span class="new-badge">New</span></div>
+        <div class="card-desc">Team risk table with policy dropdowns, risk budget bars, warnings, action buttons (Meeting, Test, Ban, Coins). Policies sub-tab. RM Analytics sub-tab.</div>
+      </a>
+      <a href="org-structure.html" class="card">
+        <div class="card-title"><span class="tab-num">5</span> Org Structure <span class="new-badge">New</span></div>
+        <div class="card-desc">Org tree view, assign traders to Senior Traders, create ad-hoc groups.</div>
+      </a>
+      <a href="invest-program.html" class="card">
+        <div class="card-title"><span class="tab-num">6</span> Investing</div>
+        <div class="card-desc">Create/manage invest programs, investment operations, fee configurations.</div>
+      </a>
+    </div>
   </div>
 
-  <!-- Core Pages -->
-  <div class="section-title">Core Pages</div>
+  <!-- ============================================================
+       SENIOR TRADER
+       ============================================================ -->
+  <div class="role-section role-senior-trader">
+    <div class="role-header">
+      <div class="role-icon">⭐</div>
+      <div class="role-name">Senior Trader</div>
+    </div>
+    <div class="role-desc">Sees own team of traders (flat list). Can perform RM actions on their team. Same trading and analytics tools as Team Lead.</div>
+    <div class="role-tabs-hint">Sidebar tabs: Team &rarr; Trading &rarr; Performance &rarr; Risk Management</div>
+    <div class="grid">
+      <a href="team-analytics.html" class="card">
+        <div class="card-title"><span class="tab-num">1</span> Team <span class="new-badge">New</span></div>
+        <div class="card-desc">Flat list of own traders (same columns as TL Analytics, no hierarchy). Capital metrics and chart.</div>
+      </a>
+      <a href="trading-terminal.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Terminal</div>
+        <div class="card-desc">TradingView chart, order form (Market/Limit/Stop), positions panel, open orders table.</div>
+      </a>
+      <a href="coinmarketcap.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: CMP</div>
+        <div class="card-desc">CoinMarketCap crypto market overview.</div>
+      </a>
+      <a href="long-short.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: Long/Short</div>
+        <div class="card-desc">Market sentiment ratios.</div>
+      </a>
+      <a href="greed.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: Fear & Greed</div>
+        <div class="card-desc">Fear & Greed Index gauge + historical chart.</div>
+      </a>
+      <a href="news.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: News</div>
+        <div class="card-desc">Crypto news feed aggregation.</div>
+      </a>
+      <a href="team-analytics.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Performance <span class="new-badge">New</span></div>
+        <div class="card-desc">Team performance scoped to own traders. Same layout as TL Performance.</div>
+      </a>
+      <a href="risk-management.html" class="card">
+        <div class="card-title"><span class="tab-num">4</span> Risk Management <span class="new-badge">New</span></div>
+        <div class="card-desc">Risk table scoped to own team. Policy dropdowns, action buttons (Meeting, Test, Ban, Coins). Policies sub-tab.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TRADER
+       ============================================================ -->
+  <div class="role-section role-trader">
+    <div class="role-header">
+      <div class="role-icon">📈</div>
+      <div class="role-name">Trader</div>
+    </div>
+    <div class="role-desc">Sees only their own data. Can edit own journal and trading system. View-only for everything else.</div>
+    <div class="role-tabs-hint">Sidebar tabs: Overview &rarr; Trading &rarr; Performance &rarr; Journal</div>
+    <div class="grid">
+      <a href="trader-workspace.html" class="card">
+        <div class="card-title"><span class="tab-num">1</span> Overview <span class="new-badge">New</span></div>
+        <div class="card-desc">Personal summary cards (capital, PnL), open positions table, capital chart.</div>
+      </a>
+      <a href="trading-terminal.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Terminal</div>
+        <div class="card-desc">TradingView chart, order form (Market/Limit/Stop), positions panel, open orders table.</div>
+      </a>
+      <a href="coinmarketcap.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: CMP</div>
+        <div class="card-desc">CoinMarketCap crypto market overview.</div>
+      </a>
+      <a href="long-short.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: Long/Short</div>
+        <div class="card-desc">Market sentiment ratios.</div>
+      </a>
+      <a href="greed.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: Fear & Greed</div>
+        <div class="card-desc">Fear & Greed Index gauge + historical chart.</div>
+      </a>
+      <a href="news.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Trading &mdash; Analytics: News</div>
+        <div class="card-desc">Crypto news feed aggregation.</div>
+      </a>
+      <a href="reports.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Performance</div>
+        <div class="card-desc">Personal performance only. Orders, Positions, PnL, Performance reports.</div>
+      </a>
+      <a href="trader-workspace.html" class="card">
+        <div class="card-title"><span class="tab-num">4</span> Journal <span class="new-badge">New</span></div>
+        <div class="card-desc">Trading System editor + Trade History with editable entries. Strategy notes and trade annotations.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RISK MANAGER
+       ============================================================ -->
+  <div class="role-section role-risk-manager">
+    <div class="role-header">
+      <div class="role-icon">🛡️</div>
+      <div class="role-name">Risk Manager</div>
+    </div>
+    <div class="role-desc">Sees assigned traders. Full RM action buttons: ban trading, assign testing, ban coins, schedule meetings.</div>
+    <div class="role-tabs-hint">Sidebar tabs: Risk Management &rarr; Analytics &rarr; Trading &rarr; Performance</div>
+    <div class="grid">
+      <a href="risk-management.html" class="card">
+        <div class="card-title"><span class="tab-num">1</span> Risk Management <span class="new-badge">New</span></div>
+        <div class="card-desc">Team risk table, policy dropdowns, risk budget progress bars, warnings/forced closures. Action buttons: Meeting, Test, Ban, Coins. Policies + RM Analytics sub-tabs.</div>
+      </a>
+      <a href="team-analytics.html" class="card">
+        <div class="card-title"><span class="tab-num">2</span> Analytics <span class="new-badge">New</span></div>
+        <div class="card-desc">Flat list of assigned traders, capital metrics, performance chart.</div>
+      </a>
+      <a href="trading-terminal.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Trading &mdash; Terminal</div>
+        <div class="card-desc">TradingView chart, order form (Market/Limit/Stop), positions panel, open orders table.</div>
+      </a>
+      <a href="coinmarketcap.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Trading &mdash; Analytics: CMP</div>
+        <div class="card-desc">CoinMarketCap crypto market overview.</div>
+      </a>
+      <a href="long-short.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Trading &mdash; Analytics: Long/Short</div>
+        <div class="card-desc">Market sentiment ratios.</div>
+      </a>
+      <a href="greed.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Trading &mdash; Analytics: Fear & Greed</div>
+        <div class="card-desc">Fear & Greed Index gauge + historical chart.</div>
+      </a>
+      <a href="news.html" class="card">
+        <div class="card-title"><span class="tab-num">3</span> Trading &mdash; Analytics: News</div>
+        <div class="card-desc">Crypto news feed aggregation.</div>
+      </a>
+      <a href="team-analytics.html" class="card">
+        <div class="card-title"><span class="tab-num">4</span> Performance <span class="new-badge">New</span></div>
+        <div class="card-desc">Performance scoped to assigned traders. Same layout as TL Performance.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       INVESTOR
+       ============================================================ -->
+  <div class="role-section role-investor">
+    <div class="role-header">
+      <div class="role-icon">💰</div>
+      <div class="role-name">Investor</div>
+    </div>
+    <div class="role-desc">External user. Registers, invests in programs, views portfolio performance and reports.</div>
+    <div class="grid">
+      <a href="investor-form.html" class="card">
+        <div class="card-title">Registration Wizard</div>
+        <div class="card-desc">5-step investor onboarding form.</div>
+      </a>
+      <a href="investor.html" class="card">
+        <div class="card-title">Investor Portal</div>
+        <div class="card-desc">Home with strategy cards, performance dashboard, portfolio overview.</div>
+      </a>
+      <a href="investor-redesign-v3.html" class="card">
+        <div class="card-title">Investor Portal V3 <span class="new-badge">New</span></div>
+        <div class="card-desc">Redesigned investor experience with updated strategy cards and reports.</div>
+      </a>
+      <a href="invest-program.html" class="card">
+        <div class="card-title">Invest Programs</div>
+        <div class="card-desc">Browse available programs, view terms, invest/withdraw.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN
+       ============================================================ -->
+  <div class="role-section role-admin">
+    <div class="role-header">
+      <div class="role-icon">⚙️</div>
+      <div class="role-name">Admin / System</div>
+    </div>
+    <div class="role-desc">System administration, user management, financial operations, monitoring.</div>
+    <div class="grid">
+      <a href="dashboard.html" class="card">
+        <div class="card-title">Dashboard</div>
+        <div class="card-desc">Admin overview: balance summary, DDP limits, Fear & Greed widgets.</div>
+      </a>
+      <a href="members.html" class="card">
+        <div class="card-title">Members</div>
+        <div class="card-desc">User management with role tabs, member cards, invite dialog.</div>
+      </a>
+      <a href="monitoring.html" class="card">
+        <div class="card-title">Monitoring</div>
+        <div class="card-desc">Live orders and positions overview across all traders.</div>
+      </a>
+      <a href="admin-reports.html" class="card">
+        <div class="card-title">Admin Reports</div>
+        <div class="card-desc">Report list + detail views with financial summary.</div>
+      </a>
+      <a href="fee-config.html" class="card">
+        <div class="card-title">Fee Config</div>
+        <div class="card-desc">Management + performance fee configuration per program.</div>
+      </a>
+      <a href="wallet-management.html" class="card">
+        <div class="card-title">Wallet Management</div>
+        <div class="card-desc">Create/manage deposit addresses, enable/disable wallets.</div>
+      </a>
+      <a href="approve-trades.html" class="card">
+        <div class="card-title">Approve Trades</div>
+        <div class="card-desc">Pending trade approval queue.</div>
+      </a>
+      <a href="balance.html" class="card">
+        <div class="card-title">Balance</div>
+        <div class="card-desc">Account balance: Review, Transactions, Allocation tabs.</div>
+      </a>
+      <a href="policy.html" class="card">
+        <div class="card-title">Policy Management</div>
+        <div class="card-desc">Trading policy rules — create and edit RM policies.</div>
+      </a>
+      <a href="ddp.html" class="card">
+        <div class="card-title">DDP</div>
+        <div class="card-desc">Daily deposit protection rules.</div>
+      </a>
+      <a href="audit-log.html" class="card">
+        <div class="card-title">Audit Log</div>
+        <div class="card-desc">System audit trail with expandable change details.</div>
+      </a>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============================================================
+       SHARED / ALL ROLES
+       ============================================================ -->
+  <div class="section-title">Shared Pages (All Roles)</div>
   <div class="grid">
     <a href="home.html" class="card">
-      <div class="card-title">Home</div>
-      <div class="card-desc">Public landing page with hero, features, footer.</div>
+      <div class="card-title">Home / Landing</div>
+      <div class="card-desc">Public landing page with hero, features, footer. Pre-login.</div>
     </a>
     <a href="auth.html" class="card">
       <div class="card-title">Auth</div>
       <div class="card-desc">Login, Sign Up, Forgot Password, Reset Password.</div>
     </a>
-    <a href="dashboard.html" class="card">
-      <div class="card-title">Dashboard</div>
-      <div class="card-desc">Admin overview: balance, DDP limits, Fear & Greed widgets.</div>
-    </a>
-    <a href="trading-terminal.html" class="card">
-      <div class="card-title">Trading Terminal</div>
-      <div class="card-desc">TradingView chart, order form, positions, TP/SL.</div>
+    <a href="settings.html" class="card">
+      <div class="card-title">Settings</div>
+      <div class="card-desc">Account, Security, Notifications settings tabs.</div>
     </a>
     <a href="reports.html" class="card">
       <div class="card-title">Reports</div>
       <div class="card-desc">8 report tabs: Orders, Positions, PnL, Performance, Group, Journal, Lifecycle, Team.</div>
     </a>
-    <a href="monitoring.html" class="card">
-      <div class="card-title">Monitoring</div>
-      <div class="card-desc">Live orders and positions overview (admin).</div>
-    </a>
-  </div>
-
-  <!-- Analytics Sub-tabs -->
-  <div class="section-title">Analytics Sub-tabs (embedded in Trading &rarr; Analytics)</div>
-  <div class="grid">
-    <a href="coinmarketcap.html" class="card">
-      <div class="card-title">CoinMarketCap <span class="deprecated-badge">Sub-tab</span></div>
-      <div class="card-desc">Crypto market overview table. Now "Basic Info" sub-tab in Analytics.</div>
-    </a>
-    <a href="long-short.html" class="card">
-      <div class="card-title">Long/Short <span class="deprecated-badge">Sub-tab</span></div>
-      <div class="card-desc">Market sentiment ratios. Now sub-tab in Analytics.</div>
-    </a>
-    <a href="greed.html" class="card">
-      <div class="card-title">Fear & Greed <span class="deprecated-badge">Sub-tab</span></div>
-      <div class="card-desc">Fear & Greed Index gauge + chart. Now sub-tab in Analytics.</div>
-    </a>
-    <a href="news.html" class="card">
-      <div class="card-title">News <span class="deprecated-badge">Sub-tab</span></div>
-      <div class="card-desc">Crypto news feed. Now sub-tab in Analytics.</div>
-    </a>
-  </div>
-
-  <!-- Management -->
-  <div class="section-title">Management</div>
-  <div class="grid">
-    <a href="members.html" class="card">
-      <div class="card-title">Members</div>
-      <div class="card-desc">User management with role tabs, member cards, invite dialog.</div>
-    </a>
-    <a href="policy.html" class="card">
-      <div class="card-title">Policy</div>
-      <div class="card-desc">Trading policy rules management. Also embedded in RM tab.</div>
-    </a>
-    <a href="ddp.html" class="card">
-      <div class="card-title">DDP</div>
-      <div class="card-desc">Daily deposit protection rules.</div>
-    </a>
-    <a href="audit-log.html" class="card">
-      <div class="card-title">Audit Log</div>
-      <div class="card-desc">System audit trail with expandable change details.</div>
-    </a>
-    <a href="balance.html" class="card">
-      <div class="card-title">Balance</div>
-      <div class="card-desc">Account balance: Review, Transactions, Allocation tabs.</div>
-    </a>
-    <a href="settings.html" class="card">
-      <div class="card-title">Settings</div>
-      <div class="card-desc">Account, Security, Notifications settings tabs.</div>
-    </a>
-  </div>
-
-  <!-- Admin -->
-  <div class="section-title">Admin</div>
-  <div class="grid">
-    <a href="fee-config.html" class="card">
-      <div class="card-title">Fee Config</div>
-      <div class="card-desc">Management + performance fee configuration.</div>
-    </a>
-    <a href="admin-reports.html" class="card">
-      <div class="card-title">Admin Reports</div>
-      <div class="card-desc">Report list + detail views with financial summary.</div>
-    </a>
-    <a href="wallet-management.html" class="card">
-      <div class="card-title">Wallet Management</div>
-      <div class="card-desc">Create address, address list, enable/disable.</div>
-    </a>
-    <a href="approve-trades.html" class="card">
-      <div class="card-title">Approve Trades</div>
-      <div class="card-desc">Pending trade approval queue.</div>
-    </a>
-  </div>
-
-  <!-- Investor -->
-  <div class="section-title">Investor</div>
-  <div class="grid">
-    <a href="invest-program.html" class="card">
-      <div class="card-title">Invest Programs</div>
-      <div class="card-desc">Create programs, list programs, investment operations.</div>
-    </a>
-    <a href="investor-form.html" class="card">
-      <div class="card-title">Investor Form</div>
-      <div class="card-desc">5-step registration wizard.</div>
-    </a>
-    <a href="investor.html" class="card">
-      <div class="card-title">Investor Portal</div>
-      <div class="card-desc">Investor home with strategy cards and performance.</div>
-    </a>
-  </div>
-
-  <!-- Other -->
-  <div class="section-title">Other</div>
-  <div class="grid">
     <a href="wiki.html" class="card">
       <div class="card-title">Wiki</div>
       <div class="card-desc">Knowledge base with section navigation.</div>
@@ -273,9 +499,20 @@ h1 {
       <div class="card-title">Legal</div>
       <div class="card-desc">Privacy Policy + Terms of Service.</div>
     </a>
+  </div>
+
+  <!-- ============================================================
+       REFERENCE
+       ============================================================ -->
+  <div class="section-title">Reference</div>
+  <div class="grid">
+    <a href="role-workspaces.html" class="card">
+      <div class="card-title">Role Workspaces Overview</div>
+      <div class="card-desc">Foundation layout showing all 4 roles side-by-side: tab structures, permissions matrix, routing map.</div>
+    </a>
     <a href="_system.html" class="card">
       <div class="card-title">Design System</div>
-      <div class="card-desc">Color tokens, typography, component reference.</div>
+      <div class="card-desc">Color tokens, typography scale, component reference, spacing rules.</div>
     </a>
   </div>
 
