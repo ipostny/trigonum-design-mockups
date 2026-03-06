@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Home (Landing Page)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --lime:   #81E70B;
+  --green:  #00E68A;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * HOME PAGE — Public landing page (no sidebar)
+ * Route: /
+ * No auth required. Shows hero + feature highlights + CTA.
+ * Links to /auth/signup and /auth/login
+ */
+
+/* ---- HERO SECTION ---- */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative background gradient */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(18,204,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  left: -150px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(175,51,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1100px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+/* Left column — text + CTA */
+.hero-text {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 24px;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
+}
+.hero-title span {
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-description {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--white-75);
+  margin-bottom: 36px;
+  max-width: 460px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 14px 32px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-decoration: none;
+}
+.btn-primary:hover { opacity: 0.9; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 14px 32px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-secondary:hover { border-color: var(--white-35); color: var(--white-92); }
+
+/* Right column — decorative visual (abstract triangle/geometric pattern) */
+.hero-visual {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+}
+
+/* Large decorative triangle */
+.triangle-hero {
+  width: 0; height: 0;
+  border-left: 160px solid transparent;
+  border-right: 160px solid transparent;
+  border-bottom: 280px solid var(--white-05);
+  position: relative;
+}
+.triangle-hero::before {
+  content: '';
+  position: absolute;
+  left: -120px; top: 40px;
+  width: 0; height: 0;
+  border-left: 120px solid transparent;
+  border-right: 120px solid transparent;
+  border-bottom: 210px solid var(--white-03);
+}
+
+/* ---- FEATURES SECTION ---- */
+.features {
+  padding: 80px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.features-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 12px;
+}
+
+.features-heading {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 48px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.feature-card:hover {
+  transform: translateY(-2px);
+}
+/* Triangle accent */
+.feature-card::before {
+  content: '';
+  position: absolute; top: -15px; right: -15px;
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--white-03);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.feature-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.feature-card-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--white-55);
+}
+
+/* ---- FOOTER ---- */
+.footer {
+  padding: 32px;
+  text-align: center;
+  border-top: 1px solid var(--white-08);
+}
+.footer-text {
+  font-size: 12px;
+  color: var(--white-35);
+}
+.footer a {
+  color: var(--white-55);
+  text-decoration: none;
+}
+.footer a:hover { color: var(--white-75); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">Professional Trading Platform</div>
+      <h1 class="hero-title">
+        Trade Smarter with<br>
+        <span>TrigonumTrade</span>
+      </h1>
+      <p class="hero-description">
+        Advanced crypto trading platform for professional teams. Real-time monitoring, risk management, and comprehensive analytics — all in one place.
+      </p>
+      <div class="hero-actions">
+        <a href="/auth/signup" class="btn-primary">Get Started</a>
+        <a href="/auth/login" class="btn-secondary">Sign In</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="triangle-hero"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <p class="features-title">Why TrigonumTrade</p>
+  <h2 class="features-heading">Built for Professional Trading Teams</h2>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(18,204,255,0.15); color: var(--cyan);">&#9651;</div>
+      <h3 class="feature-card-title">Real-Time Trading</h3>
+      <p class="feature-card-desc">Execute trades with TradingView-powered charting and Bybit integration. Monitor positions and orders in real time.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(175,51,255,0.15); color: var(--purple);">&#9652;</div>
+      <h3 class="feature-card-title">Risk Management</h3>
+      <p class="feature-card-desc">Set trading policies, daily limits, and position controls. Automated risk monitoring keeps your team within bounds.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(0,230,138,0.15); color: var(--green);">&#9653;</div>
+      <h3 class="feature-card-title">Comprehensive Reports</h3>
+      <p class="feature-card-desc">Detailed P&L analysis, performance tracking, and investor reports. Export to PDF or XLSX with one click.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(18,204,255,0.15); color: var(--cyan);">&#9654;</div>
+      <h3 class="feature-card-title">Team Management</h3>
+      <p class="feature-card-desc">Role-based access control for traders, analysts, and administrators. Full audit trail for every action.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(175,51,255,0.15); color: var(--purple);">&#9655;</div>
+      <h3 class="feature-card-title">Investor Portal</h3>
+      <p class="feature-card-desc">Dedicated interface for investors to track performance, view reports, and manage their investment programs.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(0,230,138,0.15); color: var(--green);">&#9656;</div>
+      <h3 class="feature-card-title">Market Intelligence</h3>
+      <p class="feature-card-desc">Fear & Greed index, crypto news aggregation, and market data from CoinMarketCap — all integrated natively.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p class="footer-text">
+    &copy; 2026 TrigonumTrade &middot;
+    <a href="/privacy-policy">Privacy Policy</a> &middot;
+    <a href="/terms-of-service">Terms of Service</a>
+  </p>
+</footer>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

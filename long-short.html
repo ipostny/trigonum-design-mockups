@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Long/Short Ratios</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * LONG/SHORT PAGE — Market sentiment analysis via ratios
+ * Route: /long-short (DEPRECATED as standalone)
+ * Auth required. Uses AppLayout.
+ *
+ * ROLE-WORKSPACE NOTE (V2):
+ * This page NO LONGER exists as a standalone sidebar item.
+ * It is embedded as the "Long/Short" sub-tab within the Analytics section
+ * of each role workspace's Trading tab:
+ *   - /workspace/{role}/trading → Analytics → Long/Short
+ * The content and API calls remain identical — only the navigation context changes.
+ * See role-workspaces.html for the tab structure.
+ *
+ * 4 sections stacked vertically, each with:
+ * - Section title
+ * - Asset selector (pill toggle: BTCUSDT, ETHUSDT, etc.)
+ * - Interval selector (pill toggle: 5m, 15m, 30m, 1h, 2h, 4h)
+ * - Chart (line chart with long/short ratio)
+ *
+ * APIs:
+ * - useGetTopAccountRatioHistoryQuery (Account Ratio)
+ * - useGetTopPositionRatioHistoryQuery (Position Ratio)
+ * - useGetLongShortGlobalAccountRatio1Query (Global Ratio)
+ * - useGetExchangeTakerBuySellRatioQuery (Exchange Taker Ratio — shows as table)
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.page-subtitle {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 28px;
+}
+
+/* Ratio section */
+.ratio-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Filters row */
+.filters-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pill-group {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+  border: 1px solid var(--white-08);
+}
+.pill-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--white-55);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.pill-btn:hover { color: var(--white-75); }
+.pill-btn.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
+
+/* Chart */
+.chart-area {
+  height: 240px;
+  background: var(--white-03);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-35);
+  font-size: 13px;
+}
+
+/* Legend */
+.chart-legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--white-55);
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Exchange table (4th section) */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.data-table th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--white-08);
+}
+.data-table td {
+  font-size: 13px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Long/Short Ratios</h1>
+    <p class="page-subtitle">Market sentiment analysis from Coinglass aggregated data</p>
+
+    <!-- Section 1: Top Account Ratio -->
+    <div class="ratio-section">
+      <h2 class="section-title">Top Trader Account Ratio</h2>
+      <div class="card">
+        <div class="filters-row">
+          <div class="pill-group">
+            <button class="pill-btn active">BTCUSDT</button>
+            <button class="pill-btn">ETHUSDT</button>
+            <button class="pill-btn">SOLUSDT</button>
+          </div>
+          <div class="pill-group">
+            <button class="pill-btn">5m</button>
+            <button class="pill-btn active">15m</button>
+            <button class="pill-btn">30m</button>
+            <button class="pill-btn">1h</button>
+            <button class="pill-btn">2h</button>
+            <button class="pill-btn">4h</button>
+          </div>
+        </div>
+        <div class="chart-area">
+          [Recharts LineChart — Long accounts % (green) vs Short accounts % (red)]
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div> Long %</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red);"></div> Short %</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Top Position Ratio -->
+    <div class="ratio-section">
+      <h2 class="section-title">Top Trader Position Ratio</h2>
+      <div class="card">
+        <div class="filters-row">
+          <div class="pill-group">
+            <button class="pill-btn active">BTCUSDT</button>
+            <button class="pill-btn">ETHUSDT</button>
+            <button class="pill-btn">SOLUSDT</button>
+          </div>
+          <div class="pill-group">
+            <button class="pill-btn">5m</button>
+            <button class="pill-btn active">15m</button>
+            <button class="pill-btn">30m</button>
+            <button class="pill-btn">1h</button>
+            <button class="pill-btn">2h</button>
+            <button class="pill-btn">4h</button>
+          </div>
+        </div>
+        <div class="chart-area">
+          [Recharts LineChart — Long positions % vs Short positions %]
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div> Long %</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red);"></div> Short %</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Global Account Ratio -->
+    <div class="ratio-section">
+      <h2 class="section-title">Global Long/Short Account Ratio</h2>
+      <div class="card">
+        <div class="filters-row">
+          <div class="pill-group">
+            <button class="pill-btn active">BTCUSDT</button>
+            <button class="pill-btn">ETHUSDT</button>
+            <button class="pill-btn">SOLUSDT</button>
+          </div>
+          <div class="pill-group">
+            <button class="pill-btn">5m</button>
+            <button class="pill-btn active">15m</button>
+            <button class="pill-btn">30m</button>
+            <button class="pill-btn">1h</button>
+            <button class="pill-btn">2h</button>
+            <button class="pill-btn">4h</button>
+          </div>
+        </div>
+        <div class="chart-area">
+          [Recharts LineChart — Global long/short ratio line]
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Exchange Taker Buy/Sell Ratio (TABLE, not chart) -->
+    <div class="ratio-section">
+      <h2 class="section-title">Exchange Taker Buy/Sell Ratio</h2>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:16px 24px;">
+          <div class="filters-row">
+            <div class="pill-group">
+              <button class="pill-btn active">BTCUSDT</button>
+              <button class="pill-btn">ETHUSDT</button>
+            </div>
+            <div class="pill-group">
+              <button class="pill-btn">5m</button>
+              <button class="pill-btn active">1h</button>
+              <button class="pill-btn">4h</button>
+              <button class="pill-btn">12h</button>
+              <button class="pill-btn">24h</button>
+            </div>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Exchange</th>
+              <th>Buy Volume</th>
+              <th>Sell Volume</th>
+              <th>Buy/Sell Ratio</th>
+              <th>Taker Buy %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;color:var(--white-92);">Binance</td>
+              <td>$1.24B</td>
+              <td>$1.18B</td>
+              <td style="color:var(--green);">1.051</td>
+              <td style="color:var(--green);">51.2%</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--white-92);">Bybit</td>
+              <td>$420M</td>
+              <td>$445M</td>
+              <td style="color:var(--red);">0.944</td>
+              <td style="color:var(--red);">48.6%</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--white-92);">OKX</td>
+              <td>$380M</td>
+              <td>$365M</td>
+              <td style="color:var(--green);">1.041</td>
+              <td style="color:var(--green);">51.0%</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--white-92);">Bitget</td>
+              <td>$195M</td>
+              <td>$210M</td>
+              <td style="color:var(--red);">0.929</td>
+              <td style="color:var(--red);">48.1%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

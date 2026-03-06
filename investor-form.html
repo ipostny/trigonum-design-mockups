@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Investor Registration Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * INVESTOR FORM PAGE — Multi-step investor registration/onboarding wizard
+ * Route: /investor-form
+ * Auth required. Uses AppLayout. Investor role.
+ *
+ * Steps:
+ * 1. Personal Information (name, phone, date of birth, nationality)
+ * 2. Financial Profile (income range, net worth, investment experience)
+ * 3. Risk Assessment (risk tolerance, investment goals, time horizon)
+ * 4. Documents (ID upload, proof of address, accreditation docs)
+ * 5. Review & Submit (read-only summary of all steps)
+ *
+ * Features:
+ * - Step indicator (numbered circles with lines)
+ * - Navigation: Back / Next / Submit
+ * - Form autosave (draft saved on each step completion)
+ * - Profile header showing current user info
+ * - Validation per step before proceeding
+ *
+ * APIs:
+ * - useGetUserFormQuery (load existing form data / draft)
+ * - useSaveUserFormDraftMutation (autosave)
+ * - useSubmitUserFormMutation (final submit)
+ *
+ * Form: React Hook Form + Zod per-step schemas
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-title { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+.page-subtitle {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 28px;
+}
+
+/* Profile header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  margin-bottom: 28px;
+}
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.profile-info {}
+.profile-name { font-size: 16px; font-weight: 600; }
+.profile-email { font-size: 12px; color: var(--white-55); }
+.profile-status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-badge {
+  padding: 4px 12px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.status-draft { background: rgba(255,176,32,0.1); color: var(--amber); }
+.status-submitted { background: rgba(18,204,255,0.1); color: var(--cyan); }
+.status-verified { background: rgba(0,230,138,0.1); color: var(--green); }
+
+/* Step indicator */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  gap: 0;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 2px solid var(--white-15);
+  background: transparent;
+  color: var(--white-55);
+}
+.step.completed .step-circle {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--navy-900);
+}
+.step.active .step-circle {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: var(--navy-900);
+}
+.step-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--white-55);
+  white-space: nowrap;
+}
+.step.active .step-label { color: var(--white-92); }
+.step.completed .step-label { color: var(--green); }
+
+.step-line {
+  width: 48px;
+  height: 2px;
+  background: var(--white-15);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+.step-line.completed { background: var(--green); }
+
+/* Form card */
+.form-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+}
+
+.form-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.form-section-desc {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group {}
+.form-group.full-width { grid-column: span 2; }
+
+.field-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  color: var(--white-92);
+  font-size: 14px;
+  width: 100%;
+}
+.input-field:focus { outline: none; border-color: var(--cyan); }
+
+select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+/* Radio group */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--white-03);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+.radio-option:hover { background: var(--white-05); }
+.radio-option.selected {
+  border-color: var(--cyan);
+  background: rgba(18,204,255,0.05);
+}
+.radio-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--white-35);
+  flex-shrink: 0;
+}
+.radio-option.selected .radio-dot {
+  border-color: var(--cyan);
+  background: var(--cyan);
+  box-shadow: inset 0 0 0 3px var(--navy-700);
+}
+.radio-text {
+  font-size: 13px;
+  color: var(--white-75);
+}
+.radio-option.selected .radio-text { color: var(--white-92); }
+
+/* File upload */
+.upload-zone {
+  border: 2px dashed var(--white-15);
+  border-radius: var(--r-md);
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+.upload-zone:hover { border-color: var(--cyan); }
+.upload-icon {
+  font-size: 32px;
+  color: var(--white-35);
+  margin-bottom: 8px;
+}
+.upload-text {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 4px;
+}
+.upload-hint {
+  font-size: 11px;
+  color: var(--white-35);
+}
+
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--white-03);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  margin-top: 8px;
+}
+.file-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  background: var(--white-08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--white-55);
+}
+.file-info { flex: 1; }
+.file-name { font-size: 13px; font-weight: 500; }
+.file-size { font-size: 11px; color: var(--white-55); }
+.file-remove {
+  color: var(--red);
+  font-size: 11px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* Navigation */
+.form-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.btn-back {
+  background: var(--white-08);
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-next {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-submit {
+  background: var(--green);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.autosave-note {
+  font-size: 11px;
+  color: var(--white-35);
+}
+
+/* Review summary (step 5) */
+.review-section {
+  margin-bottom: 20px;
+}
+.review-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--white-55);
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--white-08);
+}
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+.review-label { font-size: 13px; color: var(--white-55); }
+.review-value { font-size: 13px; font-weight: 500; }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Investor Registration</h1>
+    <p class="page-subtitle">Complete your investor profile to access investment features</p>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-avatar">JS</div>
+      <div class="profile-info">
+        <div class="profile-name">John Smith</div>
+        <div class="profile-email">john@example.com</div>
+      </div>
+      <div class="profile-status">
+        <span class="status-badge status-draft">Draft</span>
+      </div>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="stepper">
+      <div class="step completed">
+        <div class="step-circle">&#10003;</div>
+        <span class="step-label">Personal</span>
+      </div>
+      <div class="step-line completed"></div>
+      <div class="step active">
+        <div class="step-circle">2</div>
+        <span class="step-label">Financial</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-circle">3</div>
+        <span class="step-label">Risk</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-circle">4</div>
+        <span class="step-label">Documents</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-circle">5</div>
+        <span class="step-label">Review</span>
+      </div>
+    </div>
+
+    <!-- Step 2: Financial Profile (active step shown) -->
+    <div class="form-card">
+      <h2 class="form-section-title">Financial Profile</h2>
+      <p class="form-section-desc">Help us understand your financial background for appropriate investment recommendations</p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="field-label">Annual Income Range</label>
+          <select class="input-field">
+            <option value="">Select range...</option>
+            <option>Under $50,000</option>
+            <option>$50,000 - $100,000</option>
+            <option>$100,000 - $250,000</option>
+            <option>$250,000 - $500,000</option>
+            <option>$500,000+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Net Worth</label>
+          <select class="input-field">
+            <option value="">Select range...</option>
+            <option>Under $100,000</option>
+            <option>$100,000 - $500,000</option>
+            <option>$500,000 - $1,000,000</option>
+            <option>$1,000,000 - $5,000,000</option>
+            <option>$5,000,000+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Source of Funds</label>
+          <select class="input-field">
+            <option value="">Select source...</option>
+            <option>Employment</option>
+            <option>Business Income</option>
+            <option>Investments</option>
+            <option>Inheritance</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Investment Experience</label>
+          <select class="input-field">
+            <option value="">Select level...</option>
+            <option>None</option>
+            <option>Less than 1 year</option>
+            <option>1-3 years</option>
+            <option>3-5 years</option>
+            <option>5+ years</option>
+          </select>
+        </div>
+        <div class="form-group full-width">
+          <label class="field-label">Crypto Trading Experience</label>
+          <div class="radio-group">
+            <div class="radio-option">
+              <div class="radio-dot"></div>
+              <span class="radio-text">No experience with cryptocurrency</span>
+            </div>
+            <div class="radio-option selected">
+              <div class="radio-dot"></div>
+              <span class="radio-text">Some experience (held crypto assets)</span>
+            </div>
+            <div class="radio-option">
+              <div class="radio-dot"></div>
+              <span class="radio-text">Experienced trader (active trading)</span>
+            </div>
+            <div class="radio-option">
+              <div class="radio-dot"></div>
+              <span class="radio-text">Professional (derivatives, margin trading)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="form-nav">
+      <button class="btn-back">&larr; Back</button>
+      <span class="autosave-note">Draft saved automatically</span>
+      <button class="btn-next">Next Step &rarr;</button>
+    </div>
+
+    <!-- ======= STEP 1: PERSONAL INFO (commented) ======= -->
+    <!--
+    <div class="form-card">
+      <h2 class="form-section-title">Personal Information</h2>
+      <p class="form-section-desc">Basic information for identity verification</p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="field-label">First Name</label>
+          <input class="input-field" type="text" placeholder="John">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Last Name</label>
+          <input class="input-field" type="text" placeholder="Smith">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Phone Number</label>
+          <input class="input-field" type="tel" placeholder="+1 555 123 4567">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Date of Birth</label>
+          <input class="input-field" type="date">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Nationality</label>
+          <select class="input-field">
+            <option value="">Select country...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Country of Residence</label>
+          <select class="input-field">
+            <option value="">Select country...</option>
+          </select>
+        </div>
+        <div class="form-group full-width">
+          <label class="field-label">Address</label>
+          <input class="input-field" type="text" placeholder="Street address, city, postal code">
+        </div>
+      </div>
+    </div>
+    -->
+
+    <!-- ======= STEP 4: DOCUMENTS (commented) ======= -->
+    <!--
+    <div class="form-card">
+      <h2 class="form-section-title">Document Upload</h2>
+      <p class="form-section-desc">Upload required documents for verification</p>
+
+      <div class="form-group" style="margin-bottom:20px;">
+        <label class="field-label">Government-issued ID</label>
+        <div class="upload-zone">
+          <div class="upload-icon">&#128196;</div>
+          <div class="upload-text">Click or drag file to upload</div>
+          <div class="upload-hint">Passport, Driver's License, or National ID (PDF, JPG, PNG, max 10MB)</div>
+        </div>
+        <div class="uploaded-file">
+          <div class="file-icon">PDF</div>
+          <div class="file-info">
+            <div class="file-name">passport-scan.pdf</div>
+            <div class="file-size">2.4 MB</div>
+          </div>
+          <button class="file-remove">Remove</button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:20px;">
+        <label class="field-label">Proof of Address</label>
+        <div class="upload-zone">
+          <div class="upload-icon">&#128196;</div>
+          <div class="upload-text">Click or drag file to upload</div>
+          <div class="upload-hint">Utility bill or bank statement, less than 3 months old</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">Accreditation Documents (Optional)</label>
+        <div class="upload-zone">
+          <div class="upload-icon">&#128196;</div>
+          <div class="upload-text">Click or drag file to upload</div>
+          <div class="upload-hint">Accredited investor certification or equivalent</div>
+        </div>
+      </div>
+    </div>
+    -->
+
+    <!-- ======= STEP 5: REVIEW (commented) ======= -->
+    <!--
+    <div class="form-card">
+      <h2 class="form-section-title">Review & Submit</h2>
+      <p class="form-section-desc">Please verify all information before submitting</p>
+
+      <div class="review-section">
+        <div class="review-section-title">Personal Information</div>
+        <div class="review-row">
+          <span class="review-label">Full Name</span>
+          <span class="review-value">John Smith</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Phone</span>
+          <span class="review-value">+1 555 123 4567</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Date of Birth</span>
+          <span class="review-value">Jan 15, 1985</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Nationality</span>
+          <span class="review-value">United States</span>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-title">Financial Profile</div>
+        <div class="review-row">
+          <span class="review-label">Annual Income</span>
+          <span class="review-value">$100,000 - $250,000</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Net Worth</span>
+          <span class="review-value">$500,000 - $1,000,000</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Crypto Experience</span>
+          <span class="review-value">Some experience</span>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-title">Documents</div>
+        <div class="review-row">
+          <span class="review-label">Government ID</span>
+          <span class="review-value" style="color:var(--green);">&#10003; Uploaded</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Proof of Address</span>
+          <span class="review-value" style="color:var(--green);">&#10003; Uploaded</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back">&larr; Back</button>
+      <span></span>
+      <button class="btn-submit">Submit Application</button>
+    </div>
+    -->
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trigonum Investor — Design Mockup v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================================================
+   TRIGONUM DESIGN SYSTEM v3 — Full Data + Triangle Motifs
+   ======================================================================== */
+
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --navy-400: #5A5AC4;
+  --navy-300: #7575FF;
+
+  --cyan:     #12CCFF;
+  --purple:   #AF33FF;
+  --lime:     #81E70B;
+
+  --green:    #00E68A;
+  --red:      #FF4D6A;
+  --amber:    #FFB020;
+
+  --white:    #FFFFFF;
+  --white-90: rgba(255,255,255,0.92);
+  --white-70: rgba(255,255,255,0.75);
+  --white-50: rgba(255,255,255,0.55);
+  --white-30: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 9999px;
+
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ---- Layout ---- */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sidebar triangle watermark */
+.sidebar::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -20px;
+  width: 0; height: 0;
+  border-left: 80px solid transparent;
+  border-right: 80px solid transparent;
+  border-bottom: 140px solid rgba(117,117,255,0.03);
+  pointer-events: none;
+}
+
+.sidebar-logo {
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 16px;
+}
+
+.sidebar-logo .logo-svg {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sidebar-logo .logo-svg path {
+  fill: white;
+}
+
+.sidebar-logo .sub {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white-50);
+  margin-top: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: var(--white-50);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.nav-item:hover { color: var(--white-70); background: var(--white-05); }
+
+.nav-item.active {
+  color: var(--white);
+  background: linear-gradient(90deg, rgba(18,204,255,0.12), transparent);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-icon {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Triangle nav icon */
+.nav-icon .tri {
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid currentColor;
+}
+
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  position: relative;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* ---- Background Triangles ---- */
+.bg-triangles {
+  position: fixed;
+  top: 0; left: 240px; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+
+/* ---- Cards ---- */
+.card {
+  background: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  z-index: 1;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Triangle accent on cards — actual triangle, not square */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid rgba(117,117,255,0.04);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+.card-glow-cyan::after {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(18,204,255,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.card-glow-purple::after {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(175,71,255,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.card-glow-green::after {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(0,230,138,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+/* ---- Tab Navigation ---- */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  z-index: 1;
+  position: relative;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-50);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tab-btn:hover { color: var(--white-70); }
+
+.tab-btn.active {
+  color: var(--white);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 20%; right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  border-radius: 2px;
+}
+
+/* ---- Tab Content ---- */
+.tab-content { display: none; position: relative; z-index: 1; }
+.tab-content.active { display: block; }
+
+/* ---- Section Titles ---- */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: var(--white-70);
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+/* ---- Grid ---- */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ---- Stat Cards ---- */
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-70);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+.stat-value.cyan { color: var(--cyan); }
+.stat-value.white { color: var(--white); }
+.stat-value.purple { color: var(--purple); }
+
+.stat-detail {
+  font-size: 12px;
+  color: var(--white-70);
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* ---- Balance Cards (bigger, home) ---- */
+.balance-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.balance-card {
+  background: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.balance-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Triangle decorations on balance cards */
+.balance-card .tri-accent {
+  position: absolute;
+  top: -8px; right: -8px;
+  width: 0; height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 52px solid rgba(117,117,255,0.05);
+  transform: rotate(20deg);
+  pointer-events: none;
+}
+
+.balance-card .tri-accent-2 {
+  position: absolute;
+  bottom: -12px; left: 10px;
+  width: 0; height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 35px solid rgba(18,204,255,0.03);
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+/* ---- PnL Bar Chart ---- */
+.pnl-chart-container {
+  margin-bottom: 28px;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 240px;
+  padding: 0 20px;
+  position: relative;
+}
+
+/* Zero line */
+.bar-chart-wrapper {
+  position: relative;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.bar-chart-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 200px;
+  position: relative;
+}
+
+/* The zero line sits in the middle area */
+.zero-line {
+  position: absolute;
+  left: 20px; right: 20px;
+  top: 65%;
+  height: 1px;
+  background: var(--white-15);
+}
+
+.zero-label {
+  position: absolute;
+  left: 0;
+  top: 65%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--white-30);
+}
+
+.bar-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar-label-top {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.bar-label-top.green { color: var(--green); }
+.bar-label-top.red { color: var(--red); }
+
+.bar-element {
+  width: 48px;
+  border-radius: 6px 6px 2px 2px;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.bar-element.positive {
+  background: linear-gradient(180deg, var(--green), rgba(0,230,138,0.6));
+  box-shadow: 0 0 20px rgba(0,230,138,0.2);
+}
+
+.bar-element.negative {
+  background: linear-gradient(0deg, var(--red), rgba(255,77,106,0.6));
+  box-shadow: 0 0 20px rgba(255,77,106,0.2);
+  border-radius: 2px 2px 6px 6px;
+}
+
+.bar-month {
+  font-size: 11px;
+  color: var(--white-70);
+  margin-top: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Strategy Cards ---- */
+.strategy-card {
+  background: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.strategy-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Bottom color bar — triangle shape instead of rectangle */
+.strategy-card .color-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.strategy-card .color-bar.cyan { background: linear-gradient(90deg, var(--cyan), transparent); }
+.strategy-card .color-bar.purple { background: linear-gradient(90deg, var(--purple), transparent); }
+.strategy-card .color-bar.lime { background: linear-gradient(90deg, var(--lime), transparent); }
+
+/* Triangle icon in strategy card */
+.strat-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.strat-icon.cyan-bg {
+  background: rgba(18,204,255,0.12);
+}
+.strat-icon.purple-bg {
+  background: rgba(175,71,255,0.12);
+}
+
+.strat-icon .tri-icon {
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid var(--cyan);
+}
+
+.strat-icon.purple-bg .tri-icon {
+  border-bottom-color: var(--purple);
+}
+
+.strat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.strat-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.strat-type {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.strat-type.cyan { color: var(--cyan); }
+.strat-type.purple { color: var(--purple); }
+.strat-type.lime { color: var(--lime); }
+
+.strat-desc {
+  font-size: 12px;
+  color: var(--white-70);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.strat-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.strat-stat-label {
+  font-size: 10px;
+  color: var(--white-50);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.strat-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Triangle corner accent */
+.strategy-card .tri-corner {
+  position: absolute;
+  top: -10px; right: -10px;
+  width: 0; height: 0;
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-bottom: 60px solid rgba(117,117,255,0.04);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+/* ---- Performance Page ---- */
+.perf-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  min-height: 40px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.perf-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.perf-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Pill toggle group */
+.pill-group {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+  border: 1px solid var(--white-08);
+}
+
+.pill-btn {
+  padding: 6px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white-50);
+  background: none;
+  border: none;
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.pill-btn:hover { color: var(--white-70); }
+
+.pill-btn.active {
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(18,204,255,0.3);
+}
+
+/* Custom Strategy Selector */
+.strategy-selector {
+  position: relative;
+}
+
+.selector-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px;
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 180px;
+}
+
+.selector-trigger:hover {
+  border-color: var(--white-30);
+  background: var(--white-08);
+}
+
+.selector-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.selector-dot.all { background: linear-gradient(135deg, var(--cyan), var(--purple)); }
+.selector-dot.cyan { background: var(--cyan); }
+.selector-dot.purple { background: var(--purple); }
+.selector-dot.red { background: var(--red); }
+
+.selector-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white-90);
+  flex: 1;
+}
+
+.selector-chevron {
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--white-50);
+  transition: transform 0.2s;
+}
+
+.selector-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--navy-700);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+  min-width: 220px;
+  z-index: 100;
+  display: none;
+}
+
+.strategy-selector.open .selector-dropdown { display: block; }
+.strategy-selector.open .selector-chevron { transform: rotate(180deg); }
+
+.selector-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.selector-option:hover { background: var(--white-08); }
+.selector-option.selected { background: var(--white-05); }
+
+.selector-option-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--white-90);
+  flex: 1;
+}
+
+.selector-option-roi {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* ---- Donut Charts (CSS) ---- */
+.donut-container {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.donut {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.donut-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.donut-center-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--white);
+}
+
+.donut-center-label {
+  font-size: 9px;
+  color: var(--white-50);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--white-70);
+}
+
+.legend-color {
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legend-pct {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--white-90);
+  min-width: 35px;
+  text-align: right;
+}
+
+/* ---- Balance Page ---- */
+.investment-row {
+  background: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.investment-row:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Triangle accent on investment rows */
+.investment-row::before {
+  content: '';
+  position: absolute;
+  top: -8px; right: 30px;
+  width: 0; height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 35px solid rgba(117,117,255,0.03);
+  transform: rotate(10deg);
+  pointer-events: none;
+}
+
+.inv-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.inv-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+
+.inv-icon .tri-icon {
+  width: 0; height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+}
+
+.inv-icon.cyan-bg {
+  background: rgba(18,204,255,0.12);
+}
+.inv-icon.cyan-bg .tri-icon {
+  border-bottom: 16px solid var(--cyan);
+}
+.inv-icon.purple-bg {
+  background: rgba(175,71,255,0.12);
+}
+.inv-icon.purple-bg .tri-icon {
+  border-bottom: 16px solid var(--purple);
+}
+
+.inv-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.inv-type {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.inv-type.cyan { color: var(--cyan); }
+.inv-type.purple { color: var(--purple); }
+
+.inv-right {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  text-align: right;
+}
+
+.inv-metric-label {
+  font-size: 10px;
+  color: var(--white-50);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.inv-metric-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ---- Capital Movements Table ---- */
+.movements-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.movements-table th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-50);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--white-08);
+}
+
+.movements-table td {
+  font-size: 13px;
+  color: var(--white-90);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--white-05);
+  font-weight: 500;
+}
+
+.movements-table tr:last-child td { border-bottom: none; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.badge.deposit {
+  background: rgba(0,230,138,0.1);
+  color: var(--green);
+}
+
+.badge.withdrawal {
+  background: rgba(255,77,106,0.1);
+  color: var(--red);
+}
+
+/* Small triangle in badge */
+.badge .tri-sm {
+  width: 0; height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+}
+.badge.deposit .tri-sm {
+  border-bottom: 5px solid var(--green);
+}
+.badge.withdrawal .tri-sm {
+  border-top: 5px solid var(--red);
+}
+
+/* ---- Utility ---- */
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-28 { margin-bottom: 28px; }
+.mt-8 { margin-top: 8px; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+
+/* ---- Balance Visibility Toggle ---- */
+.vis-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--white-05);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--white-70);
+  transition: all 0.2s;
+}
+
+.vis-toggle:hover { background: var(--white-08); color: var(--white-90); }
+
+/* ---- Responsive triangles bg pattern ---- */
+.tri-pattern {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ---- Converging triangle composition (legacy, unused with video) ---- */
+.convergence-bg {
+  position: absolute;
+  width: 600px; height: 500px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== VIDEO BACKGROUND — Actual Trigonum animated triangles ===== */
+
+.bg-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  opacity: 0.18;
+  z-index: 0;
+}
+
+/* ---- Design Notes ---- */
+.design-note {
+  background: rgba(255,176,32,0.08);
+  border: 1px dashed rgba(255,176,32,0.3);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  font-size: 11px;
+  color: var(--amber);
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .balance-cards { grid-template-columns: 1fr; }
+  .main-content { padding: 16px; }
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--white-08);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white-70);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+  background: var(--white-15);
+  color: var(--white-90);
+}
+
+.theme-toggle .icon { font-size: 16px; }
+
+/* ========================================================================
+   LIGHT THEME — Day mode overrides
+   ======================================================================== */
+
+body.light {
+  --navy-900: #D5D7E3;
+  --navy-800: #C8CAD9;
+  --navy-700: #BCBECD;
+  --navy-600: #B0B2C4;
+  --navy-500: #8E91AD;
+  --navy-400: #6E71A0;
+  --navy-300: #5A5AC4;
+
+  --green:    #0BBF72;
+  --red:      #E63B56;
+
+  --white:    #1A1A3E;
+  --white-90: rgba(26,26,62,0.92);
+  --white-70: rgba(26,26,62,0.78);
+  --white-50: rgba(26,26,62,0.62);
+  --white-30: rgba(26,26,62,0.35);
+  --white-15: rgba(26,26,62,0.14);
+  --white-08: rgba(26,26,62,0.08);
+  --white-05: rgba(26,26,62,0.05);
+  --white-03: rgba(26,26,62,0.03);
+
+  --shadow-card: 0 2px 8px rgba(26,26,62,0.08), 0 8px 32px rgba(26,26,62,0.05);
+  --shadow-elevated: 0 8px 24px rgba(26,26,62,0.10), 0 16px 48px rgba(26,26,62,0.06);
+}
+
+body.light {
+  background: #D5D7E3;
+  color: #1A1A3E;
+}
+
+body.light .sidebar {
+  background: #E0E2EE;
+  border-right-color: rgba(26,26,62,0.10);
+}
+
+body.light .sidebar-logo .logo-svg path {
+  fill: #1A1A3E;
+}
+
+body.light .sidebar-logo .sub {
+  color: rgba(26,26,62,0.65);
+}
+
+body.light .nav-item {
+  color: rgba(26,26,62,0.55);
+}
+
+body.light .nav-item:hover {
+  color: rgba(26,26,62,0.75);
+  background: rgba(26,26,62,0.06);
+}
+
+body.light .nav-item.active {
+  color: #1A1A3E;
+  background: linear-gradient(90deg, rgba(18,204,255,0.12), transparent);
+}
+
+body.light .nav-icon .tri {
+  border-bottom-color: rgba(26,26,62,0.40);
+}
+
+body.light .nav-item.active .nav-icon .tri {
+  border-bottom-color: #1A1A3E;
+}
+
+body.light .card,
+body.light .balance-card,
+body.light .strategy-card,
+body.light .investment-row {
+  background: linear-gradient(135deg, #E8EAF4, #E2E4F0);
+  border-color: rgba(26,26,62,0.10);
+}
+
+/* Light theme stat values keep their semantic colors */
+body.light .stat-value.green { color: #0BBF72; }
+body.light .stat-value.red { color: #E63B56; }
+body.light .stat-value.cyan { color: #0A8FB3; }
+body.light .stat-value.white { color: #1A1A3E; }
+body.light .stat-value.purple { color: #7B32B3; }
+
+body.light .strat-type.cyan { color: #0A8FB3; }
+body.light .strat-type.purple { color: #7B32B3; }
+body.light .strat-type.lime { color: #5CA31A; }
+body.light .inv-type.cyan { color: #0A8FB3; }
+body.light .inv-type.purple { color: #7B32B3; }
+
+/* Light theme text readability — stronger contrast on grey */
+body.light .section-subtitle,
+body.light .stat-detail,
+body.light .strat-desc {
+  color: rgba(26,26,62,0.70);
+}
+
+body.light .stat-label,
+body.light .strat-stat-label,
+body.light .inv-metric-label {
+  color: rgba(26,26,62,0.60);
+}
+
+body.light .movements-table td {
+  color: rgba(26,26,62,0.88);
+}
+
+/* Light theme bar chart colors — slightly deeper for contrast */
+body.light .bar-pos {
+  background: linear-gradient(180deg, #0BBF72, rgba(11,191,114,0.5)) !important;
+  box-shadow: 0 0 16px rgba(11,191,114,0.12) !important;
+}
+body.light .bar-neg {
+  background: linear-gradient(0deg, #E63B56, rgba(230,59,86,0.5)) !important;
+  box-shadow: 0 0 16px rgba(230,59,86,0.12) !important;
+}
+
+/* Light donut center */
+body.light .donut > div:first-child {
+  background: #BCBECD !important;
+}
+
+/* Light table */
+body.light .movements-table th {
+  color: rgba(26,26,62,0.58);
+  border-bottom-color: rgba(26,26,62,0.10);
+}
+body.light .movements-table td {
+  color: #1A1A3E;
+  border-bottom-color: rgba(26,26,62,0.05);
+}
+
+body.light .badge.deposit {
+  background: rgba(11,191,114,0.1);
+  color: #0BBF72;
+}
+body.light .badge.withdrawal {
+  background: rgba(230,59,86,0.1);
+  color: #E63B56;
+}
+
+/* Light theme background — more visible on grey background */
+body.light .bg-video { opacity: 0.22; }
+
+/* Light pill toggle */
+body.light .pill-group {
+  background: rgba(26,26,62,0.04);
+  border-color: rgba(26,26,62,0.08);
+}
+body.light .pill-btn.active {
+  background: linear-gradient(135deg, #0A8FB3, #7B32B3);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(10,143,179,0.25);
+}
+
+/* Light selector */
+body.light .selector-trigger {
+  background: rgba(26,26,62,0.04);
+  border-color: rgba(26,26,62,0.12);
+}
+body.light .selector-dropdown {
+  background: #E0E2EE;
+  border-color: rgba(26,26,62,0.12);
+}
+
+/* Light vis toggle */
+body.light .vis-toggle {
+  background: rgba(26,26,62,0.06);
+  border-color: rgba(26,26,62,0.12);
+  color: rgba(26,26,62,0.65);
+}
+
+/* Light theme toggle button itself */
+body.light .theme-toggle {
+  background: rgba(26,26,62,0.08);
+  border-color: rgba(26,26,62,0.12);
+  color: rgba(26,26,62,0.55);
+}
+body.light .theme-toggle:hover {
+  background: rgba(26,26,62,0.14);
+  color: rgba(26,26,62,0.8);
+}
+
+/* Card triangle accents — darker on light bg */
+body.light .card::before {
+  border-bottom-color: rgba(90,90,196,0.06);
+}
+body.light .balance-card .tri-accent {
+  border-bottom-color: rgba(90,90,196,0.06) !important;
+}
+body.light .strategy-card .tri-corner {
+  border-bottom-color: rgba(90,90,196,0.06) !important;
+}
+
+/* Strategy card color bar */
+body.light .color-bar.cyan { background: linear-gradient(90deg, #0A8FB3, transparent); }
+body.light .color-bar.purple { background: linear-gradient(90deg, #7B32B3, transparent); }
+
+/* Light strat-icon backgrounds */
+body.light .strat-icon.cyan-bg,
+body.light .inv-icon.cyan-bg {
+  background: rgba(10,143,179,0.1);
+}
+body.light .strat-icon.purple-bg,
+body.light .inv-icon.purple-bg {
+  background: rgba(123,50,179,0.1);
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- ====== SIDEBAR ====== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg class="logo-svg" width="180" height="26" viewBox="0 0 240 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60.3696 10.3834C60.3696 8.0283 59.4672 5.63388 57.8256 4.12937C56.064 2.50687 53.5392 1.65137 50.52 1.65137H34.7856V32.3314H41.2032V20.3987H49.896C52.2384 20.3987 53.4576 20.969 53.4576 24.3664V32.3314H59.9184V25.4235C59.9184 20.6297 59.3664 18.8253 55.8672 17.6699C58.1568 16.5342 60.3744 13.9283 60.3744 10.3883L60.3696 10.3834ZM49.488 14.6314H41.2032V7.3793H49.488C52.3008 7.3793 53.7888 8.80513 53.7888 11.0078C53.7888 13.2105 52.344 14.6363 49.488 14.6363V14.6314Z" fill="white"/>
+        <path d="M70.5408 1.65137H64.1232V32.3314H70.5408V1.65137Z" fill="white"/>
+        <path d="M194.976 19.6612C194.976 23.388 193.243 27.3705 188.381 27.3705C184.253 27.3705 181.786 24.4893 181.786 19.6612V1.65137H175.325V20.5068C175.325 24.5926 176.698 27.9113 179.299 30.1189C181.594 32.0659 184.733 33.0935 188.381 33.0935C192.029 33.0935 195.408 31.9676 197.712 29.8338C200.117 27.6065 201.394 24.3812 201.394 20.5068V1.65137H194.976V19.6612Z" fill="white"/>
+        <path d="M123.072 0.889648C118.421 0.889648 114.442 2.52199 111.566 5.61458C108.85 8.53508 107.352 12.5717 107.352 16.9918C107.352 21.4119 108.85 25.4534 111.566 28.369C114.446 31.4616 118.426 33.0939 123.072 33.0939C127.718 33.0939 131.702 31.4616 134.578 28.369C137.294 25.4534 138.792 21.4119 138.792 16.9918C138.792 12.5717 137.294 8.53017 134.578 5.61458C131.702 2.52199 127.723 0.889648 123.072 0.889648ZM123.072 27.3709C117.595 27.3709 113.77 23.1032 113.77 16.9918C113.77 10.8803 117.595 6.61758 123.072 6.61758C128.549 6.61758 132.374 10.8853 132.374 16.9918C132.374 23.0983 128.549 27.3709 123.072 27.3709Z" fill="white"/>
+        <path d="M231.264 1.65332L223.133 24.2455L215.002 1.65332H206.266V32.3334H212.477V11.0245L220.176 32.3334H220.219H226.042H226.09L233.789 11.0196V32.3334H240V1.65332H231.264Z" fill="white"/>
+        <path d="M164.078 26.9919L151.282 1.65137H142.224V32.3314H148.637V9.49347L160.171 32.3314H170.496V1.65137H164.078V26.9919Z" fill="white"/>
+        <path d="M89.2992 21.1266H98.1408C97.824 23.2211 95.6208 27.3708 89.8416 27.3708C88.8912 27.3708 80.5584 27.0807 80.5584 16.9966C80.5584 10.7918 84.4032 6.62243 90.1296 6.62243C93.7488 6.62243 96.3456 8.38751 97.3152 11.4703H103.954C102.936 6.19468 98.2608 0.899414 90.048 0.899414C85.3344 0.899414 81.2832 2.517 78.3408 5.57517C75.528 8.49568 73.9776 12.5519 73.9776 17.0015C73.9776 21.4511 75.3552 25.4582 77.8512 28.2755C80.6448 31.432 84.7776 33.1037 89.8032 33.1037C97.128 33.1037 104.52 28.6688 104.52 18.7617V15.5167H89.304V21.1365L89.2992 21.1266Z" fill="white"/>
+        <path d="M12.5136 32.3318H18.9792V7.69922L12.5136 14.322V32.3318Z" fill="white"/>
+        <path d="M18.9792 7.69888H31.5312V1.65137H24.8832L18.9792 7.69888Z" fill="white"/>
+        <path d="M0 1.65137V7.69888H18.9792L13.08 1.65137H0Z" fill="white"/>
+      </svg>
+      <div class="sub">Investor Portal</div>
+    </div>
+    <a class="nav-item active" onclick="showTab('home')">
+      <span class="nav-icon"><span class="tri"></span></span>
+      Home
+    </a>
+    <a class="nav-item" onclick="showTab('performance')">
+      <span class="nav-icon"><span class="tri"></span></span>
+      Performance
+    </a>
+    <a class="nav-item" onclick="showTab('balance')">
+      <span class="nav-icon"><span class="tri"></span></span>
+      Balance
+    </a>
+    <a class="nav-item" onclick="showTab('investing')">
+      <span class="nav-icon"><span class="tri"></span></span>
+      Investing
+    </a>
+    <a class="nav-item" onclick="showTab('wiki')">
+      <span class="nav-icon"><span class="tri"></span></span>
+      Wiki
+    </a>
+    <a class="nav-item" onclick="showTab('news')">
+      <span class="nav-icon"><span class="tri"></span></span>
+      News
+    </a>
+  </aside>
+
+  <!-- ====== MAIN CONTENT ====== -->
+  <div class="main-content">
+
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span class="icon" id="themeIcon">&#9790;</span>
+      <span id="themeLabel">Light</span>
+    </div>
+
+    <!-- Animated triangle background — actual video from Trigonum main site -->
+    <div class="bg-triangles">
+      <video class="bg-video" src="video-header.mp4" autoplay muted loop playsinline></video>
+    </div>
+
+    <!-- ====== HOME TAB ====== -->
+    <div class="tab-content active" id="tab-home">
+
+      <div class="perf-header">
+        <div class="perf-title">Home</div>
+      </div>
+
+      <!-- Balance Summary Cards -->
+      <div class="balance-cards">
+        <div class="balance-card">
+          <div class="tri-accent"></div>
+          <div class="tri-accent-2"></div>
+          <div class="stat-label">Total Invested</div>
+          <div class="stat-value white">$7,000</div>
+          <div class="stat-detail">2 active strategies</div>
+        </div>
+        <div class="balance-card">
+          <div class="tri-accent"></div>
+          <div class="tri-accent-2"></div>
+          <div class="stat-label">Total Return</div>
+          <div class="stat-value green">+$2,880</div>
+          <div class="stat-detail">Since September 2025</div>
+        </div>
+        <div class="balance-card">
+          <div class="tri-accent"></div>
+          <div class="tri-accent-2"></div>
+          <div class="stat-label">Portfolio ROI</div>
+          <div class="stat-value cyan">+41.14%</div>
+          <div class="stat-detail">Weighted across all strategies</div>
+        </div>
+      </div>
+
+      <!-- P&L Overview Chart -->
+      <div class="card pnl-chart-container">
+        <div class="flex-between mb-16">
+          <div>
+            <div class="section-title">P&L Overview</div>
+            <div class="section-subtitle">Monthly performance across all strategies</div>
+          </div>
+          <div class="vis-toggle">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="7" cy="7" r="3"/>
+              <path d="M1 7s2.5-4 6-4 6 4 6 4-2.5 4-6 4-6-4-6-4z"/>
+            </svg>
+            Visible
+          </div>
+        </div>
+
+        <!-- Bar chart: 3 rows — positive area, zero line + labels row, negative area -->
+        <div style="padding: 10px 30px 0; position: relative;">
+          <!-- Y-axis labels -->
+          <div style="position: absolute; left: 4px; top: 12px; font-size: 9px; color: var(--white-30);">$1.5K</div>
+          <div style="position: absolute; left: 10px; top: 82px; font-size: 9px; color: var(--white-30);">$1K</div>
+          <div style="position: absolute; left: 10px; top: 152px; font-size: 9px; color: var(--white-30);">$500</div>
+
+          <!-- Positive bars area (grows upward from zero line) -->
+          <div style="display: flex; justify-content: space-around; align-items: flex-end; height: 180px; border-bottom: 1px solid var(--white-15); position: relative;">
+            <!-- Faint grid lines -->
+            <div style="position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--white-05);"></div>
+            <div style="position: absolute; left: 0; right: 0; top: 60px; height: 1px; background: var(--white-05);"></div>
+            <div style="position: absolute; left: 0; right: 0; top: 120px; height: 1px; background: var(--white-05);"></div>
+
+            <!-- Oct: +$850 (height = 850/1500 * 180 ≈ 102px) -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$850</div>
+              <div style="width: 50px; height: 102px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 20px rgba(0,230,138,0.15); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.08);"></div>
+              </div>
+            </div>
+
+            <!-- Nov: empty above zero (the negative bar is below) -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="visibility: hidden; font-size: 13px; margin-bottom: 5px;">.</div>
+              <div style="width: 50px; height: 0;"></div>
+            </div>
+
+            <!-- Dec: +$530 (height = 530/1500 * 180 ≈ 64px) -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$530</div>
+              <div style="width: 50px; height: 64px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 20px rgba(0,230,138,0.15); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.08);"></div>
+              </div>
+            </div>
+
+            <!-- Jan: +$1,270 (height = 1270/1500 * 180 ≈ 152px) -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$1,270</div>
+              <div style="width: 50px; height: 152px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 25px rgba(0,230,138,0.2); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.1);"></div>
+                <div style="position: absolute; top: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid rgba(255,255,255,0.2);"></div>
+              </div>
+            </div>
+
+            <!-- Feb: +$460 (height = 460/1500 * 180 ≈ 55px) -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$460</div>
+              <div style="width: 50px; height: 55px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 20px rgba(0,230,138,0.15); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.08);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Negative bars area (hangs below zero line) -->
+          <div style="display: flex; justify-content: space-around; align-items: flex-start; height: 50px; position: relative;">
+            <div style="position: absolute; left: -24px; top: -8px; font-size: 9px; color: var(--white-30);">$0</div>
+
+            <div style="flex: 1;"></div>
+
+            <!-- Nov negative bar + value -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="width: 50px; height: 28px; border-radius: 0 0 6px 6px; background: linear-gradient(0deg, #FF4D6A, rgba(255,77,106,0.45)); box-shadow: 0 0 20px rgba(255,77,106,0.15); position: relative;">
+                <div style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid rgba(255,255,255,0.08);"></div>
+              </div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--red); margin-top: 4px;">-$230</div>
+            </div>
+
+            <div style="flex: 1;"></div>
+            <div style="flex: 1;"></div>
+            <div style="flex: 1;"></div>
+          </div>
+
+          <!-- Month labels — all on ONE consistent horizontal line -->
+          <div style="display: flex; justify-content: space-around; padding-top: 4px;">
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Oct 25</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Nov 25</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Dec 25</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Jan 26</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Feb 26</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Strategies -->
+      <div class="section-title mb-8" style="margin-top: 4px;">My Strategies</div>
+      <div class="section-subtitle">Your active investment strategies</div>
+
+      <div class="grid-2">
+        <!-- Alpha Growth Fund -->
+        <div class="strategy-card">
+          <div class="tri-corner"></div>
+          <div class="color-bar cyan"></div>
+          <div class="strat-header">
+            <div class="strat-icon cyan-bg">
+              <div class="tri-icon"></div>
+            </div>
+            <div>
+              <div class="strat-name">Alpha Growth Fund</div>
+              <div class="strat-type cyan">TRADE & INVEST</div>
+            </div>
+          </div>
+          <div class="strat-desc">Conservative growth strategy focusing on major pairs — BTC, ETH, SOL. Emphasizes risk-adjusted returns with systematic position sizing.</div>
+          <div class="strat-stats">
+            <div>
+              <div class="strat-stat-label">Invested</div>
+              <div class="strat-stat-value white">$5,000</div>
+            </div>
+            <div>
+              <div class="strat-stat-label">Return</div>
+              <div class="strat-stat-value green">+$2,055</div>
+            </div>
+            <div>
+              <div class="strat-stat-label">ROI</div>
+              <div class="strat-stat-value cyan">+41.1%</div>
+            </div>
+            <div>
+              <div class="strat-stat-label">HWM</div>
+              <div class="strat-stat-value white">$10,420</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beta Momentum Fund -->
+        <div class="strategy-card">
+          <div class="tri-corner" style="border-bottom-color: rgba(175,71,255,0.04);"></div>
+          <div class="color-bar purple"></div>
+          <div class="strat-header">
+            <div class="strat-icon purple-bg">
+              <div class="tri-icon"></div>
+            </div>
+            <div>
+              <div class="strat-name">Beta Momentum Fund</div>
+              <div class="strat-type purple">MOMENTUM</div>
+            </div>
+          </div>
+          <div class="strat-desc">Automated momentum strategy across multiple altcoins — DOGE, AVAX, AAVE, XRP, LINK, DOT, MATIC. Higher risk, higher reward potential.</div>
+          <div class="strat-stats">
+            <div>
+              <div class="strat-stat-label">Invested</div>
+              <div class="strat-stat-value white">$2,000</div>
+            </div>
+            <div>
+              <div class="strat-stat-label">Return</div>
+              <div class="strat-stat-value green">+$825</div>
+            </div>
+            <div>
+              <div class="strat-stat-label">ROI</div>
+              <div class="strat-stat-value purple">+41.3%</div>
+            </div>
+            <div>
+              <div class="strat-stat-label">HWM</div>
+              <div class="strat-stat-value white">$2,285</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== PERFORMANCE TAB ====== -->
+    <div class="tab-content" id="tab-performance">
+
+      <!-- Header with controls -->
+      <div class="perf-header">
+        <div class="perf-title">Performance</div>
+        <div class="perf-controls">
+          <div class="pill-group">
+            <button class="pill-btn active">Month</button>
+            <button class="pill-btn">Quarter</button>
+            <button class="pill-btn">Year</button>
+          </div>
+
+          <!-- Custom strategy selector -->
+          <div class="strategy-selector" id="stratSelector">
+            <div class="selector-trigger" onclick="document.getElementById('stratSelector').classList.toggle('open')">
+              <span class="selector-dot all"></span>
+              <span class="selector-text">All Strategies</span>
+              <span class="selector-chevron"></span>
+            </div>
+            <div class="selector-dropdown">
+              <div class="selector-option selected">
+                <span class="selector-dot all"></span>
+                <span class="selector-option-text">All Strategies</span>
+                <span class="selector-option-roi">+41.1%</span>
+              </div>
+              <div class="selector-option">
+                <span class="selector-dot cyan"></span>
+                <span class="selector-option-text">Alpha Growth Fund</span>
+                <span class="selector-option-roi">+41.1%</span>
+              </div>
+              <div class="selector-option">
+                <span class="selector-dot purple"></span>
+                <span class="selector-option-text">Beta Momentum Fund</span>
+                <span class="selector-option-roi">+41.3%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid-4">
+        <div class="card card-glow-green">
+          <div class="stat-label">Total P&L</div>
+          <div class="stat-value green">+$2,880</div>
+          <div class="stat-detail">5 reports published</div>
+        </div>
+        <div class="card card-glow-cyan">
+          <div class="stat-label">Best Month</div>
+          <div class="stat-value green">+$1,270</div>
+          <div class="stat-detail">January 2026</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Worst Month</div>
+          <div class="stat-value red">-$230</div>
+          <div class="stat-detail">November 2025</div>
+        </div>
+        <div class="card card-glow-purple">
+          <div class="stat-label">Avg. Monthly</div>
+          <div class="stat-value green">+$576</div>
+          <div class="stat-detail">Across 5 months</div>
+        </div>
+      </div>
+
+      <!-- Monthly PnL Chart (rendered bars) -->
+      <div class="card mb-24">
+        <div class="section-title mb-8">Monthly P&L</div>
+        <div class="section-subtitle">Profit and loss per reporting period</div>
+
+        <div style="padding: 10px 30px 0; position: relative;">
+          <!-- Y-axis labels -->
+          <div style="position: absolute; left: 4px; top: 12px; font-size: 9px; color: var(--white-30);">$1.5K</div>
+          <div style="position: absolute; left: 10px; top: 82px; font-size: 9px; color: var(--white-30);">$1K</div>
+          <div style="position: absolute; left: 10px; top: 152px; font-size: 9px; color: var(--white-30);">$500</div>
+
+          <!-- Positive bars area -->
+          <div style="display: flex; justify-content: space-around; align-items: flex-end; height: 180px; border-bottom: 1px solid var(--white-15); position: relative;">
+            <div style="position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--white-05);"></div>
+            <div style="position: absolute; left: 0; right: 0; top: 60px; height: 1px; background: var(--white-05);"></div>
+            <div style="position: absolute; left: 0; right: 0; top: 120px; height: 1px; background: var(--white-05);"></div>
+
+            <!-- Oct: +$850 -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$850</div>
+              <div style="width: 52px; height: 102px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 20px rgba(0,230,138,0.15); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.08);"></div>
+              </div>
+            </div>
+
+            <!-- Nov: empty above zero -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="visibility: hidden; font-size: 13px; margin-bottom: 5px;">.</div>
+              <div style="width: 52px; height: 0;"></div>
+            </div>
+
+            <!-- Dec: +$530 -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$530</div>
+              <div style="width: 52px; height: 64px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 20px rgba(0,230,138,0.15); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.08);"></div>
+              </div>
+            </div>
+
+            <!-- Jan: +$1,270 -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$1,270</div>
+              <div style="width: 52px; height: 152px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 25px rgba(0,230,138,0.2); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.1);"></div>
+                <div style="position: absolute; top: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid rgba(255,255,255,0.2);"></div>
+              </div>
+            </div>
+
+            <!-- Feb: +$460 -->
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 5px;">+$460</div>
+              <div style="width: 52px; height: 55px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #00E68A, rgba(0,230,138,0.45)); box-shadow: 0 0 20px rgba(0,230,138,0.15); position: relative;">
+                <div style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid rgba(255,255,255,0.08);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Negative bars area -->
+          <div style="display: flex; justify-content: space-around; align-items: flex-start; height: 50px; position: relative;">
+            <div style="position: absolute; left: -24px; top: -8px; font-size: 9px; color: var(--white-30);">$0</div>
+
+            <div style="flex: 1;"></div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <div style="width: 52px; height: 28px; border-radius: 0 0 6px 6px; background: linear-gradient(0deg, #FF4D6A, rgba(255,77,106,0.45)); box-shadow: 0 0 20px rgba(255,77,106,0.15); position: relative;">
+                <div style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid rgba(255,255,255,0.08);"></div>
+              </div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--red); margin-top: 4px;">-$230</div>
+            </div>
+
+            <div style="flex: 1;"></div>
+            <div style="flex: 1;"></div>
+            <div style="flex: 1;"></div>
+          </div>
+
+          <!-- Month labels — all on ONE consistent line -->
+          <div style="display: flex; justify-content: space-around; padding-top: 4px;">
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Oct 25</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Nov 25</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Dec 25</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Jan 26</div>
+            <div style="flex: 1; text-align: center; font-size: 12px; color: var(--white-70); font-weight: 500;">Feb 26</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Distribution Charts -->
+      <div class="grid-2">
+        <!-- Symbol Distribution (Donut) -->
+        <div class="card">
+          <div class="section-title mb-8">Symbol Distribution</div>
+          <div class="section-subtitle">Trading volume by cryptocurrency</div>
+
+          <div class="donut-container">
+            <!-- CSS conic-gradient donut -->
+            <div class="donut" style="background: conic-gradient(
+              #12CCFF 0deg 205.2deg,
+              #AF33FF 205.2deg 288deg,
+              #81E70B 288deg 309.6deg,
+              #FFB020 309.6deg 320.4deg,
+              #FF4D6A 320.4deg 329deg,
+              #00E68A 329deg 337.7deg,
+              #7575FF 337.7deg 344.9deg,
+              #5A5AC4 344.9deg 350.3deg,
+              #3F3F8A 350.3deg 355.7deg,
+              rgba(255,255,255,0.2) 355.7deg 360deg
+            );">
+              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 80px; height: 80px; border-radius: 50%; background: var(--navy-700);"></div>
+              <div class="donut-center">
+                <div class="donut-center-value">10</div>
+                <div class="donut-center-label">Symbols</div>
+              </div>
+            </div>
+
+            <div class="donut-legend">
+              <div class="legend-item"><span class="legend-color" style="background: #12CCFF;"></span> BTCUSDT <span class="legend-pct">57%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #AF33FF;"></span> ETHUSDT <span class="legend-pct">23%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #81E70B;"></span> SOLUSDT <span class="legend-pct">6%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #FFB020;"></span> DOGEUSDT <span class="legend-pct">3%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #FF4D6A;"></span> AVAXUSDT <span class="legend-pct">2.4%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #00E68A;"></span> AAVEUSDT <span class="legend-pct">2.4%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #7575FF;"></span> XRPUSDT <span class="legend-pct">2%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #5A5AC4;"></span> LINKUSDT <span class="legend-pct">1.5%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: #3F3F8A;"></span> DOTUSDT <span class="legend-pct">1.5%</span></div>
+              <div class="legend-item"><span class="legend-color" style="background: rgba(255,255,255,0.2);"></span> MATICUSDT <span class="legend-pct">1.2%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side Distribution -->
+        <div class="card">
+          <div class="section-title mb-8">Side Distribution</div>
+          <div class="section-subtitle">Buy vs Sell trade volume</div>
+
+          <div class="donut-container">
+            <div class="donut" style="background: conic-gradient(
+              var(--green) 0deg 266.4deg,
+              var(--red) 266.4deg 360deg
+            );">
+              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 80px; height: 80px; border-radius: 50%; background: var(--navy-700);"></div>
+              <div class="donut-center">
+                <div class="donut-center-value">63</div>
+                <div class="donut-center-label">Trades</div>
+              </div>
+            </div>
+
+            <div class="donut-legend">
+              <div class="legend-item">
+                <span class="legend-color" style="background: var(--green);"></span>
+                BUY
+                <span class="legend-pct">74%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color" style="background: var(--red);"></span>
+                SELL
+                <span class="legend-pct">26%</span>
+              </div>
+              <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--white-08);">
+                <div class="legend-item" style="margin-bottom: 4px;">
+                  <span style="font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px;">Total Volume</span>
+                </div>
+                <div style="font-size: 18px; font-weight: 700; color: var(--white);">$25,100</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategy Performance Breakdown -->
+      <div class="card mb-24">
+        <div class="section-title mb-8">Strategy Breakdown</div>
+        <div class="section-subtitle">Performance comparison across your strategies</div>
+
+        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+          <!-- Alpha -->
+          <div style="flex: 1; min-width: 300px; padding: 16px; border: 1px solid var(--white-08); border-radius: var(--r-md); background: var(--white-03); position: relative; overflow: hidden;">
+            <!-- Triangle watermark -->
+            <div style="position: absolute; top: -10px; right: -10px; width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent; border-bottom: 50px solid rgba(18,204,255,0.04); transform: rotate(15deg);"></div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <div style="width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 12px solid var(--cyan);"></div>
+              <span style="font-size: 15px; font-weight: 700; color: var(--white);">Alpha Growth Fund</span>
+              <span style="font-size: 10px; color: var(--cyan); font-weight: 600; letter-spacing: 1.5px;">TRADE & INVEST</span>
+            </div>
+            <div style="display: flex; gap: 20px;">
+              <div>
+                <div style="font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">5-Mo P&L</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--green);">+$2,055</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">ROI</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--cyan);">+41.1%</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Invested</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--white);">$5,000</div>
+              </div>
+            </div>
+          </div>
+          <!-- Beta -->
+          <div style="flex: 1; min-width: 300px; padding: 16px; border: 1px solid var(--white-08); border-radius: var(--r-md); background: var(--white-03); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -10px; right: -10px; width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent; border-bottom: 50px solid rgba(175,71,255,0.04); transform: rotate(15deg);"></div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <div style="width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 12px solid var(--purple);"></div>
+              <span style="font-size: 15px; font-weight: 700; color: var(--white);">Beta Momentum Fund</span>
+              <span style="font-size: 10px; color: var(--purple); font-weight: 600; letter-spacing: 1.5px;">MOMENTUM</span>
+            </div>
+            <div style="display: flex; gap: 20px;">
+              <div>
+                <div style="font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">5-Mo P&L</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--green);">+$825</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">ROI</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--purple);">+41.3%</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; color: var(--white-50); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Invested</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--white);">$2,000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== BALANCE TAB ====== -->
+    <div class="tab-content" id="tab-balance">
+
+      <div class="perf-header">
+        <div class="perf-title">Balance</div>
+        <div class="vis-toggle">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="7" cy="7" r="3"/>
+            <path d="M1 7s2.5-4 6-4 6 4 6 4-2.5 4-6 4-6-4-6-4z"/>
+          </svg>
+          Visible
+        </div>
+      </div>
+
+      <!-- Balance Overview Cards -->
+      <div class="balance-cards mb-28">
+        <div class="balance-card">
+          <div class="tri-accent"></div>
+          <div class="tri-accent-2"></div>
+          <div class="stat-label">Total Invested</div>
+          <div class="stat-value white">$7,000</div>
+          <div class="stat-detail">Across 2 strategies</div>
+        </div>
+        <div class="balance-card">
+          <div class="tri-accent"></div>
+          <div class="stat-label">Total Return</div>
+          <div class="stat-value green">+$2,880</div>
+          <div class="stat-detail">Net P&L after fees</div>
+        </div>
+        <div class="balance-card">
+          <div class="tri-accent"></div>
+          <div class="stat-label">Portfolio ROI</div>
+          <div class="stat-value cyan">+41.14%</div>
+          <div class="stat-detail">Weighted average</div>
+        </div>
+      </div>
+
+      <!-- Investments List -->
+      <div class="section-title mb-8">My Investments</div>
+      <div class="section-subtitle">Active investment positions and their performance</div>
+
+      <!-- Investment 1: Alpha Growth -->
+      <div class="investment-row">
+        <div class="inv-left">
+          <div class="inv-icon cyan-bg">
+            <div class="tri-icon"></div>
+          </div>
+          <div>
+            <div class="inv-name">Alpha Growth Fund</div>
+            <div class="inv-type cyan">TRADE & INVEST</div>
+          </div>
+        </div>
+        <div class="inv-right">
+          <div>
+            <div class="inv-metric-label">Invested</div>
+            <div class="inv-metric-value white">$5,000</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">Return</div>
+            <div class="inv-metric-value green">+$2,055</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">ROI</div>
+            <div class="inv-metric-value cyan">+41.1%</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">High Water Mark</div>
+            <div class="inv-metric-value white">$10,420</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">Status</div>
+            <div><span class="badge deposit" style="background: rgba(0,230,138,0.1); color: var(--green);">● Active</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Investment 2: Beta Momentum -->
+      <div class="investment-row">
+        <div class="inv-left">
+          <div class="inv-icon purple-bg">
+            <div class="tri-icon"></div>
+          </div>
+          <div>
+            <div class="inv-name">Beta Momentum Fund</div>
+            <div class="inv-type purple">MOMENTUM</div>
+          </div>
+        </div>
+        <div class="inv-right">
+          <div>
+            <div class="inv-metric-label">Invested</div>
+            <div class="inv-metric-value white">$2,000</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">Return</div>
+            <div class="inv-metric-value green">+$825</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">ROI</div>
+            <div class="inv-metric-value purple">+41.3%</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">High Water Mark</div>
+            <div class="inv-metric-value white">$2,285</div>
+          </div>
+          <div>
+            <div class="inv-metric-label">Status</div>
+            <div><span class="badge deposit" style="background: rgba(0,230,138,0.1); color: var(--green);">● Active</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Capital Movements -->
+      <div class="section-title mb-8" style="margin-top: 28px;">Capital Movements</div>
+      <div class="section-subtitle">Deposits, withdrawals, and top-ups history</div>
+
+      <div class="card">
+        <table class="movements-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Strategy</th>
+              <th>Amount</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sep 15, 2025</td>
+              <td><span class="badge deposit"><span class="tri-sm"></span> Deposit</span></td>
+              <td>Alpha Growth Fund</td>
+              <td style="color: var(--green); font-weight: 700;">+$5,000</td>
+              <td style="color: var(--white-70);">Initial investment</td>
+            </tr>
+            <tr>
+              <td>Oct 1, 2025</td>
+              <td><span class="badge deposit"><span class="tri-sm"></span> Deposit</span></td>
+              <td>Beta Momentum Fund</td>
+              <td style="color: var(--green); font-weight: 700;">+$2,000</td>
+              <td style="color: var(--white-70);">Initial investment</td>
+            </tr>
+            <tr>
+              <td>Dec 10, 2025</td>
+              <td><span class="badge deposit"><span class="tri-sm"></span> Deposit</span></td>
+              <td>Alpha Growth Fund</td>
+              <td style="color: var(--green); font-weight: 700;">+$1,000</td>
+              <td style="color: var(--white-70);">Top-up during rally</td>
+            </tr>
+            <tr>
+              <td>Feb 15, 2026</td>
+              <td><span class="badge withdrawal"><span class="tri-sm"></span> Withdrawal</span></td>
+              <td>Alpha Growth Fund</td>
+              <td style="color: var(--red); font-weight: 700;">-$700</td>
+              <td style="color: var(--white-70);">Partial profit taking</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<script>
+// Tab switching
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById('tab-' + tabName).classList.add('active');
+
+  // Find the nav item that matches
+  const navItems = document.querySelectorAll('.nav-item');
+  const tabMap = { home: 0, performance: 1, balance: 2, investing: 3, wiki: 4, news: 5 };
+  if (tabMap[tabName] !== undefined) {
+    navItems[tabMap[tabName]].classList.add('active');
+  }
+}
+
+// Close strategy selector when clicking outside
+document.addEventListener('click', function(e) {
+  const sel = document.getElementById('stratSelector');
+  if (sel && !sel.contains(e.target)) {
+    sel.classList.remove('open');
+  }
+});
+
+// Pill button switching
+document.querySelectorAll('.pill-group').forEach(group => {
+  group.querySelectorAll('.pill-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      group.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+
+// Theme toggle
+function toggleTheme() {
+  const body = document.body;
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+
+  if (body.classList.contains('light')) {
+    body.classList.remove('light');
+    icon.innerHTML = '&#9790;'; // moon
+    label.textContent = 'Light';
+  } else {
+    body.classList.add('light');
+    icon.innerHTML = '&#9728;'; // sun
+    label.textContent = 'Dark';
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Fear & Greed Index</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * GREED PAGE — Fear & Greed Index
+ * Route: /greed (DEPRECATED as standalone)
+ * Auth required. Uses AppLayout.
+ *
+ * ROLE-WORKSPACE NOTE (V2):
+ * This page NO LONGER exists as a standalone sidebar item.
+ * It is embedded as the "Fear/Greed" sub-tab within the Analytics section
+ * of each role workspace's Trading tab:
+ *   - /workspace/{role}/trading → Analytics → Fear/Greed
+ * The content and API calls remain identical — only the navigation context changes.
+ * See role-workspaces.html for the tab structure.
+ *
+ * Layout: Gauge card (left) + Period summary (right) + Chart (full width below)
+ * API: useGetFearAndGreedIndexHistoryQuery()
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.page-subtitle {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 28px;
+}
+
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+/* Triangle accent */
+.card::before {
+  content: '';
+  position: absolute; top: -15px; right: -15px;
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--white-03);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+/* Top row: gauge + period summary */
+.top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* ---- GAUGE CARD ---- */
+.gauge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.gauge-wrapper {
+  position: relative;
+  width: 220px;
+  height: 130px;
+  margin-bottom: 24px;
+}
+
+/* SVG semicircle gauge */
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gauge-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 8px;
+}
+
+.gauge-value {
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.gauge-classification {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Color scale for gauge values */
+.extreme-fear { color: var(--red); }
+.fear { color: #FF7D3B; }
+.neutral-mood { color: var(--amber); }
+.greed { color: #7BCC00; }
+.extreme-greed { color: var(--green); }
+
+/* ---- PERIOD SUMMARY CARD ---- */
+.summary-card {
+  padding: 24px;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.stat-sub {
+  font-size: 12px;
+  color: var(--white-55);
+}
+
+/* Period pills */
+.pill-group {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+  border: 1px solid var(--white-08);
+  margin-bottom: 24px;
+}
+.pill-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--white-55);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.pill-btn.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ---- CHART CARD ---- */
+.chart-card {
+  padding: 24px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.chart-placeholder {
+  height: 300px;
+  background: var(--white-03);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-35);
+  font-size: 13px;
+}
+
+/* Chart legend */
+.chart-legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--white-55);
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Fear & Greed Index</h1>
+    <p class="page-subtitle">Bitcoin market sentiment indicator based on multiple data sources</p>
+
+    <div class="top-row">
+      <!-- Gauge -->
+      <div class="card gauge-card">
+        <div class="gauge-wrapper">
+          <!-- SVG semicircle gauge (red → orange → yellow → lime → green) -->
+          <svg class="gauge-svg" viewBox="0 0 220 130">
+            <!-- Background arc -->
+            <path d="M 20 120 A 90 90 0 0 1 200 120" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="14" stroke-linecap="round"/>
+            <!-- Colored arc segments -->
+            <path d="M 20 120 A 90 90 0 0 1 56 48" fill="none" stroke="#FF4D6A" stroke-width="14" stroke-linecap="round"/>
+            <path d="M 56 48 A 90 90 0 0 1 110 30" fill="none" stroke="#FF7D3B" stroke-width="14"/>
+            <path d="M 110 30 A 90 90 0 0 1 164 48" fill="none" stroke="#FFB020" stroke-width="14"/>
+            <path d="M 164 48 A 90 90 0 0 1 200 120" fill="none" stroke="#00E68A" stroke-width="14" stroke-linecap="round"/>
+            <!-- Needle indicator (pointing at ~72 = Greed) -->
+            <line x1="110" y1="120" x2="170" y2="55" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="110" cy="120" r="6" fill="white"/>
+          </svg>
+        </div>
+        <span class="gauge-label">Current Index</span>
+        <span class="gauge-value greed">72</span>
+        <span class="gauge-classification greed">Greed</span>
+      </div>
+
+      <!-- Period Summary -->
+      <div class="card summary-card">
+        <div class="pill-group">
+          <button class="pill-btn">1W</button>
+          <button class="pill-btn">1M</button>
+          <button class="pill-btn">3M</button>
+          <button class="pill-btn">1Y</button>
+          <button class="pill-btn active">All</button>
+        </div>
+
+        <div class="summary-stats">
+          <div>
+            <div class="stat-label">Average</div>
+            <div class="stat-value" style="font-size: 24px;">58</div>
+            <div class="stat-sub">Greed</div>
+          </div>
+          <div>
+            <div class="stat-label">BTC Price</div>
+            <div class="stat-value" style="font-size: 24px;">$94,200</div>
+            <div class="stat-sub">Current</div>
+          </div>
+          <div>
+            <div class="stat-label">High</div>
+            <div class="stat-value extreme-greed" style="font-size: 24px;">92</div>
+            <div class="stat-sub">Extreme Greed</div>
+          </div>
+          <div>
+            <div class="stat-label">Low</div>
+            <div class="stat-value extreme-fear" style="font-size: 24px;">15</div>
+            <div class="stat-sub">Extreme Fear</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="card chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">Historical Fear & Greed vs. BTC Price</h3>
+      </div>
+      <div class="chart-placeholder">
+        <!-- Recharts AreaChart with dual Y-axes -->
+        <!-- Left Y: Fear & Greed index (0-100), colored zones -->
+        <!-- Right Y: BTC price -->
+        <!-- X: dates -->
+        [Recharts AreaChart — Fear & Greed index (colored by zones) + BTC price overlay]
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--cyan);"></div>
+          Fear & Greed Index
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--purple);"></div>
+          BTC Price
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

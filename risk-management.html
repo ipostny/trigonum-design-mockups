@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Risk Management (Team + Actions + Policies)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --lime:   #81E70B;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * RISK MANAGEMENT TAB — Used by Team Lead, Senior Trader, and Risk Manager
+ *
+ * SUB-TABS: Team | Policies
+ *
+ * TEAM SUB-TAB:
+ * - Summary panel: Total Risk Now, Warnings, Forced Closures, Status chips
+ * - Filters: Period, Senior Trader (TL only), Policy, Coin/Market
+ * - Trader table with:
+ *   - Policy dropdown (inline, instant-save with confirmation)
+ *   - Risk budget progress bar (0-100%, color thresholds)
+ *   - Warning/Forced Closure counters (clickable → filtered trades popup)
+ *   - Open positions count (clickable)
+ *   - Action buttons: Meeting, Testing, Ban Trading, Ban Coins
+ * - Auto-refresh every 15-30s for live risk data
+ * - CSV export
+ *
+ * POLICIES SUB-TAB:
+ * - Existing policies list (from policy.html)
+ * - No changes from existing functionality
+ *
+ * SCOPE:
+ * - Team Lead: sees ALL traders
+ * - Senior Trader: sees own team
+ * - Risk Manager: sees assigned traders
+ *
+ * PERMISSIONS:
+ * - All three roles can: assign policy, assign meeting, assign testing, ban trading, ban coins
+ *
+ * ACTION BEHAVIORS:
+ * - Policy dropdown: instant-save with confirmation popup
+ * - Assign Meeting: popup with date picker + note field
+ * - Assign Testing: toggle with confirmation (blocks trading)
+ * - Ban Trading: toggle with confirmation
+ * - Ban Coins: multi-select coins popup
+ *
+ * APIs:
+ * - useGetRiskTeamQuery({ period, seniorTraderId?, policyId? })
+ * - useAssignPolicyMutation({ traderId, policyId })
+ * - useAssignMeetingMutation({ traderId, date, note })
+ * - useAssignTestingMutation({ traderId, enabled })
+ * - useBanTradingMutation({ traderId, enabled })
+ * - useBanCoinsMutation({ traderId, coins[] })
+ * - useGetTraderTradesQuery({ traderId, filters })
+ */
+
+.workspace { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 260px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 8px;
+}
+
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--white-92); }
+.logo-box { width: 28px; height: 28px; background: linear-gradient(135deg, var(--cyan), var(--purple)); border-radius: 6px; }
+.logo-text { font-size: 14px; font-weight: 700; }
+
+.role-tag {
+  display: inline-block; margin-top: 10px;
+  padding: 4px 10px; border-radius: var(--r-full);
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  background: rgba(255,176,32,0.15); color: var(--amber); border: 1px solid rgba(255,176,32,0.25);
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px; font-size: 13px; font-weight: 500;
+  color: var(--white-55); position: relative;
+}
+
+.nav-item.active { color: var(--white-92); background: var(--white-08); }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+}
+
+.main { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+/* Sub-tabs */
+.sub-tabs { display: flex; border-bottom: 1px solid var(--white-08); margin-bottom: 24px; }
+
+.sub-tab {
+  padding: 12px 24px; font-size: 13px; font-weight: 600;
+  color: var(--white-55); background: none; border: none; cursor: pointer; position: relative;
+}
+
+.sub-tab:hover { color: var(--white-75); }
+.sub-tab.active { color: var(--white-92); }
+.sub-tab.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple)); border-radius: 2px;
+}
+
+/* Summary panel */
+.summary-panel {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+}
+
+.summary-card .label { font-size: 11px; color: var(--white-55); margin-bottom: 6px; }
+.summary-card .value { font-size: 24px; font-weight: 800; }
+.summary-card .sub { font-size: 12px; color: var(--white-55); margin-top: 4px; }
+
+.status-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+
+.status-chip {
+  font-size: 10px; font-weight: 700; padding: 4px 10px;
+  border-radius: var(--r-full); cursor: pointer;
+}
+
+.status-chip.testing { background: rgba(255,176,32,0.15); color: var(--amber); }
+.status-chip.banned { background: rgba(255,77,106,0.15); color: var(--red); }
+.status-chip.coin-ban { background: rgba(175,51,255,0.15); color: var(--purple); }
+
+/* Filters */
+.filters-row {
+  display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+}
+
+.filter-select {
+  background: var(--navy-700); color: var(--white-75);
+  border: 1px solid var(--white-15); border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 12px; font-family: var(--font);
+}
+
+.btn-export {
+  margin-left: auto;
+  padding: 8px 16px; font-size: 12px; font-weight: 600;
+  background: none; border: 1px solid var(--white-15);
+  color: var(--white-55); border-radius: var(--r-sm); cursor: pointer;
+}
+
+.btn-export:hover { color: var(--white-75); border-color: var(--white-35); }
+
+/* Auto-refresh indicator */
+.refresh-indicator {
+  font-size: 11px; color: var(--white-35);
+  display: flex; align-items: center; gap: 6px;
+}
+
+.refresh-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Risk table */
+.risk-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+
+.risk-table th {
+  text-align: left; padding: 12px 10px;
+  font-size: 11px; font-weight: 600; color: var(--white-55);
+  letter-spacing: 0.5px; text-transform: uppercase;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+  white-space: nowrap;
+}
+
+.risk-table td {
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+  vertical-align: middle;
+}
+
+.risk-table tr:hover > td { background: var(--white-03); }
+
+/* Trader name link */
+.trader-name { color: var(--cyan); font-weight: 600; cursor: pointer; text-decoration: none; }
+.trader-name:hover { text-decoration: underline; }
+
+/* Policy dropdown */
+.policy-select {
+  background: var(--navy-700); color: var(--white-75);
+  border: 1px solid var(--white-15); border-radius: var(--r-sm);
+  padding: 6px 10px; font-size: 12px; font-family: var(--font);
+  cursor: pointer; width: 130px;
+}
+
+/* Progress bar */
+.progress-bar-container {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.progress-bar {
+  flex: 1; height: 8px;
+  background: var(--white-08); border-radius: 4px;
+  overflow: hidden; min-width: 80px;
+}
+
+.progress-bar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-bar-fill.low { background: var(--green); }
+.progress-bar-fill.medium { background: var(--amber); }
+.progress-bar-fill.high { background: var(--red); }
+
+.progress-label { font-size: 11px; color: var(--white-55); min-width: 36px; text-align: right; }
+
+/* Clickable counters */
+.counter-link {
+  cursor: pointer; font-weight: 600; text-decoration: none;
+}
+
+.counter-link:hover { text-decoration: underline; }
+.counter-link.warn { color: var(--amber); }
+.counter-link.danger { color: var(--red); }
+.counter-link.info { color: var(--cyan); }
+.counter-link.zero { color: var(--white-35); }
+
+/* Action buttons */
+.action-group { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.action-btn {
+  font-size: 10px; font-weight: 600; padding: 4px 8px;
+  border-radius: 4px; cursor: pointer; white-space: nowrap;
+  border: 1px solid var(--white-15); background: none;
+}
+
+.action-btn:hover { border-color: var(--white-35); }
+.action-btn.meeting { color: var(--white-55); }
+.action-btn.meeting:hover { color: var(--cyan); }
+.action-btn.testing { color: var(--amber); }
+.action-btn.testing.active { background: rgba(255,176,32,0.1); border-color: rgba(255,176,32,0.3); }
+.action-btn.ban { color: var(--red); }
+.action-btn.ban.active { background: rgba(255,77,106,0.1); border-color: rgba(255,77,106,0.3); }
+.action-btn.coins { color: var(--purple); }
+
+/* Toggle switch */
+.toggle {
+  width: 36px; height: 20px;
+  background: var(--white-15); border-radius: 10px;
+  position: relative; cursor: pointer;
+  border: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: white; border-radius: 50%;
+  transition: left 0.2s;
+}
+
+.toggle.on { background: var(--red); }
+.toggle.on::after { left: 18px; }
+
+/* ============================================================
+   CONFIRMATION POPUP (for policy change, ban, testing)
+   ============================================================ */
+
+.confirm-popup {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--navy-800);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  width: 420px;
+  box-shadow: var(--shadow-elevated);
+  z-index: 1000;
+}
+
+.confirm-popup .title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+.confirm-popup .desc { font-size: 13px; color: var(--white-55); line-height: 1.6; margin-bottom: 20px; }
+
+.confirm-popup .actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+.btn-confirm {
+  padding: 8px 20px; font-size: 13px; font-weight: 600;
+  border: none; border-radius: var(--r-sm); cursor: pointer;
+}
+
+.btn-confirm.danger { background: var(--red); color: white; }
+.btn-confirm.primary { background: var(--cyan); color: var(--navy-900); }
+.btn-confirm.secondary { background: none; border: 1px solid var(--white-15); color: var(--white-55); }
+
+/* ============================================================
+   MEETING POPUP
+   ============================================================ */
+
+.meeting-popup {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--navy-800);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  width: 440px;
+  box-shadow: var(--shadow-elevated);
+  z-index: 1000;
+}
+
+.form-field { margin-bottom: 16px; }
+.form-field .label { font-size: 12px; color: var(--white-55); margin-bottom: 6px; }
+.form-field input, .form-field textarea {
+  width: 100%;
+  background: var(--navy-700); color: var(--white-75);
+  border: 1px solid var(--white-15); border-radius: var(--r-sm);
+  padding: 10px 14px; font-size: 13px; font-family: var(--font);
+}
+.form-field textarea { height: 80px; resize: vertical; }
+
+/* Overlay for popups */
+.popup-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6); z-index: 999;
+}
+
+/* RM action log link */
+.action-log-link {
+  font-size: 12px; color: var(--white-35);
+  margin-top: 16px; text-align: right;
+}
+
+.action-log-link a { color: var(--cyan); text-decoration: none; }
+.action-log-link a:hover { text-decoration: underline; }
+
+/* Pagination */
+.pagination {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 16px; font-size: 12px; color: var(--white-55);
+}
+
+/* Section divider */
+.section-divider {
+  margin: 48px 0; border-top: 2px dashed var(--white-15); padding-top: 32px;
+}
+.section-divider-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--white-35);
+  text-align: center; margin-bottom: 24px;
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="workspace">
+  <!-- Sidebar (Risk Manager view shown) -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <a class="logo">
+        <div class="logo-box"></div>
+        <span class="logo-text">TrigonumTrade</span>
+      </a>
+      <div class="role-tag">Risk Manager</div>
+    </div>
+    <div class="nav-item active">🛡️ Risk Management</div>
+    <div class="nav-item">📊 Analytics</div>
+    <div class="nav-item">📈 Trading</div>
+    <div class="nav-item">🏆 Performance</div>
+  </div>
+
+  <div class="main">
+    <!-- Sub-tabs -->
+    <div class="sub-tabs">
+      <button class="sub-tab active">Team</button>
+      <button class="sub-tab">Policies</button>
+    </div>
+
+    <!-- Summary Panel -->
+    <div class="summary-panel">
+      <div class="summary-card">
+        <div class="label">Total Risk Now (to SL)</div>
+        <div class="value" style="color:var(--amber);">$34,650</div>
+        <div class="sub">3.2% of total capital</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Warnings (This Week)</div>
+        <div class="value" style="cursor:pointer;">
+          <span class="counter-link warn">12</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Forced Closures</div>
+        <div class="value" style="cursor:pointer;">
+          <span class="counter-link danger">3</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Restriction Status</div>
+        <div class="status-chips">
+          <span class="status-chip testing">Testing: 1</span>
+          <span class="status-chip banned">Banned: 1</span>
+          <span class="status-chip coin-ban">Coin Ban: 2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-row">
+      <select class="filter-select">
+        <option>Period: Week</option>
+        <option>Day</option>
+        <option>Month</option>
+        <option>Quarter</option>
+        <option>Year</option>
+      </select>
+      <select class="filter-select">
+        <option>All Policies</option>
+        <option>Conservative</option>
+        <option>Moderate</option>
+        <option>Aggressive</option>
+      </select>
+      <select class="filter-select">
+        <option>All Statuses</option>
+        <option>Has Warnings</option>
+        <option>Testing Assigned</option>
+        <option>Trading Banned</option>
+        <option>Coin Restrictions</option>
+      </select>
+      <div class="refresh-indicator">
+        <span class="refresh-dot"></span> Auto-refreshing every 15s
+      </div>
+      <button class="btn-export">Export CSV</button>
+    </div>
+
+    <!-- Risk Team Table -->
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th>Trader</th>
+          <th>RM Policy</th>
+          <th>Risk Now (to SL)</th>
+          <th>Risk Budget</th>
+          <th>Warnings</th>
+          <th>Forced Close</th>
+          <th>Positions</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Trader 1: Healthy -->
+        <tr>
+          <td><a class="trader-name">Dmitry Volkov</a></td>
+          <td>
+            <select class="policy-select">
+              <option selected>Conservative</option>
+              <option>Moderate</option>
+              <option>Aggressive</option>
+            </select>
+          </td>
+          <td>$4,200</td>
+          <td>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div class="progress-bar-fill low" style="width:28%;"></div>
+              </div>
+              <span class="progress-label">28%</span>
+            </div>
+          </td>
+          <td><span class="counter-link warn">3</span></td>
+          <td><span class="counter-link zero">0</span></td>
+          <td><span class="counter-link info">4</span></td>
+          <td>
+            <div class="action-group">
+              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn testing">Test</button>
+              <button class="action-btn ban">Ban</button>
+              <button class="action-btn coins">Coins</button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Trader 2: High risk, has warnings -->
+        <tr>
+          <td><a class="trader-name">Anna Sokolova</a></td>
+          <td>
+            <select class="policy-select">
+              <option>Conservative</option>
+              <option selected>Moderate</option>
+              <option>Aggressive</option>
+            </select>
+          </td>
+          <td style="color:var(--amber);font-weight:600;">$8,900</td>
+          <td>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div class="progress-bar-fill medium" style="width:68%;"></div>
+              </div>
+              <span class="progress-label" style="color:var(--amber);">68%</span>
+            </div>
+          </td>
+          <td><span class="counter-link warn">5</span></td>
+          <td><span class="counter-link danger">2</span></td>
+          <td><span class="counter-link info">3</span></td>
+          <td>
+            <div class="action-group">
+              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn testing active">Testing</button>
+              <button class="action-btn ban">Ban</button>
+              <button class="action-btn coins">Coins</button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Trader 3: Critical risk -->
+        <tr>
+          <td><a class="trader-name">Igor Morozov</a></td>
+          <td>
+            <select class="policy-select">
+              <option>Conservative</option>
+              <option>Moderate</option>
+              <option selected>Aggressive</option>
+            </select>
+          </td>
+          <td style="color:var(--red);font-weight:600;">$14,200</td>
+          <td>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div class="progress-bar-fill high" style="width:92%;"></div>
+              </div>
+              <span class="progress-label" style="color:var(--red);">92%</span>
+            </div>
+          </td>
+          <td><span class="counter-link warn">4</span></td>
+          <td><span class="counter-link danger">1</span></td>
+          <td><span class="counter-link info">6</span></td>
+          <td>
+            <div class="action-group">
+              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn testing">Test</button>
+              <button class="action-btn ban active">Banned</button>
+              <button class="action-btn coins">BTC, ETH</button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Trader 4: Clean -->
+        <tr>
+          <td><a class="trader-name">Olga Petrova</a></td>
+          <td>
+            <select class="policy-select">
+              <option selected>Conservative</option>
+              <option>Moderate</option>
+              <option>Aggressive</option>
+            </select>
+          </td>
+          <td>$1,800</td>
+          <td>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div class="progress-bar-fill low" style="width:15%;"></div>
+              </div>
+              <span class="progress-label">15%</span>
+            </div>
+          </td>
+          <td><span class="counter-link zero">0</span></td>
+          <td><span class="counter-link zero">0</span></td>
+          <td><span class="counter-link info">2</span></td>
+          <td>
+            <div class="action-group">
+              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn testing">Test</button>
+              <button class="action-btn ban">Ban</button>
+              <button class="action-btn coins">Coins</button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Trader 5 -->
+        <tr>
+          <td><a class="trader-name">Pavel Sidorov</a></td>
+          <td>
+            <select class="policy-select">
+              <option>Conservative</option>
+              <option selected>Moderate</option>
+              <option>Aggressive</option>
+            </select>
+          </td>
+          <td>$5,550</td>
+          <td>
+            <div class="progress-bar-container">
+              <div class="progress-bar">
+                <div class="progress-bar-fill medium" style="width:52%;"></div>
+              </div>
+              <span class="progress-label">52%</span>
+            </div>
+          </td>
+          <td><span class="counter-link zero">0</span></td>
+          <td><span class="counter-link zero">0</span></td>
+          <td><span class="counter-link info">3</span></td>
+          <td>
+            <div class="action-group">
+              <button class="action-btn meeting">Meeting</button>
+              <button class="action-btn testing">Test</button>
+              <button class="action-btn ban">Ban</button>
+              <button class="action-btn coins">Coins</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="action-log-link">
+      <a href="#">View RM Action Log →</a>
+    </div>
+
+    <!-- ============================================================
+         POPUPS — Shown when triggered by actions
+         ============================================================ -->
+
+    <!-- POPUP 1: Assign Meeting -->
+    <div class="section-divider">
+      <div class="section-divider-label">Popup: Assign Meeting</div>
+    </div>
+
+    <div style="max-width:440px;">
+      <div class="meeting-popup" style="position:relative;top:auto;left:auto;transform:none;">
+        <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Assign Meeting</div>
+        <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
+          Schedule a meeting with <strong style="color:var(--white-92);">Anna Sokolova</strong>
+        </div>
+        <div class="form-field">
+          <div class="label">Date & Time</div>
+          <input type="datetime-local" value="2026-03-07T10:00" />
+        </div>
+        <div class="form-field">
+          <div class="label">Notes</div>
+          <textarea placeholder="Reason for meeting, topics to discuss...">Review recent forced closures and discuss risk limits adjustment.</textarea>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button class="btn-confirm secondary">Cancel</button>
+          <button class="btn-confirm primary">Schedule Meeting</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POPUP 2: Ban Confirmation -->
+    <div class="section-divider">
+      <div class="section-divider-label">Popup: Ban Trading Confirmation</div>
+    </div>
+
+    <div style="max-width:420px;">
+      <div class="confirm-popup" style="position:relative;top:auto;left:auto;transform:none;">
+        <div class="title">Ban Trading</div>
+        <div class="desc">
+          Are you sure you want to <strong style="color:var(--red);">ban trading</strong> for <strong>Igor Morozov</strong>?
+          <br><br>
+          This will immediately prevent the trader from opening new positions. Existing positions will NOT be closed automatically.
+        </div>
+        <div class="actions">
+          <button class="btn-confirm secondary">Cancel</button>
+          <button class="btn-confirm danger">Ban Trading</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POPUP 3: Ban Coins (multi-select) -->
+    <div class="section-divider">
+      <div class="section-divider-label">Popup: Ban Specific Coins</div>
+    </div>
+
+    <div style="max-width:440px;">
+      <div class="meeting-popup" style="position:relative;top:auto;left:auto;transform:none;">
+        <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Ban Coins — Igor Morozov</div>
+        <div style="font-size:13px;color:var(--white-55);margin-bottom:16px;">
+          Select coins the trader is NOT allowed to trade:
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,77,106,0.1);border:1px solid rgba(255,77,106,0.3);border-radius:var(--r-full);font-size:12px;color:var(--red);cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:var(--red);"> BTC
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,77,106,0.1);border:1px solid rgba(255,77,106,0.3);border-radius:var(--r-full);font-size:12px;color:var(--red);cursor:pointer;">
+            <input type="checkbox" checked style="accent-color:var(--red);"> ETH
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+            <input type="checkbox"> SOL
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+            <input type="checkbox"> AVAX
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+            <input type="checkbox"> DOGE
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-full);font-size:12px;color:var(--white-55);cursor:pointer;">
+            <input type="checkbox"> XRP
+          </label>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button class="btn-confirm secondary">Cancel</button>
+          <button class="btn-confirm primary">Save Coin Bans</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POPUP 4: Policy Change Confirmation -->
+    <div class="section-divider">
+      <div class="section-divider-label">Popup: Policy Change Confirmation</div>
+    </div>
+
+    <div style="max-width:420px;">
+      <div class="confirm-popup" style="position:relative;top:auto;left:auto;transform:none;">
+        <div class="title">Change RM Policy</div>
+        <div class="desc">
+          Change policy for <strong>Dmitry Volkov</strong> from <strong>Conservative</strong> to <strong>Moderate</strong>?
+          <br><br>
+          This will immediately apply the new risk limits.
+        </div>
+        <div class="actions">
+          <button class="btn-confirm secondary">Cancel</button>
+          <button class="btn-confirm primary">Apply Policy</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

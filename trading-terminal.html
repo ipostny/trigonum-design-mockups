@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Trading Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * TRADING TERMINAL — Full-featured trading interface
+ * Route: /terminal (standalone) + embedded in role workspaces
+ * Auth required. Uses AppLayout. Trader/Admin role.
+ *
+ * ROLE-WORKSPACE NOTE (V2):
+ * This page is ALSO embedded as the "Trading" tab content within each role workspace:
+ *   - /workspace/team-lead/trading → Terminal sub-tab
+ *   - /workspace/senior-trader/trading → Terminal sub-tab
+ *   - /workspace/trader/trading → Terminal sub-tab
+ *   - /workspace/risk-manager/trading → Terminal sub-tab
+ * The Trading tab has two sub-tabs: Terminal (this page) | Analytics (CMP, L/S, Greed, News, Liquidation Map).
+ * No changes needed to this mockup — it renders identically in both contexts.
+ * See role-workspaces.html for the tab structure.
+ *
+ * LAYOUT (3-column):
+ * - Left: TradingView chart (takes most width)
+ * - Right sidebar: Order form + position info
+ * - Bottom: Open orders / Position history tabs
+ *
+ * FEATURES:
+ * - TradingView Advanced Chart widget (real-time via WebSocket)
+ * - Symbol selector (dropdown with search)
+ * - Account selector (trade account dropdown)
+ * - Order form:
+ *   - Order type tabs: Market, Limit, Stop
+ *   - Side toggle: Buy (green) / Sell (red)
+ *   - Quantity input with quick-fill buttons (25%, 50%, 75%, 100%)
+ *   - Price input (for Limit/Stop)
+ *   - TP/SL inputs (optional, expandable)
+ *   - Leverage slider
+ *   - Order value display (calculated)
+ *   - Submit button
+ * - Position panel (current open position for selected symbol)
+ * - Open orders table (bottom panel)
+ * - Order confirmation dialog
+ *
+ * APIs:
+ * - WebSocket: real-time price, orderbook, position updates
+ * - useGetOpenOrdersQuery
+ * - useGetPositionsQuery
+ * - usePlaceOrderMutation
+ * - useCancelOrderMutation
+ * - useModifyOrderMutation
+ * - useSetLeverageMutation
+ *
+ * TradingView:
+ * - Advanced Charts library (self-hosted)
+ * - Custom datafeed connecting to Bybit via backend proxy
+ * - Chart state persisted in localStorage
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+
+/* Terminal uses full available space */
+.terminal-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: auto 1fr auto;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* Top bar */
+.terminal-top-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--white-08);
+  background: var(--navy-800);
+}
+
+.symbol-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+.symbol-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+.symbol-arrow { color: var(--white-55); font-size: 10px; }
+
+.ticker-info {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.ticker-price {
+  font-size: 20px;
+  font-weight: 800;
+}
+.ticker-change {
+  font-size: 12px;
+  font-weight: 600;
+}
+.ticker-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ticker-stat-label {
+  font-size: 10px;
+  color: var(--white-55);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ticker-stat-value {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.account-selector {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.account-select {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 6px 12px;
+  color: var(--white-92);
+  font-size: 12px;
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+/* Chart area */
+.chart-panel {
+  grid-column: 1;
+  grid-row: 2;
+  background: var(--navy-900);
+  border-right: 1px solid var(--white-08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-35);
+  font-size: 14px;
+  min-height: 400px;
+}
+
+/* Right sidebar — order form + position */
+.order-panel {
+  grid-column: 2;
+  grid-row: 2;
+  background: var(--navy-800);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.order-form {
+  padding: 16px;
+  flex: 1;
+}
+
+/* Order type tabs */
+.order-type-tabs {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-md);
+  padding: 3px;
+  margin-bottom: 16px;
+}
+.order-type-btn {
+  flex: 1;
+  padding: 7px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--white-55);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+.order-type-btn.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
+
+/* Buy/Sell toggle */
+.side-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.side-btn {
+  padding: 10px;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+}
+.side-btn.buy {
+  background: rgba(0,230,138,0.15);
+  color: var(--green);
+  border: 1px solid rgba(0,230,138,0.3);
+}
+.side-btn.buy.active {
+  background: var(--green);
+  color: var(--navy-900);
+}
+.side-btn.sell {
+  background: rgba(255,77,106,0.1);
+  color: var(--red);
+  border: 1px solid rgba(255,77,106,0.2);
+}
+.side-btn.sell.active {
+  background: var(--red);
+  color: white;
+}
+
+/* Form fields */
+.order-field {
+  margin-bottom: 12px;
+}
+.order-field-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--white-55);
+  margin-bottom: 4px;
+}
+.order-field-hint {
+  font-weight: 400;
+  color: var(--white-35);
+}
+
+.order-input-wrapper {
+  position: relative;
+}
+.order-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 8px 40px 8px 12px;
+  color: var(--white-92);
+  font-size: 14px;
+  width: 100%;
+  font-weight: 500;
+}
+.order-input:focus { outline: none; border-color: var(--cyan); }
+.order-input-unit {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--white-35);
+  font-weight: 600;
+}
+
+/* Quick fill buttons */
+.quick-fill {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+.quick-btn {
+  flex: 1;
+  padding: 4px;
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--white-55);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.quick-btn:hover { background: var(--white-05); color: var(--white-75); }
+
+/* Leverage slider */
+.leverage-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.leverage-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--white-55);
+}
+.leverage-slider {
+  flex: 1;
+  height: 4px;
+  background: var(--white-08);
+  border-radius: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.leverage-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--cyan);
+  cursor: pointer;
+}
+.leverage-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* TP/SL expandable */
+.tpsl-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--white-55);
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.tpsl-toggle:hover { color: var(--white-75); }
+
+.tpsl-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Order summary */
+.order-summary {
+  background: var(--white-03);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+}
+.summary-label { color: var(--white-55); }
+.summary-value { font-weight: 600; }
+
+/* Submit button */
+.btn-place-order {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.btn-place-order.buy {
+  background: var(--green);
+  color: var(--navy-900);
+}
+.btn-place-order.sell {
+  background: var(--red);
+  color: white;
+}
+
+/* Current position mini-panel */
+.position-panel {
+  padding: 12px 16px;
+  border-top: 1px solid var(--white-08);
+  background: var(--white-03);
+}
+.position-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.position-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--white-55);
+}
+.position-side {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}
+.position-side.long { background: rgba(0,230,138,0.15); color: var(--green); }
+.position-side.short { background: rgba(255,77,106,0.1); color: var(--red); }
+
+.position-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.position-stat-label {
+  font-size: 10px;
+  color: var(--white-55);
+}
+.position-stat-value {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-close-position {
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  border: 1px solid rgba(255,77,106,0.3);
+  border-radius: var(--r-sm);
+  background: rgba(255,77,106,0.1);
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Bottom panel — Open Orders */
+.bottom-panel {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  background: var(--navy-800);
+  border-top: 1px solid var(--white-08);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.bottom-tabs {
+  display: flex;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--white-08);
+}
+.bottom-tab {
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.bottom-tab.active { color: var(--white-92); }
+.bottom-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: var(--cyan);
+}
+.bottom-tab .tab-count {
+  margin-left: 4px;
+  font-size: 10px;
+  background: var(--white-08);
+  padding: 1px 6px;
+  border-radius: var(--r-full);
+}
+
+.orders-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.orders-table th {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55); padding: 8px 12px; text-align: left;
+  position: sticky; top: 0; background: var(--navy-800);
+}
+.orders-table td {
+  font-size: 12px; padding: 8px 12px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.orders-table tr:hover td { background: var(--white-03); }
+
+.btn-cancel-order {
+  padding: 3px 10px;
+  border: 1px solid rgba(255,77,106,0.3);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Confirm dialog */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.confirm-card {
+  background: var(--navy-700);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  width: 380px;
+  box-shadow: var(--shadow-elevated);
+}
+.confirm-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.confirm-details {
+  margin-bottom: 20px;
+}
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.confirm-label { color: var(--white-55); }
+.confirm-value { font-weight: 600; }
+.confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-confirm-cancel {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--white-75);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-confirm-place {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-confirm-place.buy { background: var(--green); color: var(--navy-900); }
+.btn-confirm-place.sell { background: var(--red); color: white; }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <div class="terminal-layout">
+    <!-- Top Bar -->
+    <div class="terminal-top-bar">
+      <div class="symbol-selector">
+        <span class="symbol-name">BTCUSDT</span>
+        <span class="symbol-arrow">&#9660;</span>
+      </div>
+
+      <div class="ticker-info">
+        <span class="ticker-price" style="color:var(--green);">85,142.50</span>
+        <span class="ticker-change" style="color:var(--green);">+2.34%</span>
+
+        <div class="ticker-stat">
+          <span class="ticker-stat-label">24h High</span>
+          <span class="ticker-stat-value">86,200.00</span>
+        </div>
+        <div class="ticker-stat">
+          <span class="ticker-stat-label">24h Low</span>
+          <span class="ticker-stat-value">82,450.00</span>
+        </div>
+        <div class="ticker-stat">
+          <span class="ticker-stat-label">24h Vol</span>
+          <span class="ticker-stat-value">$4.2B</span>
+        </div>
+      </div>
+
+      <div class="account-selector">
+        <span style="font-size:11px;color:var(--white-55);">Account:</span>
+        <select class="account-select">
+          <option>Bybit Main</option>
+          <option>Bybit Sub-1</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-panel">
+      [TradingView Advanced Chart Widget — Full-featured candlestick chart with drawing tools, indicators, and timeframe selector]
+    </div>
+
+    <!-- Order Form Sidebar -->
+    <div class="order-panel">
+      <div class="order-form">
+        <!-- Order Type -->
+        <div class="order-type-tabs">
+          <button class="order-type-btn active">Market</button>
+          <button class="order-type-btn">Limit</button>
+          <button class="order-type-btn">Stop</button>
+        </div>
+
+        <!-- Buy/Sell -->
+        <div class="side-toggle">
+          <button class="side-btn buy active">Buy / Long</button>
+          <button class="side-btn sell">Sell / Short</button>
+        </div>
+
+        <!-- Price (for Limit/Stop, hidden for Market) -->
+        <!--
+        <div class="order-field">
+          <div class="order-field-label">
+            <span>Price</span>
+            <span class="order-field-hint">Last: 85,142.50</span>
+          </div>
+          <div class="order-input-wrapper">
+            <input class="order-input" type="number" value="85000">
+            <span class="order-input-unit">USDT</span>
+          </div>
+        </div>
+        -->
+
+        <!-- Quantity -->
+        <div class="order-field">
+          <div class="order-field-label">
+            <span>Quantity</span>
+            <span class="order-field-hint">Available: 0.582 BTC</span>
+          </div>
+          <div class="order-input-wrapper">
+            <input class="order-input" type="number" placeholder="0.000" value="0.100">
+            <span class="order-input-unit">BTC</span>
+          </div>
+          <div class="quick-fill">
+            <button class="quick-btn">25%</button>
+            <button class="quick-btn">50%</button>
+            <button class="quick-btn">75%</button>
+            <button class="quick-btn">100%</button>
+          </div>
+        </div>
+
+        <!-- Leverage -->
+        <div class="leverage-row">
+          <span class="leverage-label">Leverage</span>
+          <input class="leverage-slider" type="range" min="1" max="100" value="10">
+          <span class="leverage-value">10x</span>
+        </div>
+
+        <!-- TP/SL -->
+        <div class="tpsl-toggle">&#9660; Take Profit / Stop Loss</div>
+        <div class="tpsl-fields">
+          <div class="order-field" style="margin-bottom:0;">
+            <div class="order-field-label"><span>TP Price</span></div>
+            <div class="order-input-wrapper">
+              <input class="order-input" type="number" placeholder="—">
+              <span class="order-input-unit">USDT</span>
+            </div>
+          </div>
+          <div class="order-field" style="margin-bottom:0;">
+            <div class="order-field-label"><span>SL Price</span></div>
+            <div class="order-input-wrapper">
+              <input class="order-input" type="number" placeholder="—">
+              <span class="order-input-unit">USDT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <div class="summary-row">
+            <span class="summary-label">Order Value</span>
+            <span class="summary-value">$8,514.25</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Margin Required</span>
+            <span class="summary-value">$851.43</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Est. Fee</span>
+            <span class="summary-value">$5.11</span>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button class="btn-place-order buy">Buy / Long BTCUSDT</button>
+      </div>
+
+      <!-- Current Position -->
+      <div class="position-panel">
+        <div class="position-header">
+          <span class="position-title">Open Position</span>
+          <span class="position-side long">Long</span>
+        </div>
+        <div class="position-grid">
+          <div>
+            <div class="position-stat-label">Size</div>
+            <div class="position-stat-value">0.5 BTC</div>
+          </div>
+          <div>
+            <div class="position-stat-label">Entry Price</div>
+            <div class="position-stat-value">$84,200.00</div>
+          </div>
+          <div>
+            <div class="position-stat-label">Mark Price</div>
+            <div class="position-stat-value">$85,142.50</div>
+          </div>
+          <div>
+            <div class="position-stat-label">Unrealized PnL</div>
+            <div class="position-stat-value" style="color:var(--green);">+$471.25</div>
+          </div>
+          <div>
+            <div class="position-stat-label">Leverage</div>
+            <div class="position-stat-value">10x</div>
+          </div>
+          <div>
+            <div class="position-stat-label">Liq. Price</div>
+            <div class="position-stat-value" style="color:var(--red);">$75,960.00</div>
+          </div>
+        </div>
+        <button class="btn-close-position">Close Position</button>
+      </div>
+    </div>
+
+    <!-- Bottom Panel — Open Orders -->
+    <div class="bottom-panel">
+      <div class="bottom-tabs">
+        <button class="bottom-tab active">Open Orders <span class="tab-count">3</span></button>
+        <button class="bottom-tab">Order History</button>
+        <button class="bottom-tab">Trades</button>
+      </div>
+
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Side</th>
+            <th>Type</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Filled</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">BTCUSDT</td>
+            <td style="color:var(--green);font-weight:600;">Buy</td>
+            <td>Limit</td>
+            <td>0.2</td>
+            <td>$84,000.00</td>
+            <td>0%</td>
+            <td>New</td>
+            <td>14:35:22</td>
+            <td><button class="btn-cancel-order">Cancel</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">ETHUSDT</td>
+            <td style="color:var(--red);font-weight:600;">Sell</td>
+            <td>Limit</td>
+            <td>5.0</td>
+            <td>$3,500.00</td>
+            <td>0%</td>
+            <td>New</td>
+            <td>13:22:10</td>
+            <td><button class="btn-cancel-order">Cancel</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">SOLUSDT</td>
+            <td style="color:var(--green);font-weight:600;">Buy</td>
+            <td>Stop</td>
+            <td>50.0</td>
+            <td>$152.00</td>
+            <td>0%</td>
+            <td>New</td>
+            <td>12:15:44</td>
+            <td><button class="btn-cancel-order">Cancel</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ORDER CONFIRMATION DIALOG ===== -->
+<!--
+<div class="confirm-overlay">
+  <div class="confirm-card">
+    <h2 class="confirm-title">Confirm Order</h2>
+    <div class="confirm-details">
+      <div class="confirm-row">
+        <span class="confirm-label">Symbol</span>
+        <span class="confirm-value">BTCUSDT</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Side</span>
+        <span class="confirm-value" style="color:var(--green);">Buy / Long</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Type</span>
+        <span class="confirm-value">Market</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Quantity</span>
+        <span class="confirm-value">0.100 BTC</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Leverage</span>
+        <span class="confirm-value">10x</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Est. Value</span>
+        <span class="confirm-value">$8,514.25</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Est. Fee</span>
+        <span class="confirm-value">$5.11</span>
+      </div>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn-confirm-cancel">Cancel</button>
+      <button class="btn-confirm-place buy">Place Order</button>
+    </div>
+  </div>
+</div>
+-->
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

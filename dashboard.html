@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --lime:   #81E70B;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * DASHBOARD PAGE — Main overview after login
+ * Route: /dashboard
+ * Auth required. Uses AppLayout.
+ * Investor users get redirected to /investor.
+ *
+ * ROLE-WORKSPACE REDIRECT (V2):
+ * Dashboard is the GENERIC landing page. After login, role-specific users
+ * are automatically redirected to their dedicated workspace:
+ *   - TEAM_LEAD    → /workspace/team-lead
+ *   - SENIOR_TRADER → /workspace/senior-trader
+ *   - TRADER        → /workspace/trader
+ *   - RISK_MANAGER  → /workspace/risk-manager
+ *   - INVESTOR      → /investor
+ *   - ADMINISTRATOR → /dashboard (this page — only admins see it)
+ * See role-workspaces.html for workspace layouts.
+ *
+ * Widgets:
+ * 1. Balance card (if verified + trade/manage_investments privilege)
+ * 2. DDP day limits (from useReadDdpStatusQuery)
+ * 3. Fear & Greed widgets (Coinglass + BTCTools)
+ * 4. Optional: Manage Investments button (header action, if verified + manage_investments)
+ * 5. Optional: "Complete investor form" alert (if not verified + manage_investments)
+ *
+ * APIs:
+ * - useGetFearAndGreedIndexHistoryQuery (Coinglass)
+ * - useGetFearAndGreedIndexQuery (BTCTools)
+ * - useReadDdpStatusQuery (day limits)
+ * - useGetUserFormQuery (investor form status)
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Page header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Alert banner */
+.alert-info {
+  background: rgba(18,204,255,0.08);
+  border: 1px solid rgba(18,204,255,0.2);
+  border-radius: var(--r-md);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: var(--white-75);
+}
+.alert-info .alert-action {
+  background: transparent;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 6px 14px;
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Widget grid */
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Card base */
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+.card:hover { transform: translateY(-2px); }
+.card::before {
+  content: '';
+  position: absolute; top: -15px; right: -15px;
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--white-03);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+/* Stat display */
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.stat-sub {
+  font-size: 12px;
+  color: var(--white-55);
+  margin-top: 4px;
+}
+
+/* Balance card specific */
+.balance-card {
+  grid-column: span 1;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--white-08);
+}
+
+.balance-item .balance-label {
+  font-size: 11px;
+  color: var(--white-55);
+  margin-bottom: 2px;
+}
+.balance-item .balance-val {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* DDP Day Limit widget */
+.limit-progress {
+  margin-top: 16px;
+}
+.limit-bar-bg {
+  height: 6px;
+  background: var(--white-08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.limit-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.limit-bar-fill.safe { background: var(--green); }
+.limit-bar-fill.warning { background: var(--amber); }
+.limit-bar-fill.danger { background: var(--red); }
+
+.limit-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--white-55);
+}
+
+/* Greed & Fear widget */
+.greed-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+.greed-gauge-mini {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.greed-gauge-mini.greed {
+  background: rgba(0,230,138,0.1);
+  border: 2px solid var(--green);
+  color: var(--green);
+}
+.greed-gauge-mini.fear {
+  background: rgba(255,77,106,0.1);
+  border: 2px solid var(--red);
+  color: var(--red);
+}
+.greed-gauge-mini.neutral {
+  background: rgba(255,176,32,0.1);
+  border: 2px solid var(--amber);
+  color: var(--amber);
+}
+
+.greed-info {
+  flex: 1;
+}
+.greed-classification {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.greed-source {
+  font-size: 11px;
+  color: var(--white-55);
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <!-- Shown for verified users with MANAGE_INVESTMENTS privilege -->
+      <button class="btn-primary">Manage Investments</button>
+    </div>
+
+    <!-- Optional alert: unverified investor form -->
+    <!--
+    <div class="alert-info">
+      <span>Complete your investor form to access investment features</span>
+      <button class="alert-action">Fill Investor Form</button>
+    </div>
+    -->
+
+    <div class="widget-grid">
+      <!-- Balance Card (ProtectedComponent: TRADE or MANAGE_INVESTMENTS) -->
+      <div class="card balance-card">
+        <div class="stat-label">Total Balance</div>
+        <div class="stat-value">$124,500.00</div>
+        <div class="balance-row">
+          <div class="balance-item">
+            <div class="balance-label">Available</div>
+            <div class="balance-val" style="color: var(--green);">$98,200.00</div>
+          </div>
+          <div class="balance-item">
+            <div class="balance-label">In Positions</div>
+            <div class="balance-val">$26,300.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DDP Day Limit Widget #1 -->
+      <div class="card">
+        <div class="stat-label">Daily PnL Limit</div>
+        <div class="stat-value" style="color: var(--green);">+$2,340</div>
+        <div class="stat-sub">of $5,000 daily limit</div>
+        <div class="limit-progress">
+          <div class="limit-bar-bg">
+            <div class="limit-bar-fill safe" style="width: 47%;"></div>
+          </div>
+          <div class="limit-footer">
+            <span>47% used</span>
+            <span>$2,660 remaining</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DDP Day Limit Widget #2 -->
+      <div class="card">
+        <div class="stat-label">Daily Drawdown</div>
+        <div class="stat-value" style="color: var(--amber);">-$1,800</div>
+        <div class="stat-sub">of $3,000 max drawdown</div>
+        <div class="limit-progress">
+          <div class="limit-bar-bg">
+            <div class="limit-bar-fill warning" style="width: 60%;"></div>
+          </div>
+          <div class="limit-footer">
+            <span>60% used</span>
+            <span>$1,200 remaining</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fear & Greed — Coinglass -->
+      <div class="card">
+        <div class="stat-label">Fear & Greed Index</div>
+        <div class="greed-display">
+          <div class="greed-gauge-mini greed">72</div>
+          <div class="greed-info">
+            <div class="greed-classification" style="color: var(--green);">Greed</div>
+            <div class="greed-source">Coinglass</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fear & Greed — BTCTools -->
+      <div class="card">
+        <div class="stat-label">Fear & Greed Index</div>
+        <div class="greed-display">
+          <div class="greed-gauge-mini neutral">55</div>
+          <div class="greed-info">
+            <div class="greed-classification" style="color: var(--amber);">Neutral</div>
+            <div class="greed-source">BTCTools</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

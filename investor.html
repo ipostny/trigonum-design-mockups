@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Investor Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * INVESTOR PORTAL — Dedicated investor experience (8 sub-pages)
+ * Route: /investor (InvestorLayout with sidebar nav)
+ * Auth required. Investor role only.
+ * Already redesigned in v1 (investor-redesign-v3) — port to v2 with design system tokens.
+ *
+ * SUB-PAGES:
+ * 1. Home (/investor) — Portfolio overview with strategy cards + performance chart
+ * 2. Balance (/investor/balance) — Investment balances per program
+ * 3. Performance (/investor/performance) — Detailed performance analytics with strategy filter
+ * 4. Investing (/investor/investing) — Available programs to invest in + current investments
+ * 5. Wiki (/investor/wiki) — Investor knowledge base (reuses main wiki component)
+ * 6. News (/investor/news) — Market news (reuses main news component)
+ * 7. Settings (/investor/settings) — Account settings (reuses main settings)
+ * 8. Report Detail (/investor/reports/:id) — Individual report view
+ *
+ * INVESTOR LAYOUT:
+ * - Left sidebar with investor nav (icon + label)
+ * - Top header with portfolio value + notification bell
+ * - Main content area with <Outlet/>
+ *
+ * APIs:
+ * - useGetInvestorDashboardQuery (home — aggregated portfolio)
+ * - useGetInvestorBalancesQuery (balance — per program)
+ * - useGetInvestorPerformanceQuery (performance — charts data)
+ * - useGetInvestorReportByIdQuery (report detail)
+ * - useGetAllInvestProgramsQuery (investing — available programs)
+ * - useGetInvestorInvestmentsQuery (investing — current investments)
+ */
+
+/* Investor Layout — different from main AppLayout */
+.investor-shell { display: flex; min-height: 100vh; }
+
+.investor-sidebar {
+  width: 220px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.investor-brand {
+  padding: 0 20px;
+  margin-bottom: 32px;
+}
+.brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+.brand-sub {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white-55);
+}
+
+.investor-nav {
+  flex: 1;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  font-size: 13px;
+  color: var(--white-55);
+  text-decoration: none;
+  cursor: pointer;
+}
+.nav-item:hover { color: var(--white-75); background: var(--white-03); }
+.nav-item.active {
+  color: var(--white-92);
+  background: var(--white-05);
+  border-right: 2px solid var(--cyan);
+}
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.investor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+}
+
+.investor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--white-08);
+}
+.portfolio-value {
+  font-size: 12px;
+  color: var(--white-55);
+}
+.portfolio-value strong {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--white-92);
+  margin-left: 8px;
+}
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.notification-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--white-05);
+  border: 1px solid var(--white-08);
+  color: var(--white-55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative;
+}
+.notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+.investor-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+}
+
+/* ===== HOME PAGE ===== */
+.page-title { font-size: 28px; font-weight: 800; margin-bottom: 24px; }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.stat-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+}
+.stat-sub {
+  font-size: 12px;
+  color: var(--white-55);
+  margin-top: 4px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* Strategy cards */
+.strategies-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.strategy-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.strategy-card:hover { transform: translateY(-2px); }
+
+.strategy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.strategy-name { font-size: 15px; font-weight: 600; }
+.strategy-badge {
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 10px;
+  font-weight: 600;
+}
+.strategy-badge.active { background: rgba(0,230,138,0.1); color: var(--green); }
+
+.strategy-metrics {
+  display: flex;
+  gap: 24px;
+}
+.strategy-metric {}
+.strategy-metric-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--white-55);
+  margin-bottom: 2px;
+}
+.strategy-metric-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Chart area */
+.chart-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pill-group {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+  border: 1px solid var(--white-08);
+}
+.pill-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--white-55);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.pill-btn.active { background: var(--white-15); color: var(--white-92); }
+
+.chart-area {
+  height: 240px;
+  background: var(--white-03);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-35);
+  font-size: 13px;
+}
+
+/* ===== BALANCE PAGE (commented) ===== */
+/*
+.balance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.balance-program-card — card per program with:
+  - Program name + status badge
+  - Invested amount, current value, PnL (%, $)
+  - Last updated timestamp
+  - "View Details" link
+*/
+
+/* ===== PERFORMANCE PAGE (commented) ===== */
+/*
+.performance-page:
+  - Strategy filter dropdown (filter all data by invest program)
+  - Summary stats row (total PnL, best month, worst month, win rate)
+  - Monthly PnL bar chart (green/red bars)
+  - Symbol distribution donut chart
+  - Side distribution (long/short) bar
+  - Cumulative performance line chart with period toggle
+*/
+
+/* ===== INVESTING PAGE (commented) ===== */
+/*
+.investing-page:
+  - "My Investments" section — table of current investments (program, amount, PnL, date)
+  - "Available Programs" section — card grid of programs accepting investments
+    Each card: name, strategy, min investment, historical return, "Invest" button
+  - Investment dialog: amount input, terms checkbox, confirm button
+*/
+
+/* Recent activity */
+.activity-list {}
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--white-05);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.activity-icon.deposit { background: rgba(0,230,138,0.1); color: var(--green); }
+.activity-icon.report { background: rgba(175,51,255,0.1); color: var(--purple); }
+.activity-icon.fee { background: rgba(255,176,32,0.1); color: var(--amber); }
+
+.activity-info { flex: 1; }
+.activity-title { font-size: 13px; font-weight: 500; }
+.activity-time { font-size: 11px; color: var(--white-55); }
+.activity-amount { font-size: 13px; font-weight: 600; }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="investor-shell">
+  <!-- Investor Sidebar -->
+  <aside class="investor-sidebar">
+    <div class="investor-brand">
+      <div class="brand-name">TRIGONUM</div>
+      <div class="brand-sub">Investor</div>
+    </div>
+    <nav class="investor-nav">
+      <a class="nav-item active">
+        <span class="nav-icon">&#127968;</span> Home
+      </a>
+      <a class="nav-item">
+        <span class="nav-icon">&#128176;</span> Balance
+      </a>
+      <a class="nav-item">
+        <span class="nav-icon">&#128200;</span> Performance
+      </a>
+      <a class="nav-item">
+        <span class="nav-icon">&#128188;</span> Investing
+      </a>
+      <a class="nav-item">
+        <span class="nav-icon">&#128218;</span> Wiki
+      </a>
+      <a class="nav-item">
+        <span class="nav-icon">&#128240;</span> News
+      </a>
+      <a class="nav-item">
+        <span class="nav-icon">&#9881;</span> Settings
+      </a>
+    </nav>
+  </aside>
+
+  <div class="investor-main">
+    <!-- Top Header -->
+    <header class="investor-header">
+      <div class="portfolio-value">
+        Portfolio Value <strong>$124,500.00</strong>
+      </div>
+      <div class="header-actions">
+        <button class="notification-btn">
+          &#128276;
+          <span class="notification-dot"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== HOME PAGE ===== -->
+    <div class="investor-content">
+      <h1 class="page-title">Welcome back, John</h1>
+
+      <div class="stats-row">
+        <div class="card">
+          <div class="stat-label">Total Invested</div>
+          <div class="stat-value">$100,000</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Current Value</div>
+          <div class="stat-value" style="color:var(--green);">$124,500</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Total PnL</div>
+          <div class="stat-value" style="color:var(--green);">+$24,500</div>
+          <div class="stat-sub">+24.5% all-time</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Monthly Return</div>
+          <div class="stat-value" style="color:var(--green);">+$3,420</div>
+          <div class="stat-sub">+2.8% this month</div>
+        </div>
+      </div>
+
+      <!-- My Strategies -->
+      <h2 class="card-title">My Strategies</h2>
+      <div class="strategies-grid">
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <span class="strategy-name">Alpha Growth Fund</span>
+            <span class="strategy-badge active">Active</span>
+          </div>
+          <div class="strategy-metrics">
+            <div class="strategy-metric">
+              <div class="strategy-metric-label">Invested</div>
+              <div class="strategy-metric-value">$75,000</div>
+            </div>
+            <div class="strategy-metric">
+              <div class="strategy-metric-label">Current</div>
+              <div class="strategy-metric-value" style="color:var(--green);">$94,500</div>
+            </div>
+            <div class="strategy-metric">
+              <div class="strategy-metric-label">Return</div>
+              <div class="strategy-metric-value" style="color:var(--green);">+26.0%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="strategy-card">
+          <div class="strategy-header">
+            <span class="strategy-name">Beta Momentum</span>
+            <span class="strategy-badge active">Active</span>
+          </div>
+          <div class="strategy-metrics">
+            <div class="strategy-metric">
+              <div class="strategy-metric-label">Invested</div>
+              <div class="strategy-metric-value">$25,000</div>
+            </div>
+            <div class="strategy-metric">
+              <div class="strategy-metric-label">Current</div>
+              <div class="strategy-metric-value" style="color:var(--green);">$30,000</div>
+            </div>
+            <div class="strategy-metric">
+              <div class="strategy-metric-label">Return</div>
+              <div class="strategy-metric-value" style="color:var(--green);">+20.0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portfolio Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="card-title" style="margin-bottom:0;">Portfolio Value Over Time</h3>
+          <div class="pill-group">
+            <button class="pill-btn">1M</button>
+            <button class="pill-btn active">3M</button>
+            <button class="pill-btn">6M</button>
+            <button class="pill-btn">1Y</button>
+            <button class="pill-btn">All</button>
+          </div>
+        </div>
+        <div class="chart-area">
+          [Recharts AreaChart — portfolio value over time, gradient fill]
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <h3 class="card-title">Recent Activity</h3>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-icon report">&#128196;</div>
+            <div class="activity-info">
+              <div class="activity-title">February Report Published</div>
+              <div class="activity-time">Mar 1, 2026</div>
+            </div>
+            <a style="font-size:12px;color:var(--cyan);text-decoration:none;cursor:pointer;">View</a>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon deposit">&#8593;</div>
+            <div class="activity-info">
+              <div class="activity-title">Deposit to Alpha Growth Fund</div>
+              <div class="activity-time">Feb 15, 2026</div>
+            </div>
+            <span class="activity-amount" style="color:var(--green);">+$10,000</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon fee">&#37;</div>
+            <div class="activity-info">
+              <div class="activity-title">Management Fee — Alpha Growth</div>
+              <div class="activity-time">Feb 1, 2026</div>
+            </div>
+            <span class="activity-amount" style="color:var(--red);">-$125</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

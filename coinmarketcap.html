@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — CoinMarketCap</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * COINMARKETCAP PAGE — Crypto market overview
+ * Route: /coinmarketcap (DEPRECATED as standalone)
+ * Auth required. Uses AppLayout.
+ *
+ * ROLE-WORKSPACE NOTE (V2):
+ * This page NO LONGER exists as a standalone sidebar item.
+ * It is embedded as the "Basic Info (CMP)" sub-tab within the Analytics section
+ * of each role workspace's Trading tab:
+ *   - /workspace/team-lead/trading → Analytics → Basic Info
+ *   - /workspace/senior-trader/trading → Analytics → Basic Info
+ *   - /workspace/trader/trading → Analytics → Basic Info
+ *   - /workspace/risk-manager/trading → Analytics → Basic Info
+ * The content and API calls remain identical — only the navigation context changes.
+ * See role-workspaces.html for the tab structure.
+ *
+ * Full-width paginated table showing top cryptocurrencies.
+ * Auto-refreshes every 60s (pollingInterval: 60000).
+ * API: useGetLatestListingsQuery({ limit, start })
+ *
+ * Columns: Rank, Name (icon+symbol), Market Cap, Price,
+ *          1h%, 24h%, 7d%, Volume 24h, Circulating Supply, Category
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+}
+.refresh-indicator {
+  font-size: 11px;
+  color: var(--white-35);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Table card */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.data-table th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--white-08);
+  background: var(--white-03);
+  white-space: nowrap;
+}
+.data-table th.right { text-align: right; }
+
+.data-table td {
+  font-size: 13px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+  white-space: nowrap;
+}
+.data-table td.right { text-align: right; }
+
+.data-table tr:hover td { background: var(--white-03); }
+
+/* Rank */
+.rank-cell {
+  color: var(--white-55);
+  font-weight: 600;
+  width: 50px;
+}
+
+/* Coin name cell */
+.coin-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.coin-icon-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--white-08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.coin-name-text {
+  font-weight: 600;
+  color: var(--white-92);
+}
+.coin-symbol {
+  font-size: 11px;
+  color: var(--white-55);
+  margin-left: 6px;
+}
+
+/* Percentage change */
+.pct-positive { color: var(--green); }
+.pct-negative { color: var(--red); }
+
+/* Category tags */
+.category-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.cat-tag {
+  padding: 2px 8px;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  font-size: 10px;
+  color: var(--white-55);
+}
+
+/* Pagination */
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--white-08);
+}
+
+.rows-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--white-55);
+}
+.rows-select select {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 4px 8px;
+  color: var(--white-92);
+  font-size: 12px;
+}
+
+.pagination {
+  display: flex;
+  gap: 4px;
+}
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--white-55);
+  font-size: 12px;
+  cursor: pointer;
+}
+.page-btn.active {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border-color: var(--cyan);
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">CoinMarketCap</h1>
+      <div class="refresh-indicator">
+        <div class="live-dot"></div>
+        Auto-refresh every 60s
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th class="right">Market Cap</th>
+            <th class="right">Price</th>
+            <th class="right">1h %</th>
+            <th class="right">24h %</th>
+            <th class="right">7d %</th>
+            <th class="right">Volume 24h</th>
+            <th class="right">Circulating</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rank-cell">1</td>
+            <td>
+              <div class="coin-cell">
+                <div class="coin-icon-sm">BTC</div>
+                <span class="coin-name-text">Bitcoin</span>
+                <span class="coin-symbol">BTC</span>
+              </div>
+            </td>
+            <td class="right">$1.86T</td>
+            <td class="right" style="font-weight:600;color:var(--white-92);">$94,250.00</td>
+            <td class="right pct-positive">+0.32%</td>
+            <td class="right pct-positive">+2.15%</td>
+            <td class="right pct-negative">-1.08%</td>
+            <td class="right">$42.5B</td>
+            <td class="right">19.8M</td>
+            <td><div class="category-tags"><span class="cat-tag">Layer 1</span><span class="cat-tag">PoW</span></div></td>
+          </tr>
+          <tr>
+            <td class="rank-cell">2</td>
+            <td>
+              <div class="coin-cell">
+                <div class="coin-icon-sm">ETH</div>
+                <span class="coin-name-text">Ethereum</span>
+                <span class="coin-symbol">ETH</span>
+              </div>
+            </td>
+            <td class="right">$428.2B</td>
+            <td class="right" style="font-weight:600;color:var(--white-92);">$3,560.00</td>
+            <td class="right pct-negative">-0.15%</td>
+            <td class="right pct-positive">+1.82%</td>
+            <td class="right pct-positive">+4.25%</td>
+            <td class="right">$18.2B</td>
+            <td class="right">120.4M</td>
+            <td><div class="category-tags"><span class="cat-tag">Layer 1</span><span class="cat-tag">DeFi</span></div></td>
+          </tr>
+          <tr>
+            <td class="rank-cell">3</td>
+            <td>
+              <div class="coin-cell">
+                <div class="coin-icon-sm">SOL</div>
+                <span class="coin-name-text">Solana</span>
+                <span class="coin-symbol">SOL</span>
+              </div>
+            </td>
+            <td class="right">$82.5B</td>
+            <td class="right" style="font-weight:600;color:var(--white-92);">$178.40</td>
+            <td class="right pct-positive">+0.85%</td>
+            <td class="right pct-positive">+3.45%</td>
+            <td class="right pct-positive">+8.12%</td>
+            <td class="right">$4.8B</td>
+            <td class="right">462.5M</td>
+            <td><div class="category-tags"><span class="cat-tag">Layer 1</span></div></td>
+          </tr>
+          <tr>
+            <td class="rank-cell">4</td>
+            <td>
+              <div class="coin-cell">
+                <div class="coin-icon-sm">XRP</div>
+                <span class="coin-name-text">XRP</span>
+                <span class="coin-symbol">XRP</span>
+              </div>
+            </td>
+            <td class="right">$68.1B</td>
+            <td class="right" style="font-weight:600;color:var(--white-92);">$1.24</td>
+            <td class="right pct-negative">-0.42%</td>
+            <td class="right pct-negative">-0.95%</td>
+            <td class="right pct-positive">+2.30%</td>
+            <td class="right">$2.1B</td>
+            <td class="right">54.9B</td>
+            <td><div class="category-tags"><span class="cat-tag">Payment</span></div></td>
+          </tr>
+          <tr>
+            <td class="rank-cell">5</td>
+            <td>
+              <div class="coin-cell">
+                <div class="coin-icon-sm">BNB</div>
+                <span class="coin-name-text">BNB</span>
+                <span class="coin-symbol">BNB</span>
+              </div>
+            </td>
+            <td class="right">$58.4B</td>
+            <td class="right" style="font-weight:600;color:var(--white-92);">$390.80</td>
+            <td class="right pct-positive">+0.18%</td>
+            <td class="right pct-positive">+0.76%</td>
+            <td class="right pct-negative">-2.15%</td>
+            <td class="right">$1.4B</td>
+            <td class="right">149.5M</td>
+            <td><div class="category-tags"><span class="cat-tag">Exchange</span><span class="cat-tag">Layer 1</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="rows-select">
+          <span>Rows per page:</span>
+          <select>
+            <option>10</option>
+            <option selected>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </div>
+        <div class="pagination">
+          <button class="page-btn">&lsaquo;</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">&rsaquo;</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

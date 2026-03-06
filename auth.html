@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Auth (Login, Sign Up, Forgot, Reset)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * AUTH PAGES — No sidebar (public pages)
+ * Routes: /auth/login, /auth/signup, /auth/forgot, /auth/reset
+ * Layout: 2-column split — Left: decorative chart/brand visual, Right: form
+ * Auth.tsx is the wrapper with <Outlet/> for sub-forms
+ *
+ * Forms use React Hook Form + Zod validation:
+ * - Login: email, password, rememberMe checkbox, forgot password link
+ * - Sign Up: email, password (with strength indicator), name
+ * - Forgot: email only, success = "check email" message
+ * - Reset: password + confirm (with strength indicator), token from URL
+ *
+ * APIs:
+ * - useAuthenticateUserMutation (login)
+ * - useRegisterUserMutation (signup)
+ * - useForgotPasswordMutation (forgot)
+ * - useResetPasswordMutation (reset)
+ */
+
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.auth-container {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  max-width: 1000px;
+  width: 100%;
+  gap: 64px;
+  align-items: center;
+}
+
+/* Left: brand visual */
+.auth-visual {
+  position: relative;
+}
+
+.auth-brand {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+}
+.auth-brand-sub {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 48px;
+}
+
+/* Decorative chart visualization */
+.chart-visual {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  height: 320px;
+}
+.chart-visual::before {
+  content: '';
+  position: absolute; top: -15px; right: -15px;
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--white-03);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+.chart-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-35);
+  font-size: 13px;
+}
+
+/* Right: auth form */
+.auth-form-panel {
+  max-width: 400px;
+}
+
+.form-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  color: var(--white-92);
+  font-size: 14px;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+.input-field::placeholder {
+  color: var(--white-35);
+}
+
+/* Password input with toggle */
+.password-wrapper {
+  position: relative;
+}
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--white-35);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Password strength indicator */
+.strength-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+.strength-segment {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  background: var(--white-08);
+}
+.strength-segment.active { background: var(--red); }
+.strength-segment.active.medium { background: var(--amber); }
+.strength-segment.active.strong { background: var(--green); }
+
+.strength-label {
+  font-size: 11px;
+  color: var(--white-55);
+  margin-top: 4px;
+}
+
+/* Checkbox */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.checkbox-row input[type="checkbox"] {
+  accent-color: var(--cyan);
+  width: 16px;
+  height: 16px;
+}
+.checkbox-row label {
+  font-size: 13px;
+  color: var(--white-75);
+}
+
+/* Links */
+.form-link {
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 13px;
+}
+.form-link:hover { text-decoration: underline; }
+
+.forgot-link {
+  display: block;
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+/* Submit button */
+.btn-submit {
+  width: 100%;
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-bottom: 16px;
+}
+.btn-submit:hover { opacity: 0.9; }
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.form-error {
+  background: rgba(255,77,106,0.1);
+  border: 1px solid rgba(255,77,106,0.2);
+  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+
+/* Footer annotation */
+.form-annotation {
+  font-size: 12px;
+  color: var(--white-55);
+  line-height: 1.5;
+}
+.form-annotation a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+/* Success state (forgot password) */
+.success-state {
+  text-align: center;
+  padding: 32px 0;
+}
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(0,230,138,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 28px;
+  color: var(--green);
+}
+.success-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.success-desc {
+  font-size: 14px;
+  color: var(--white-75);
+  margin-bottom: 24px;
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<!-- ================================ -->
+<!-- LOGIN FORM — /auth/login         -->
+<!-- ================================ -->
+<div class="auth-shell">
+  <div class="auth-container">
+    <div class="auth-visual">
+      <div class="auth-brand">TRIGONUM</div>
+      <div class="auth-brand-sub">TRADE</div>
+      <div class="chart-visual">
+        <div class="chart-placeholder">
+          <!-- Decorative TradingView-style candlestick chart (static SVG or Recharts) -->
+          [Decorative Chart Visual]
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-form-panel">
+      <h1 class="form-title">Sign In</h1>
+
+      <div class="form-group">
+        <label class="field-label">Email</label>
+        <input class="input-field" type="email" placeholder="myemail@me.com">
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">Password</label>
+        <div class="password-wrapper">
+          <input class="input-field" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+          <button class="password-toggle">&#128065;</button>
+        </div>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="remember">
+        <label for="remember">Remember me</label>
+      </div>
+
+      <a href="/auth/forgot" class="form-link forgot-link">Forgot password?</a>
+
+      <!-- Error state (shown on invalid credentials) -->
+      <!--
+      <div class="form-error">Invalid email or password. Please try again.</div>
+      -->
+
+      <button class="btn-submit">Sign In</button>
+
+      <p class="form-annotation">
+        By signing in, you agree to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- SIGN UP FORM — /auth/signup      -->
+<!-- ================================ -->
+<!--
+<div class="auth-form-panel">
+  <h1 class="form-title">Create Account</h1>
+
+  <div class="form-group">
+    <label class="field-label">Email</label>
+    <input class="input-field" type="email" placeholder="myemail@me.com">
+  </div>
+
+  <div class="form-group">
+    <label class="field-label">Password</label>
+    <div class="password-wrapper">
+      <input class="input-field" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+      <button class="password-toggle">&#128065;</button>
+    </div>
+    <div class="strength-bar">
+      <div class="strength-segment active"></div>
+      <div class="strength-segment active medium"></div>
+      <div class="strength-segment"></div>
+      <div class="strength-segment"></div>
+    </div>
+    <span class="strength-label">Medium — add numbers or symbols for stronger</span>
+  </div>
+
+  <div class="form-group">
+    <label class="field-label">Full Name</label>
+    <input class="input-field" type="text" placeholder="John Trader">
+  </div>
+
+  <button class="btn-submit">Create Account</button>
+
+  <p class="form-annotation">
+    By creating an account, you agree to our <a href="/terms-of-service">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>.
+  </p>
+</div>
+-->
+
+<!-- ================================ -->
+<!-- FORGOT PASSWORD — /auth/forgot   -->
+<!-- ================================ -->
+<!--
+<div class="auth-form-panel">
+  <h1 class="form-title">Forgot Password</h1>
+  <p style="color:var(--white-75);font-size:14px;margin-bottom:24px;">
+    Enter your email address and we'll send you a link to reset your password.
+  </p>
+
+  <div class="form-group">
+    <label class="field-label">Email</label>
+    <input class="input-field" type="email" placeholder="myemail@me.com">
+  </div>
+
+  <button class="btn-submit">Send Reset Link</button>
+
+  <a href="/auth/login" class="form-link">&larr; Back to login</a>
+</div>
+-->
+
+<!-- FORGOT PASSWORD — Success state -->
+<!--
+<div class="auth-form-panel">
+  <div class="success-state">
+    <div class="success-icon">&#10003;</div>
+    <h2 class="success-title">Check Your Email</h2>
+    <p class="success-desc">We've sent a password reset link to your email address. Please check your inbox.</p>
+    <a href="/auth/login" class="form-link">&larr; Back to login</a>
+  </div>
+</div>
+-->
+
+<!-- ================================ -->
+<!-- RESET PASSWORD — /auth/reset     -->
+<!-- ================================ -->
+<!--
+<div class="auth-form-panel">
+  <h1 class="form-title">Reset Password</h1>
+
+  <div class="form-group">
+    <label class="field-label">New Password</label>
+    <div class="password-wrapper">
+      <input class="input-field" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+      <button class="password-toggle">&#128065;</button>
+    </div>
+    <div class="strength-bar">
+      <div class="strength-segment active"></div>
+      <div class="strength-segment active medium"></div>
+      <div class="strength-segment active strong"></div>
+      <div class="strength-segment active strong"></div>
+    </div>
+    <span class="strength-label">Strong</span>
+  </div>
+
+  <div class="form-group">
+    <label class="field-label">Confirm New Password</label>
+    <div class="password-wrapper">
+      <input class="input-field" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+      <button class="password-toggle">&#128065;</button>
+    </div>
+  </div>
+
+  <button class="btn-submit">Reset Password</button>
+
+  <a href="/auth/login" class="form-link">&larr; Back to login</a>
+</div>
+-->
+
+<!-- RESET PASSWORD — Invalid token state -->
+<!--
+<div class="auth-form-panel">
+  <h1 class="form-title">Invalid Reset Link</h1>
+  <p style="color:var(--white-75);font-size:14px;margin-bottom:24px;">
+    This password reset link is invalid or has expired. Please request a new one.
+  </p>
+  <a href="/auth/forgot" class="form-link">Request new reset link</a>
+  <br><br>
+  <a href="/auth/login" class="form-link">&larr; Back to login</a>
+</div>
+-->
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

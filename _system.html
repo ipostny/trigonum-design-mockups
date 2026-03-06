@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade Design System Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/*
+ * TRIGONUM DESIGN SYSTEM — Master Reference
+ *
+ * This file defines the complete design language for TrigonumTrade.
+ * All page mockups MUST use these variables and patterns.
+ * The CSS variables here map 1:1 to globals.css in trigonum-frontend-v2.
+ *
+ * Full visual reference: investor-redesign-v3.html
+ */
+
+:root {
+  /* Navy palette */
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --navy-400: #5A5AC4;
+  --navy-300: #7575FF;
+
+  /* Brand accents */
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --lime:   #81E70B;
+
+  /* Semantic */
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+
+  /* White alpha scale */
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+
+  /* Typography */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Border radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+
+  /* Card gradient */
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ==== LAYOUT ==== */
+.app-shell { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* ==== NAVIGATION ==== */
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px;
+  color: var(--white-55);
+  text-decoration: none;
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  transition: all 0.2s; cursor: pointer;
+}
+.nav-item:hover { color: var(--white-75); background: var(--white-05); }
+.nav-item.active {
+  color: var(--white-92);
+  background: linear-gradient(90deg, rgba(18,204,255,0.12), transparent);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+  border-radius: 0 2px 2px 0;
+}
+
+/* ==== CARDS ==== */
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+/* Triangle accent */
+.card::before {
+  content: '';
+  position: absolute; top: -15px; right: -15px;
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--white-03);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+/* ==== STAT DISPLAY ==== */
+.stat-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 28px; font-weight: 800;
+  line-height: 1.1;
+}
+
+/* ==== SECTION HEADER ==== */
+.section-title {
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 6px;
+}
+.section-subtitle {
+  font-size: 13px; color: var(--white-75);
+  margin-bottom: 20px;
+}
+
+/* ==== TABS ==== */
+.tab-bar { display: flex; gap: 0; margin-bottom: 28px; }
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  background: none; border: none; cursor: pointer;
+}
+.tab-btn:hover { color: var(--white-75); }
+.tab-btn.active { color: var(--white-92); }
+.tab-btn.active::after {
+  content: '';
+  position: absolute; bottom: -2px; left: 20%; right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+
+/* ==== GRIDS ==== */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+/* ==== TABLES ==== */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.data-table th {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--white-08);
+}
+.data-table td {
+  font-size: 13px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+/* ==== BUTTONS ==== */
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none; border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.9; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--white-35); color: var(--white-92); }
+
+/* ==== FORMS ==== */
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 16px;
+  color: var(--white-92);
+  font-size: 13px;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+.input-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ==== UTILITY ==== */
+.text-profit { color: var(--green); }
+.text-loss { color: var(--red); }
+.text-warning { color: var(--amber); }
+.text-muted { color: var(--white-55); }
+.text-cyan { color: var(--cyan); }
+.text-purple { color: var(--purple); }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div style="padding: 0 20px 24px; border-bottom: 1px solid var(--white-08); margin-bottom: 16px;">
+      <div style="font-size: 18px; font-weight: 800; letter-spacing: 2px;">TRIGONUM</div>
+      <div style="font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--white-55);">TRADE</div>
+    </div>
+    <nav>
+      <a class="nav-item active" style="position: relative;">Dashboard</a>
+      <a class="nav-item">Trading</a>
+      <a class="nav-item">Reports</a>
+      <a class="nav-item">Balance</a>
+      <a class="nav-item">Settings</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <h2 class="section-title">Design System Reference</h2>
+    <p class="section-subtitle">All component patterns available for page mockups</p>
+
+    <!-- Stat Cards -->
+    <div class="grid-4" style="margin-bottom: 32px;">
+      <div class="card">
+        <div class="stat-label">Total Balance</div>
+        <div class="stat-value">$124,500</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Today's P&L</div>
+        <div class="stat-value text-profit">+$2,340</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Open Positions</div>
+        <div class="stat-value">7</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Win Rate</div>
+        <div class="stat-value text-cyan">68.5%</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" style="position: relative;">Overview</button>
+      <button class="tab-btn">Positions</button>
+      <button class="tab-btn">Orders</button>
+      <button class="tab-btn">History</button>
+    </div>
+
+    <!-- Table -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Side</th>
+            <th>Size</th>
+            <th>Entry Price</th>
+            <th>P&L</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color: var(--white-92); font-weight: 600;">BTCUSDT</td>
+            <td class="text-profit">LONG</td>
+            <td>0.5 BTC</td>
+            <td>$67,450.00</td>
+            <td class="text-profit">+$1,250.00</td>
+            <td><span style="color: var(--cyan);">Active</span></td>
+          </tr>
+          <tr>
+            <td style="color: var(--white-92); font-weight: 600;">ETHUSDT</td>
+            <td class="text-loss">SHORT</td>
+            <td>10 ETH</td>
+            <td>$3,520.00</td>
+            <td class="text-loss">-$340.00</td>
+            <td><span style="color: var(--cyan);">Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Buttons & Form -->
+    <div style="margin-top: 32px;">
+      <h3 class="section-title">Form Elements</h3>
+      <div style="display: flex; gap: 16px; margin-top: 16px; align-items: flex-end;">
+        <div style="flex: 1;">
+          <label class="input-label">Email Address</label>
+          <input class="input-field" type="email" placeholder="trader@trigonum.ae">
+        </div>
+        <button class="btn-primary">Submit</button>
+        <button class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

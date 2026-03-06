@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Admin Reports (List + Detail)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * ADMIN REPORTS — Report management for admins
+ * Route: /admin-reports (list), /admin-reports/:reportId (detail)
+ * Auth required. Uses AppLayout. Admin only.
+ *
+ * LIST VIEW:
+ * - "Generate Report" button → opens dialog
+ * - Generate dialog: select investor, date range, invest program
+ * - Reports table: investor name, period, status, created, actions
+ * - Action menu per row: View, Publish, Recalculate, Revert to Draft, Delete
+ * - Status badges: Draft, Published, Recalculating
+ *
+ * DETAIL VIEW:
+ * - Report header (investor, period, status, action buttons)
+ * - Financial summary cards (starting capital, total PnL, fees, final balance)
+ * - Statistics breakdown (by symbol, by side)
+ * - Operations list table (all trade operations in the report)
+ *
+ * APIs:
+ * - useGetAllInvestorReportsQuery (list, paginated)
+ * - useGetInvestorReportByIdQuery (detail)
+ * - useGenerateInvestorReportMutation
+ * - usePublishInvestorReportMutation
+ * - useRecalculateInvestorReportMutation
+ * - useRevertInvestorReportMutation
+ * - useDeleteInvestorReportMutation
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.page-title { font-size: 32px; font-weight: 800; }
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Table card */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 14px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+}
+.data-table td {
+  font-size: 13px; padding: 14px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-draft {
+  background: rgba(255,176,32,0.1);
+  color: var(--amber);
+}
+.badge-published {
+  background: rgba(0,230,138,0.1);
+  color: var(--green);
+}
+.badge-recalculating {
+  background: rgba(18,204,255,0.1);
+  color: var(--cyan);
+}
+
+/* Action menu */
+.action-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--white-55);
+  cursor: pointer;
+  font-size: 14px;
+}
+.action-btn:hover { background: var(--white-08); color: var(--white-92); }
+
+/* Dropdown menu (shown on action click) */
+.dropdown-menu {
+  position: absolute;
+  right: 16px;
+  background: var(--navy-700);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-elevated);
+  padding: 4px;
+  min-width: 160px;
+  z-index: 10;
+}
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--white-75);
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+}
+.dropdown-item:hover { background: var(--white-08); color: var(--white-92); }
+.dropdown-item.danger { color: var(--red); }
+
+/* Table footer */
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--white-08);
+}
+.rows-info { font-size: 12px; color: var(--white-55); }
+.pagination { display: flex; gap: 4px; }
+.page-btn {
+  min-width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--white-08); border-radius: var(--r-sm);
+  background: transparent; color: var(--white-55); font-size: 12px; cursor: pointer;
+}
+.page-btn.active { background: var(--cyan); color: var(--navy-900); border-color: var(--cyan); }
+
+/* ===== DETAIL VIEW (below) ===== */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--white-55);
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+.back-link:hover { color: var(--cyan); }
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+.detail-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 8px;
+}
+.meta-item {
+  font-size: 13px;
+  color: var(--white-55);
+}
+.meta-item strong { color: var(--white-75); }
+
+.detail-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-outline {
+  background: transparent;
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-outline:hover { background: var(--white-08); }
+.btn-danger {
+  background: rgba(255,77,106,0.1);
+  color: var(--red);
+  border: 1px solid rgba(255,77,106,0.2);
+  border-radius: var(--r-md);
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Summary cards */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+}
+.stat-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+}
+.stat-sub {
+  font-size: 12px;
+  color: var(--white-55);
+  margin-top: 4px;
+}
+
+/* Statistics breakdown */
+.stats-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--white-05);
+}
+.breakdown-item:last-child { border-bottom: none; }
+
+.breakdown-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.breakdown-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.breakdown-value {
+  font-size: 13px;
+  font-weight: 600;
+}
+.breakdown-pct {
+  font-size: 11px;
+  color: var(--white-55);
+  margin-left: 8px;
+}
+
+/* Section title */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* ===== GENERATE DIALOG (overlay) ===== */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.dialog-card {
+  background: var(--navy-700);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  width: 480px;
+  box-shadow: var(--shadow-elevated);
+}
+.dialog-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  color: var(--white-92);
+  font-size: 14px;
+  width: 100%;
+}
+.input-field:focus { outline: none; border-color: var(--cyan); }
+
+.dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+.btn-cancel {
+  background: var(--white-08);
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+
+    <!-- ========= LIST VIEW ========= -->
+    <div class="page-header">
+      <h1 class="page-title">Investor Reports</h1>
+      <button class="btn-primary">+ Generate Report</button>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Investor</th>
+            <th>Period</th>
+            <th>Program</th>
+            <th>Total PnL</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th style="width:48px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">John Smith</td>
+            <td>Feb 1 – Feb 28, 2026</td>
+            <td>Alpha Growth Fund</td>
+            <td style="color:var(--green);">+$3,420.00</td>
+            <td><span class="badge badge-draft">Draft</span></td>
+            <td>Mar 1, 2026</td>
+            <td style="position:relative;">
+              <button class="action-btn">&#8942;</button>
+              <!-- Dropdown shown on click -->
+              <!--
+              <div class="dropdown-menu">
+                <button class="dropdown-item">View Details</button>
+                <button class="dropdown-item">Publish</button>
+                <button class="dropdown-item">Recalculate</button>
+                <button class="dropdown-item danger">Delete</button>
+              </div>
+              -->
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Sarah Connor</td>
+            <td>Feb 1 – Feb 28, 2026</td>
+            <td>Alpha Growth Fund</td>
+            <td style="color:var(--red);">-$1,150.00</td>
+            <td><span class="badge badge-published">Published</span></td>
+            <td>Mar 1, 2026</td>
+            <td><button class="action-btn">&#8942;</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Mike Chen</td>
+            <td>Jan 1 – Jan 31, 2026</td>
+            <td>Beta Momentum</td>
+            <td style="color:var(--green);">+$5,890.00</td>
+            <td><span class="badge badge-published">Published</span></td>
+            <td>Feb 1, 2026</td>
+            <td><button class="action-btn">&#8942;</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">John Smith</td>
+            <td>Jan 1 – Jan 31, 2026</td>
+            <td>Alpha Growth Fund</td>
+            <td style="color:var(--green);">+$2,100.00</td>
+            <td><span class="badge badge-recalculating">Recalculating</span></td>
+            <td>Feb 1, 2026</td>
+            <td><button class="action-btn">&#8942;</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="rows-info">1-25 of 42</div>
+        <div class="pagination">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= DETAIL VIEW (separate page, shown below for reference) ========= -->
+    <!--
+    <a href="/admin-reports" class="back-link">&larr; Back to Reports</a>
+
+    <div class="detail-header">
+      <div>
+        <h1 class="page-title">John Smith — February 2026</h1>
+        <div class="detail-meta">
+          <span class="meta-item">Program: <strong>Alpha Growth Fund</strong></span>
+          <span class="meta-item">Period: <strong>Feb 1 – Feb 28, 2026</strong></span>
+          <span class="badge badge-draft">Draft</span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <button class="btn-outline">Recalculate</button>
+        <button class="btn-primary">Publish</button>
+        <button class="btn-danger">Delete</button>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="card">
+        <div class="stat-label">Starting Capital</div>
+        <div class="stat-value">$50,000</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Total PnL</div>
+        <div class="stat-value" style="color:var(--green);">+$3,420</div>
+        <div class="stat-sub">+6.84%</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Total Fees</div>
+        <div class="stat-value">$684</div>
+        <div class="stat-sub">Mgmt: $83 / Perf: $601</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Final Balance</div>
+        <div class="stat-value" style="color:var(--green);">$52,736</div>
+      </div>
+    </div>
+
+    <div class="stats-layout">
+      <div class="card">
+        <h3 class="card-title">Distribution by Symbol</h3>
+        <div class="breakdown-item">
+          <div class="breakdown-label">
+            <div class="breakdown-dot" style="background:var(--cyan);"></div>
+            BTCUSDT
+          </div>
+          <div>
+            <span class="breakdown-value" style="color:var(--green);">+$2,100</span>
+            <span class="breakdown-pct">61.4%</span>
+          </div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-label">
+            <div class="breakdown-dot" style="background:var(--purple);"></div>
+            ETHUSDT
+          </div>
+          <div>
+            <span class="breakdown-value" style="color:var(--green);">+$890</span>
+            <span class="breakdown-pct">26.0%</span>
+          </div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-label">
+            <div class="breakdown-dot" style="background:var(--amber);"></div>
+            SOLUSDT
+          </div>
+          <div>
+            <span class="breakdown-value" style="color:var(--green);">+$430</span>
+            <span class="breakdown-pct">12.6%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">Distribution by Side</h3>
+        <div class="breakdown-item">
+          <div class="breakdown-label">
+            <div class="breakdown-dot" style="background:var(--green);"></div>
+            Long
+          </div>
+          <div>
+            <span class="breakdown-value" style="color:var(--green);">+$2,850</span>
+            <span class="breakdown-pct">83.3%</span>
+          </div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-label">
+            <div class="breakdown-dot" style="background:var(--red);"></div>
+            Short
+          </div>
+          <div>
+            <span class="breakdown-value" style="color:var(--green);">+$570</span>
+            <span class="breakdown-pct">16.7%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Trade Operations</h2>
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Symbol</th>
+            <th>Side</th>
+            <th>Entry Price</th>
+            <th>Exit Price</th>
+            <th>Volume</th>
+            <th>PnL</th>
+            <th>Investor Share</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Feb 28, 14:32</td>
+            <td style="font-weight:600;color:var(--white-92);">BTCUSDT</td>
+            <td style="color:var(--green);">Long</td>
+            <td>$84,200.00</td>
+            <td>$85,100.00</td>
+            <td>0.5 BTC</td>
+            <td style="color:var(--green);">+$450.00</td>
+            <td>$225.00</td>
+          </tr>
+          <tr>
+            <td>Feb 27, 09:15</td>
+            <td style="font-weight:600;color:var(--white-92);">ETHUSDT</td>
+            <td style="color:var(--red);">Short</td>
+            <td>$3,420.00</td>
+            <td>$3,380.00</td>
+            <td>10.0 ETH</td>
+            <td style="color:var(--green);">+$400.00</td>
+            <td>$200.00</td>
+          </tr>
+          <tr>
+            <td>Feb 25, 16:48</td>
+            <td style="font-weight:600;color:var(--white-92);">BTCUSDT</td>
+            <td style="color:var(--green);">Long</td>
+            <td>$83,500.00</td>
+            <td>$83,100.00</td>
+            <td>0.3 BTC</td>
+            <td style="color:var(--red);">-$120.00</td>
+            <td>-$60.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-footer">
+        <div class="rows-info">1-25 of 87</div>
+        <div class="pagination">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+        </div>
+      </div>
+    </div>
+    -->
+
+  </main>
+</div>
+
+<!-- ========= GENERATE REPORT DIALOG ========= -->
+<!--
+<div class="dialog-overlay">
+  <div class="dialog-card">
+    <h2 class="dialog-title">Generate Report</h2>
+
+    <div class="form-group">
+      <label class="field-label">Investor</label>
+      <select class="input-field">
+        <option value="">Select investor...</option>
+        <option>John Smith</option>
+        <option>Sarah Connor</option>
+        <option>Mike Chen</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="field-label">Invest Program</label>
+      <select class="input-field">
+        <option value="">Select program...</option>
+        <option>Alpha Growth Fund</option>
+        <option>Beta Momentum</option>
+      </select>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="field-label">Start Date</label>
+        <input class="input-field" type="date">
+      </div>
+      <div class="form-group">
+        <label class="field-label">End Date</label>
+        <input class="input-field" type="date">
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button class="btn-cancel">Cancel</button>
+      <button class="btn-primary">Generate</button>
+    </div>
+  </div>
+</div>
+-->
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Policy (Trading Policy Management)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * POLICY PAGE — Trading policy rules management
+ * Route: /policy (standalone) + embedded in role workspaces
+ * Auth required. Uses AppLayout. Admin only (standalone).
+ *
+ * ROLE-WORKSPACE NOTE (V2):
+ * This page is ALSO embedded as the "Policies" sub-tab within the
+ * Risk Management tab of role workspaces:
+ *   - /workspace/team-lead/risk-management → Policies sub-tab
+ *   - /workspace/senior-trader/risk-management → Policies sub-tab
+ *   - /workspace/risk-manager/risk-management → Policies sub-tab
+ * The RM tab has two sub-tabs: Team (see risk-management.html) | Policies (this page).
+ * No changes needed to this mockup — same policy list rendered in both contexts.
+ * See risk-management.html for the Team sub-tab and role-workspaces.html for tab structure.
+ *
+ * Full-width paginated, sortable, filterable table.
+ * "Add Policy" button opens modal form.
+ * Similar to DDP but with different columns.
+ *
+ * APIs:
+ * - useReadAllQuery (list policies with pagination, sorts, filters)
+ * - useLazyGetUserTradeAccountsQuery (resolve account IDs for filters)
+ *
+ * Columns: Policy Name, Type, Scope, Trade Accounts (with user names),
+ *          Limit, Status, Actions (edit/delete)
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.page-title { font-size: 32px; font-weight: 800; }
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none; border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+}
+
+/* Filters bar */
+.filters-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-select {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 14px;
+  color: var(--white-92);
+  font-size: 12px;
+  min-width: 140px;
+}
+.filter-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 14px;
+  color: var(--white-92);
+  font-size: 12px;
+  width: 200px;
+}
+.btn-filter {
+  background: var(--white-08);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 16px;
+  color: var(--white-75);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-clear {
+  background: transparent;
+  border: none;
+  color: var(--white-55);
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn-clear:hover { color: var(--white-75); }
+
+/* Table */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 14px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+  cursor: pointer;
+}
+.data-table td {
+  font-size: 13px; padding: 14px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+/* Account + user display */
+.account-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-avatar-sm {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--white-08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--white-75);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.status-active { background: rgba(0,230,138,0.1); color: var(--green); }
+.status-triggered { background: rgba(255,77,106,0.1); color: var(--red); }
+
+.action-group { display: flex; gap: 6px; }
+.btn-icon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--white-55);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--white-08);
+}
+.rows-info { font-size: 12px; color: var(--white-55); }
+.pagination { display: flex; gap: 4px; }
+.page-btn {
+  min-width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--white-08); border-radius: var(--r-sm);
+  background: transparent; color: var(--white-55);
+  font-size: 12px; cursor: pointer;
+}
+.page-btn.active { background: var(--cyan); color: var(--navy-900); border-color: var(--cyan); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Trading Policies</h1>
+      <button class="btn-primary">+ Add Policy</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <select class="filter-select">
+        <option value="">All Types</option>
+        <option>Max Position Size</option>
+        <option>Max Leverage</option>
+        <option>Symbol Restriction</option>
+        <option>Order Approval</option>
+      </select>
+      <input class="filter-input" type="text" placeholder="Search by account...">
+      <button class="btn-filter">Apply</button>
+      <button class="btn-clear">Clear</button>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Policy Name</th>
+            <th>Type</th>
+            <th>Trade Accounts</th>
+            <th>Limit</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Max Position BTC</td>
+            <td>Max Position Size</td>
+            <td>
+              <div class="account-user">
+                <div class="user-avatar-sm">AT</div>
+                <span>Alice T. — Main</span>
+              </div>
+            </td>
+            <td>$25,000</td>
+            <td><span class="status-badge status-active">Active</span></td>
+            <td>
+              <div class="action-group">
+                <button class="btn-icon" title="Edit">&#9998;</button>
+                <button class="btn-icon" title="Delete">&#128465;</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Leverage Cap</td>
+            <td>Max Leverage</td>
+            <td>
+              <div class="account-user">
+                <div class="user-avatar-sm">BK</div>
+                <span>Bob K. — Sub 1</span>
+              </div>
+            </td>
+            <td>10x</td>
+            <td><span class="status-badge status-active">Active</span></td>
+            <td>
+              <div class="action-group">
+                <button class="btn-icon" title="Edit">&#9998;</button>
+                <button class="btn-icon" title="Delete">&#128465;</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Order Approval Gate</td>
+            <td>Order Approval</td>
+            <td>
+              <div class="account-user">
+                <div class="user-avatar-sm">CM</div>
+                <span>Carol M. — Main</span>
+              </div>
+            </td>
+            <td>All orders &gt; $10,000</td>
+            <td><span class="status-badge status-triggered">Triggered</span></td>
+            <td>
+              <div class="action-group">
+                <button class="btn-icon" title="Edit">&#9998;</button>
+                <button class="btn-icon" title="Delete">&#128465;</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="rows-info">1-3 of 3</div>
+        <div class="pagination">
+          <button class="page-btn active">1</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

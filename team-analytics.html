@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Team Analytics (Hierarchical Table + Trade Detail)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * TEAM ANALYTICS — Used by Team Lead (hierarchical) and Senior Trader / Risk Manager (flat)
+ *
+ * CONTEXT: This is the content for:
+ *   - Team Lead → Analytics tab (hierarchical: Senior Traders → Traders)
+ *   - Team Lead → Performance → Team Analytics sub-tab (same + open trades drill-down)
+ *   - Senior Trader → Team tab (flat list, own team only)
+ *   - Risk Manager → Analytics tab (flat list, assigned traders only)
+ *
+ * VIEWS SHOWN IN THIS MOCKUP:
+ * 1. Summary cards + capital chart
+ * 2. Hierarchical expandable table (Team Lead view)
+ * 3. Trader open trades (drill-down when clicking a trader in Performance)
+ * 4. Trade detail modal (Lifecycle + Journal data)
+ * 5. Trade History sub-tab (Performance → Trade History)
+ *
+ * KEY BEHAVIORS:
+ * - Senior Trader rows expand to show their traders
+ * - "Expand All / Collapse All" buttons
+ * - Sort by any column
+ * - Period filter affects all metrics
+ * - Click trader name → opens their profile in new tab
+ * - Click trader row (in Performance) → shows open trades below
+ * - Click trade → opens Trade Detail modal
+ * - PnL conditional coloring: green (profit) → red (loss)
+ *
+ * SCOPE VARIANTS:
+ * - Team Lead: sees ALL senior traders and their traders
+ * - Senior Trader: sees only own traders (no hierarchy level, flat)
+ * - Risk Manager: sees only assigned traders (flat, no hierarchy)
+ *
+ * APIs:
+ * - useGetTeamAnalyticsQuery({ period, seniorTraderId? })
+ * - useGetTraderPositionsQuery({ traderId })
+ * - useGetTradeLifecycleQuery({ tradeId })
+ * - useGetJournalEntryQuery({ tradeId })
+ */
+
+.workspace { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 260px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 8px;
+}
+
+.sidebar-brand .logo {
+  display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--white-92);
+}
+
+.sidebar-brand .logo-box {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  border-radius: 6px;
+}
+
+.sidebar-brand .logo-text { font-size: 14px; font-weight: 700; }
+
+.role-tag {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(175,51,255,0.2);
+  color: var(--purple);
+  border: 1px solid rgba(175,51,255,0.3);
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px;
+  font-size: 13px; font-weight: 500;
+  color: var(--white-55);
+  position: relative;
+}
+
+.nav-item.active {
+  color: var(--white-92);
+  background: var(--white-08);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+}
+
+.main { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+/* Sub-tabs */
+.sub-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 24px;
+}
+
+.sub-tab-btn {
+  padding: 12px 24px;
+  font-size: 13px; font-weight: 600;
+  color: var(--white-55);
+  background: none; border: none; cursor: pointer;
+  position: relative;
+}
+
+.sub-tab-btn:hover { color: var(--white-75); }
+.sub-tab-btn.active { color: var(--white-92); }
+.sub-tab-btn.active::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 12px; right: 12px; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  border-radius: 2px;
+}
+
+/* Header */
+.content-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+}
+
+.page-title { font-size: 28px; font-weight: 800; }
+
+.period-pills {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+}
+
+.period-pill {
+  padding: 6px 14px;
+  font-size: 12px; font-weight: 600;
+  color: var(--white-55);
+  background: none; border: none; border-radius: var(--r-full); cursor: pointer;
+}
+
+.period-pill.active { background: var(--white-15); color: var(--white-92); }
+
+/* Summary cards */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  padding: 20px;
+}
+
+.summary-card .label { font-size: 12px; color: var(--white-55); margin-bottom: 6px; }
+.summary-card .value { font-size: 26px; font-weight: 800; }
+.summary-card .delta { font-size: 13px; font-weight: 600; margin-top: 4px; }
+.summary-card .delta.up { color: var(--green); }
+.summary-card .delta.down { color: var(--red); }
+
+/* Chart area */
+.chart-area {
+  background: var(--navy-700);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  height: 200px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+
+.chart-area .chart-label {
+  position: absolute;
+  top: 16px; left: 20px;
+  font-size: 13px; font-weight: 600; color: var(--white-55);
+}
+
+/* Fake chart line */
+.chart-line {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(18,204,255,0.15), transparent);
+  border-top: 2px solid var(--cyan);
+  mask: polygon(0% 60%, 14% 45%, 28% 55%, 42% 25%, 57% 35%, 71% 15%, 85% 20%, 100% 10%, 100% 100%, 0% 100%);
+  -webkit-mask: polygon(0% 60%, 14% 45%, 28% 55%, 42% 25%, 57% 35%, 71% 15%, 85% 20%, 100% 10%, 100% 100%, 0% 100%);
+}
+
+/* Controls row */
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.controls-row .section-title { font-size: 18px; font-weight: 700; }
+
+.btn-group { display: flex; gap: 8px; }
+
+.btn-outline {
+  font-size: 11px; font-weight: 600;
+  color: var(--white-55);
+  background: none;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.btn-outline:hover { color: var(--white-75); border-color: var(--white-35); }
+.btn-outline.accent { color: var(--cyan); border-color: rgba(18,204,255,0.3); }
+
+/* Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 11px; font-weight: 600;
+  color: var(--white-55);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--white-08);
+  background: var(--white-03);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.data-table th:hover { color: var(--white-75); }
+
+.data-table th .sort-icon { font-size: 10px; margin-left: 4px; opacity: 0.4; }
+
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+  white-space: nowrap;
+}
+
+.data-table tr:hover > td { background: var(--white-03); }
+
+/* Expandable row (Senior Trader) */
+.row-parent {
+  cursor: pointer;
+}
+
+.row-parent td:first-child {
+  font-weight: 600;
+  color: var(--white-92);
+}
+
+.expand-arrow {
+  display: inline-block;
+  width: 16px;
+  color: var(--white-35);
+  margin-right: 4px;
+  font-size: 10px;
+}
+
+/* Nested row (Trader under Senior Trader) */
+.row-child td {
+  background: var(--white-03);
+  border-bottom-color: var(--white-03);
+}
+
+.row-child td:first-child {
+  padding-left: 42px;
+}
+
+.row-child .trader-link {
+  color: var(--cyan);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.row-child .trader-link:hover { text-decoration: underline; }
+
+/* PnL styling */
+.pnl-up { color: var(--green); font-weight: 600; }
+.pnl-down { color: var(--red); font-weight: 600; }
+.pnl-neutral { color: var(--white-55); }
+
+/* PM link */
+.pm-link { color: var(--cyan); font-size: 12px; }
+
+/* Trader open trades section (drill-down) */
+.trades-drilldown {
+  background: var(--navy-700);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  margin: 16px 0 24px;
+  overflow: hidden;
+}
+
+.trades-drilldown-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--white-08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white-03);
+}
+
+.trades-drilldown-header .title {
+  font-size: 14px; font-weight: 600;
+}
+
+.trades-drilldown-header .close-btn {
+  font-size: 18px;
+  color: var(--white-35);
+  background: none; border: none; cursor: pointer;
+}
+
+.trades-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.trades-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 10px; font-weight: 600;
+  color: var(--white-55);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--white-05);
+}
+
+.trades-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--white-03);
+  color: var(--white-75);
+}
+
+.trades-table tr:hover td { background: var(--white-03); cursor: pointer; }
+
+.direction-long { color: var(--green); font-weight: 600; }
+.direction-short { color: var(--red); font-weight: 600; }
+
+/* ============================================================
+   TRADE DETAIL MODAL
+   Shows when clicking a specific trade
+   Content: Trade Lifecycle + Journal data
+   ============================================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--navy-800);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  width: 900px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-elevated);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--white-08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: var(--navy-800);
+  z-index: 1;
+}
+
+.modal-header .title { font-size: 18px; font-weight: 700; }
+
+.modal-close {
+  font-size: 20px;
+  color: var(--white-35);
+  background: none; border: none; cursor: pointer;
+  padding: 4px 8px;
+}
+
+.modal-close:hover { color: var(--white-75); }
+
+.modal-body { padding: 24px; }
+
+/* Trade chart area */
+.trade-chart {
+  background: var(--navy-700);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  height: 240px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.trade-chart .chart-label {
+  position: absolute;
+  top: 12px; left: 16px;
+  font-size: 12px; font-weight: 600; color: var(--white-55);
+}
+
+/* Entry/Exit/SL/TP markers */
+.trade-chart .marker {
+  position: absolute;
+  right: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+}
+
+.trade-chart .marker.entry { top: 100px; background: rgba(18,204,255,0.2); color: var(--cyan); border: 1px solid rgba(18,204,255,0.3); }
+.trade-chart .marker.exit { top: 70px; background: rgba(0,230,138,0.2); color: var(--green); border: 1px solid rgba(0,230,138,0.3); }
+.trade-chart .marker.sl { top: 160px; background: rgba(255,77,106,0.2); color: var(--red); border: 1px solid rgba(255,77,106,0.3); }
+.trade-chart .marker.tp { top: 40px; background: rgba(129,231,11,0.2); color: var(--lime, #81E70B); border: 1px solid rgba(129,231,11,0.3); }
+
+/* Horizontal marker lines */
+.trade-chart .line {
+  position: absolute;
+  left: 60px; right: 80px;
+  height: 1px;
+}
+
+.trade-chart .line.entry-line { top: 108px; border-top: 1px dashed var(--cyan); opacity: 0.3; }
+.trade-chart .line.exit-line { top: 78px; border-top: 1px dashed var(--green); opacity: 0.3; }
+.trade-chart .line.sl-line { top: 168px; border-top: 1px dashed var(--red); opacity: 0.3; }
+.trade-chart .line.tp-line { top: 48px; border-top: 1px dashed rgba(129,231,11,0.5); opacity: 0.3; }
+
+/* Trade params grid */
+.params-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.param-item {
+  background: var(--white-03);
+  border: 1px solid var(--white-05);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+}
+
+.param-item .label { font-size: 11px; color: var(--white-55); margin-bottom: 4px; }
+.param-item .value { font-size: 15px; font-weight: 700; }
+
+/* Journal section in modal */
+.journal-section {
+  background: var(--white-03);
+  border: 1px solid var(--white-05);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.journal-section .section-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55); margin-bottom: 10px;
+}
+
+.journal-section .journal-text {
+  font-size: 14px; color: var(--white-75); line-height: 1.7;
+}
+
+/* Change log */
+.change-log {
+  font-size: 12px;
+}
+
+.change-log .log-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--white-03);
+  color: var(--white-55);
+}
+
+.change-log .log-time { color: var(--white-35); font-size: 11px; min-width: 140px; }
+.change-log .log-action { color: var(--white-75); }
+
+/* ============================================================
+   SECTION 2: TRADE HISTORY SUB-TAB
+   Performance → Trade History
+   ============================================================ */
+
+.filters-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-select {
+  background: var(--navy-700);
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: var(--font);
+}
+
+.filter-input {
+  background: var(--navy-700);
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: var(--font);
+  width: 140px;
+}
+
+.btn-filter {
+  padding: 8px 16px;
+  font-size: 12px; font-weight: 600;
+  border-radius: var(--r-sm);
+  border: none; cursor: pointer;
+}
+
+.btn-apply { background: var(--cyan); color: var(--navy-900); }
+.btn-reset { background: none; border: 1px solid var(--white-15); color: var(--white-55); }
+
+/* Separator */
+.section-divider {
+  margin: 48px 0;
+  border-top: 2px dashed var(--white-15);
+  padding-top: 32px;
+}
+
+.section-divider-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--white-35);
+  text-align: center; margin-bottom: 24px;
+}
+
+/* Search */
+.search-input {
+  background: var(--navy-700);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 8px 14px 8px 32px;
+  font-size: 13px;
+  color: var(--white-75);
+  font-family: var(--font);
+  width: 240px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--white-55);
+}
+
+.pagination .pages { display: flex; gap: 4px; }
+
+.pagination .page-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  background: none; border: 1px solid var(--white-08);
+  color: var(--white-55); cursor: pointer; font-size: 12px;
+}
+
+.pagination .page-btn.active { background: var(--white-15); color: var(--white-92); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<!-- ============================================================
+     VIEW 1: TEAM LEAD — PERFORMANCE TAB
+     Sub-tabs: Team Analytics | Trade History
+     Shows hierarchical table with drill-down to open trades
+     ============================================================ -->
+
+<div class="workspace">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <a class="logo">
+        <div class="logo-box"></div>
+        <span class="logo-text">TrigonumTrade</span>
+      </a>
+      <div class="role-tag">Team Lead</div>
+    </div>
+
+    <div class="nav-item">📊 Analytics</div>
+    <div class="nav-item">📈 Trading</div>
+    <div class="nav-item active">🏆 Performance</div>
+    <div class="nav-item">🛡️ Risk Management</div>
+    <div class="nav-item">🏗️ Org Structure</div>
+    <div class="nav-item">💰 Investing</div>
+  </div>
+
+  <div class="main">
+    <!-- Sub-tabs: Team Analytics | Trade History -->
+    <div class="sub-tabs">
+      <button class="sub-tab-btn active">Team Analytics</button>
+      <button class="sub-tab-btn">Trade History</button>
+    </div>
+
+    <!-- Header -->
+    <div class="content-header">
+      <div class="page-title">Performance</div>
+      <div class="period-pills">
+        <button class="period-pill">Day</button>
+        <button class="period-pill active">Week</button>
+        <button class="period-pill">Month</button>
+        <button class="period-pill">Quarter</button>
+        <button class="period-pill">Year</button>
+        <button class="period-pill">Custom</button>
+      </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="label">Capital Under Management</div>
+        <div class="value">$2,456,789</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Change Today</div>
+        <div class="value">+$12,345</div>
+        <div class="delta up">+0.50%</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Change This Week</div>
+        <div class="value">+$45,678</div>
+        <div class="delta up">+1.89%</div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-area">
+      <div class="chart-label">Capital Change — Last 7 Days</div>
+      <div class="chart-line"></div>
+    </div>
+
+    <!-- Hierarchical Team Table -->
+    <div class="controls-row">
+      <div class="section-title">Team</div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <input class="search-input" placeholder="Search by name..." />
+        <div class="btn-group">
+          <button class="btn-outline accent">Expand All</button>
+          <button class="btn-outline">Collapse All</button>
+        </div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Senior Trader <span class="sort-icon">▼</span></th>
+          <th>Capital <span class="sort-icon">⇅</span></th>
+          <th>Unrealized PnL <span class="sort-icon">⇅</span></th>
+          <th>Realized PnL (Period) <span class="sort-icon">⇅</span></th>
+          <th>Share <span class="sort-icon">⇅</span></th>
+          <th>PM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Senior Trader 1: EXPANDED -->
+        <tr class="row-parent">
+          <td><span class="expand-arrow">▼</span> Alexei Petrov</td>
+          <td>$845,200</td>
+          <td class="pnl-up">+$4,230 (+0.50%)</td>
+          <td class="pnl-up">+$18,400 (+2.22%)</td>
+          <td>34%</td>
+          <td class="pm-link">M. Ivanova</td>
+        </tr>
+
+        <!-- Trader 1 under Alexei (SELECTED — has drill-down) -->
+        <tr class="row-child" style="background:rgba(18,204,255,0.05);">
+          <td><a class="trader-link">Dmitry Volkov</a></td>
+          <td>$320,000</td>
+          <td class="pnl-up">+$1,840 (+0.58%)</td>
+          <td class="pnl-up">+$7,200 (+2.30%)</td>
+          <td>2% / 10%</td>
+          <td></td>
+        </tr>
+
+        <!-- Drill-down: Dmitry's open trades -->
+        <tr>
+          <td colspan="6" style="padding:0;border:none;">
+            <div class="trades-drilldown">
+              <div class="trades-drilldown-header">
+                <div class="title">Open Trades — Dmitry Volkov <span style="font-size:12px;color:var(--white-55);font-weight:400;">(3 positions)</span></div>
+                <button class="close-btn">×</button>
+              </div>
+              <table class="trades-table">
+                <thead>
+                  <tr>
+                    <th>Instrument</th>
+                    <th>Direction</th>
+                    <th>Volume</th>
+                    <th>Leverage</th>
+                    <th>Mode</th>
+                    <th>Entry Price</th>
+                    <th>Value</th>
+                    <th>SL</th>
+                    <th>TP</th>
+                    <th>Unrealized PnL</th>
+                    <th>Entry Date</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>BTCUSDT</strong></td>
+                    <td class="direction-long">LONG</td>
+                    <td>0.5 BTC</td>
+                    <td>10x</td>
+                    <td>Cross</td>
+                    <td>$67,240</td>
+                    <td>$33,620</td>
+                    <td style="color:var(--red);">$66,500</td>
+                    <td style="color:var(--green);">$69,000</td>
+                    <td class="pnl-up">+$325 (+0.97%)</td>
+                    <td style="color:var(--white-55);">03/05 14:20</td>
+                    <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;">Details</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>ETHUSDT</strong></td>
+                    <td class="direction-long">LONG</td>
+                    <td>5.0 ETH</td>
+                    <td>5x</td>
+                    <td>Isolated</td>
+                    <td>$3,420</td>
+                    <td>$17,100</td>
+                    <td style="color:var(--red);">$3,350</td>
+                    <td style="color:var(--green);">$3,600</td>
+                    <td class="pnl-up">+$325 (+1.90%)</td>
+                    <td style="color:var(--white-55);">03/04 12:05</td>
+                    <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;">Details</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>SOLUSDT</strong></td>
+                    <td class="direction-short">SHORT</td>
+                    <td>100 SOL</td>
+                    <td>3x</td>
+                    <td>Cross</td>
+                    <td>$142.50</td>
+                    <td>$14,250</td>
+                    <td style="color:var(--red);">$148.00</td>
+                    <td style="color:var(--green);">$138.00</td>
+                    <td class="pnl-down">-$270 (-1.89%)</td>
+                    <td style="color:var(--white-55);">03/06 09:45</td>
+                    <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;">Details</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Trader 2 under Alexei -->
+        <tr class="row-child">
+          <td><a class="trader-link">Anna Sokolova</a></td>
+          <td>$280,000</td>
+          <td class="pnl-down">-$620 (-0.22%)</td>
+          <td class="pnl-up">+$5,100 (+1.86%)</td>
+          <td>2% / 8%</td>
+          <td></td>
+        </tr>
+
+        <!-- Trader 3 under Alexei -->
+        <tr class="row-child">
+          <td><a class="trader-link">Igor Morozov</a></td>
+          <td>$245,200</td>
+          <td class="pnl-up">+$3,010 (+1.23%)</td>
+          <td class="pnl-up">+$6,100 (+2.55%)</td>
+          <td>3% / 7%</td>
+          <td></td>
+        </tr>
+
+        <!-- Senior Trader 2: COLLAPSED -->
+        <tr class="row-parent">
+          <td><span class="expand-arrow">▶</span> Maria Kuznetsova</td>
+          <td>$612,400</td>
+          <td class="pnl-down">-$1,280 (-0.21%)</td>
+          <td class="pnl-up">+$9,800 (+1.63%)</td>
+          <td>25%</td>
+          <td class="pm-link">D. Popov</td>
+        </tr>
+
+        <!-- Senior Trader 3: COLLAPSED -->
+        <tr class="row-parent">
+          <td><span class="expand-arrow">▶</span> Nikolai Orlov</td>
+          <td>$534,600</td>
+          <td class="pnl-up">+$2,180 (+0.41%)</td>
+          <td class="pnl-up">+$12,300 (+2.35%)</td>
+          <td>22%</td>
+          <td class="pm-link">S. Kozlov</td>
+        </tr>
+
+        <!-- Senior Trader 4: COLLAPSED -->
+        <tr class="row-parent">
+          <td><span class="expand-arrow">▶</span> Elena Fedorova</td>
+          <td>$464,589</td>
+          <td class="pnl-down">-$890 (-0.19%)</td>
+          <td class="pnl-up">+$5,578 (+1.21%)</td>
+          <td>19%</td>
+          <td class="pm-link">A. Novikova</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <div>Showing 1–4 of 4 senior traders (15 traders total)</div>
+      <div class="pages">
+        <button class="page-btn active">1</button>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         SECTION DIVIDER — TRADE HISTORY SUB-TAB
+         ============================================================ -->
+    <div class="section-divider">
+      <div class="section-divider-label">Below: Trade History Sub-Tab (when "Trade History" sub-tab is active)</div>
+    </div>
+
+    <!-- Trade History Filters -->
+    <div class="controls-row">
+      <div class="section-title">Trade History</div>
+    </div>
+
+    <div class="filters-bar">
+      <select class="filter-select">
+        <option>All Traders</option>
+        <option>D. Volkov</option>
+        <option>A. Sokolova</option>
+        <option>I. Morozov</option>
+      </select>
+      <select class="filter-select">
+        <option>All Senior Traders</option>
+        <option>A. Petrov</option>
+        <option>M. Kuznetsova</option>
+      </select>
+      <input class="filter-input" type="date" value="2026-03-01" />
+      <span style="color:var(--white-35);">—</span>
+      <input class="filter-input" type="date" value="2026-03-06" />
+      <select class="filter-select">
+        <option>All Instruments</option>
+        <option>BTCUSDT</option>
+        <option>ETHUSDT</option>
+        <option>SOLUSDT</option>
+      </select>
+      <select class="filter-select">
+        <option>Direction</option>
+        <option>Buy / Long</option>
+        <option>Sell / Short</option>
+      </select>
+      <select class="filter-select">
+        <option>Status</option>
+        <option>Open</option>
+        <option>Closed</option>
+      </select>
+      <select class="filter-select">
+        <option>Result</option>
+        <option>Profit</option>
+        <option>Loss</option>
+        <option>Break-even</option>
+      </select>
+      <button class="btn-filter btn-apply">Apply</button>
+      <button class="btn-filter btn-reset">Reset</button>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Trader</th>
+          <th>Instrument</th>
+          <th>Direction</th>
+          <th>Volume</th>
+          <th>Leverage</th>
+          <th>Entry Price</th>
+          <th>Exit Price</th>
+          <th>SL</th>
+          <th>TP</th>
+          <th>PnL</th>
+          <th>Entry Date</th>
+          <th>Close Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>D. Volkov</strong></td>
+          <td>BTCUSDT</td>
+          <td class="direction-long">LONG</td>
+          <td>0.3 BTC</td>
+          <td>10x</td>
+          <td>$66,800</td>
+          <td>$67,950</td>
+          <td>$66,200</td>
+          <td>$68,500</td>
+          <td class="pnl-up">+$345 (+1.72%)</td>
+          <td style="color:var(--white-55);">03/04 09:15</td>
+          <td style="color:var(--white-55);">03/05 16:40</td>
+          <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>A. Sokolova</strong></td>
+          <td>SOLUSDT</td>
+          <td class="direction-short">SHORT</td>
+          <td>200 SOL</td>
+          <td>5x</td>
+          <td>$145.20</td>
+          <td>$141.80</td>
+          <td>$148.00</td>
+          <td>$140.00</td>
+          <td class="pnl-up">+$680 (+2.34%)</td>
+          <td style="color:var(--white-55);">03/03 11:30</td>
+          <td style="color:var(--white-55);">03/04 08:20</td>
+          <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>I. Morozov</strong></td>
+          <td>ETHUSDT</td>
+          <td class="direction-long">LONG</td>
+          <td>3.0 ETH</td>
+          <td>3x</td>
+          <td>$3,480</td>
+          <td>$3,390</td>
+          <td>$3,350</td>
+          <td>$3,600</td>
+          <td class="pnl-down">-$270 (-2.59%)</td>
+          <td style="color:var(--white-55);">03/02 14:00</td>
+          <td style="color:var(--white-55);">03/03 09:15</td>
+          <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>D. Volkov</strong></td>
+          <td>AVAXUSDT</td>
+          <td class="direction-long">LONG</td>
+          <td>50 AVAX</td>
+          <td>5x</td>
+          <td>$38.40</td>
+          <td>$39.10</td>
+          <td>$37.80</td>
+          <td>$40.00</td>
+          <td class="pnl-up">+$35 (+1.82%)</td>
+          <td style="color:var(--white-55);">03/01 16:45</td>
+          <td style="color:var(--white-55);">03/02 11:30</td>
+          <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;">Details</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <div>Showing 1–4 of 156 trades</div>
+      <div class="pages">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">...</button>
+        <button class="page-btn">32</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TRADE DETAIL MODAL
+     Opens when clicking "Details" on any trade
+     Shows: Chart with markers + Trade params + Journal text + Change log
+     ============================================================ -->
+
+<div class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <div class="title">Trade Detail — BTCUSDT LONG</div>
+        <div style="font-size:12px;color:var(--white-55);margin-top:4px;">Dmitry Volkov · Closed 03/05 16:40 · Duration: 1d 7h 25m</div>
+      </div>
+      <button class="modal-close">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Chart with entry/exit/SL/TP markers -->
+      <div class="trade-chart">
+        <div class="chart-label">BTCUSDT · 1H · 03/04 – 03/05</div>
+        <div class="line tp-line"></div>
+        <div class="line exit-line"></div>
+        <div class="line entry-line"></div>
+        <div class="line sl-line"></div>
+        <div class="marker tp">TP $68,500</div>
+        <div class="marker exit">Exit $67,950</div>
+        <div class="marker entry">Entry $66,800</div>
+        <div class="marker sl">SL $66,200</div>
+      </div>
+
+      <!-- Trade parameters -->
+      <div class="params-grid">
+        <div class="param-item">
+          <div class="label">Instrument</div>
+          <div class="value">BTCUSDT</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Direction</div>
+          <div class="value" style="color:var(--green);">LONG</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Volume</div>
+          <div class="value">0.3 BTC</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Leverage</div>
+          <div class="value">10x Cross</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Entry Price</div>
+          <div class="value">$66,800</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Exit Price</div>
+          <div class="value">$67,950</div>
+        </div>
+        <div class="param-item">
+          <div class="label">PnL</div>
+          <div class="value pnl-up">+$345 (+1.72%)</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Fees</div>
+          <div class="value" style="color:var(--white-55);">$12.40</div>
+        </div>
+        <div class="param-item">
+          <div class="label">SL</div>
+          <div class="value" style="color:var(--red);">$66,200</div>
+        </div>
+        <div class="param-item">
+          <div class="label">TP</div>
+          <div class="value" style="color:var(--green);">$68,500</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Risk / Reward</div>
+          <div class="value">1 : 2.83</div>
+        </div>
+        <div class="param-item">
+          <div class="label">Risk per Trade</div>
+          <div class="value">0.56%</div>
+        </div>
+      </div>
+
+      <!-- Journal entry (from trader's journal) -->
+      <div class="journal-section">
+        <div class="section-label">Journal Entry (from Trader)</div>
+        <div class="journal-text">
+          <strong>Entry Reason:</strong> BTC broke through the $66,500 resistance level with strong volume. 4H RSI was at 58 with room to run. Funding rates were neutral. Entry on the pullback to the newly established support.
+          <br><br>
+          <strong>Plan:</strong> Target $68,500 (previous swing high). SL below the breakout candle at $66,200. R:R approximately 1:2.8.
+          <br><br>
+          <strong>Exit Notes:</strong> Closed manually at $67,950 as momentum was fading near the target zone. Didn't wait for full TP hit.
+        </div>
+      </div>
+
+      <!-- Change log (Trade Lifecycle) -->
+      <div class="journal-section">
+        <div class="section-label">Trade Lifecycle</div>
+        <div class="change-log">
+          <div class="log-item">
+            <span class="log-time">03/04 09:15:32</span>
+            <span class="log-action">Position opened: LONG 0.3 BTC @ $66,800, SL $66,000, TP $68,500</span>
+          </div>
+          <div class="log-item">
+            <span class="log-time">03/04 14:22:10</span>
+            <span class="log-action">SL moved: $66,000 → $66,200 (trailed up after 1st push)</span>
+          </div>
+          <div class="log-item">
+            <span class="log-time">03/05 08:45:00</span>
+            <span class="log-action">Partial close: 0.1 BTC @ $67,400 (+$60)</span>
+          </div>
+          <div class="log-item">
+            <span class="log-time">03/05 16:40:15</span>
+            <span class="log-action">Position closed: 0.2 BTC @ $67,950 (+$285). Total PnL: +$345</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Close button -->
+      <div style="text-align:right;margin-top:16px;">
+        <button class="btn-outline" style="padding:8px 24px;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

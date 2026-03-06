@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Fee Configuration</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * FEE CONFIG PAGE — Investment program fee settings
+ * Route: /fee-config/:programId
+ * Auth required. Uses AppLayout. Admin only.
+ *
+ * Features:
+ * - Program header with name + back navigation
+ * - Management fee section (rate %, period, billing date)
+ * - Performance fee section (rate %, hurdle rate, high-water mark toggle)
+ * - Fee schedule table (upcoming billing dates)
+ * - Save / Reset buttons
+ *
+ * APIs:
+ * - useGetInvestProgramByIdQuery (program details)
+ * - useGetFeeConfigQuery (current fee config)
+ * - useUpdateFeeConfigMutation (save changes)
+ *
+ * Form: React Hook Form + Zod validation
+ * All numeric inputs use controlled decimal inputs
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+/* Back nav */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--white-55);
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+.back-link:hover { color: var(--cyan); }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+.page-title { font-size: 32px; font-weight: 800; }
+.program-badge {
+  background: var(--white-08);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-full);
+  padding: 4px 14px;
+  font-size: 12px;
+  color: var(--white-55);
+}
+
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.card-subtitle {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 20px;
+}
+
+/* Form layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.form-group { margin-bottom: 0; }
+.form-group.full-width { grid-column: span 2; }
+
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  color: var(--white-92);
+  font-size: 14px;
+  width: 100%;
+}
+.input-field:focus { outline: none; border-color: var(--cyan); }
+
+/* Input with suffix */
+.input-wrapper {
+  position: relative;
+}
+.input-suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--white-35);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Toggle switch */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--white-05);
+}
+.toggle-row:last-child { border-bottom: none; }
+
+.toggle-info {
+  flex: 1;
+}
+.toggle-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.toggle-desc {
+  font-size: 12px;
+  color: var(--white-55);
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--white-15);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-switch.active { background: var(--cyan); }
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+}
+.toggle-switch.active::after { transform: translateX(20px); }
+
+/* Select styled */
+select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+/* Divider */
+.section-divider {
+  height: 1px;
+  background: var(--white-08);
+  margin: 24px 0;
+}
+
+/* Fee schedule table */
+.schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.schedule-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 10px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08);
+}
+.schedule-table td {
+  font-size: 13px; padding: 10px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.schedule-table tr:hover td { background: var(--white-03); }
+
+.badge-upcoming {
+  background: rgba(18,204,255,0.1);
+  color: var(--cyan);
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-completed {
+  background: rgba(0,230,138,0.1);
+  color: var(--green);
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Actions */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-secondary {
+  background: var(--white-08);
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <a href="/invest-program" class="back-link">&larr; Back to Programs</a>
+
+    <div class="page-header">
+      <h1 class="page-title">Fee Configuration</h1>
+      <span class="program-badge">Alpha Growth Fund</span>
+    </div>
+
+    <!-- Management Fee -->
+    <div class="card">
+      <h2 class="card-title">Management Fee</h2>
+      <p class="card-subtitle">Recurring fee charged on the total assets under management</p>
+
+      <div class="form-grid-3">
+        <div class="form-group">
+          <label class="field-label">Fee Rate</label>
+          <div class="input-wrapper">
+            <input class="input-field" type="number" value="2.00" step="0.01">
+            <span class="input-suffix">%</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Billing Period</label>
+          <select class="input-field">
+            <option>Monthly</option>
+            <option>Quarterly</option>
+            <option>Annually</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Billing Day</label>
+          <select class="input-field">
+            <option>1st of month</option>
+            <option>15th of month</option>
+            <option>Last day of month</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Fee -->
+    <div class="card">
+      <h2 class="card-title">Performance Fee</h2>
+      <p class="card-subtitle">Fee charged on profits exceeding the hurdle rate</p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="field-label">Fee Rate</label>
+          <div class="input-wrapper">
+            <input class="input-field" type="number" value="20.00" step="0.01">
+            <span class="input-suffix">%</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Hurdle Rate</label>
+          <div class="input-wrapper">
+            <input class="input-field" type="number" value="8.00" step="0.01">
+            <span class="input-suffix">% p.a.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">High-Water Mark</div>
+          <div class="toggle-desc">Only charge performance fee on new all-time-high profits</div>
+        </div>
+        <div class="toggle-switch active"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">Crystallization Period</div>
+          <div class="toggle-desc">Lock in performance fee at end of each billing period</div>
+        </div>
+        <div class="toggle-switch active"></div>
+      </div>
+    </div>
+
+    <!-- Fee Schedule -->
+    <div class="card">
+      <h2 class="card-title">Upcoming Fee Schedule</h2>
+      <p class="card-subtitle">Next billing dates based on current configuration</p>
+
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Fee Type</th>
+            <th>Estimated Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Apr 1, 2026</td>
+            <td>Management Fee</td>
+            <td>$2,490.00</td>
+            <td><span class="badge-upcoming">Upcoming</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Apr 1, 2026</td>
+            <td>Performance Fee</td>
+            <td>$1,280.00</td>
+            <td><span class="badge-upcoming">Upcoming</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Mar 1, 2026</td>
+            <td>Management Fee</td>
+            <td>$2,340.00</td>
+            <td><span class="badge-completed">Completed</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">Mar 1, 2026</td>
+            <td>Performance Fee</td>
+            <td>$950.00</td>
+            <td><span class="badge-completed">Completed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button class="btn-secondary">Reset Changes</button>
+      <button class="btn-primary">Save Configuration</button>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

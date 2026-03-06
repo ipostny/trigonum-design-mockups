@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Investment Program Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * INVEST PROGRAM MANAGEMENT — Admin investment program CRUD
+ * Route: /invest-program (tabs: Create Program, Programs List)
+ * Route: /investment-operations (separate page for capital operations)
+ * Auth required. Uses AppLayout. Admin only.
+ *
+ * CREATE PROGRAM TAB:
+ * - Form: name, description, strategy, risk level, min investment
+ * - Trade accounts multi-select
+ * - Fee configuration link
+ * - Create button
+ *
+ * PROGRAMS LIST TAB:
+ * - Program cards with key metrics (AUM, investors, performance)
+ * - Status badge (Active, Paused, Closed)
+ * - Actions: Edit, Fee Config, View Investors, Pause/Close
+ *
+ * INVESTMENT OPERATIONS:
+ * - Table of capital movements (deposits/withdrawals by investors)
+ * - Action buttons: Approve, Process, Reject
+ * - Filter by program, status, investor
+ *
+ * APIs:
+ * - useGetAllInvestProgramsQuery
+ * - useCreateInvestProgramMutation
+ * - useUpdateInvestProgramMutation
+ * - useGetInvestmentOperationsQuery
+ * - useProcessInvestmentOperationMutation
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-title { font-size: 32px; font-weight: 800; margin-bottom: 24px; }
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 28px;
+}
+.tab-btn {
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.tab-btn:hover { color: var(--white-75); }
+.tab-btn.active { color: var(--white-92); }
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 24px;
+  right: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-group {}
+.form-group.full-width { grid-column: span 2; }
+
+.field-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  color: var(--white-92);
+  font-size: 14px;
+  width: 100%;
+}
+.input-field:focus { outline: none; border-color: var(--cyan); }
+
+textarea.input-field {
+  min-height: 80px;
+  resize: vertical;
+  font-family: var(--font);
+}
+
+select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.input-wrapper { position: relative; }
+.input-suffix {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--white-35); font-size: 13px;
+}
+
+/* Multi-select chips */
+.chip-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  min-height: 42px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--white-08);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-full);
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--white-75);
+}
+.chip-remove {
+  cursor: pointer;
+  color: var(--white-35);
+  font-size: 10px;
+}
+.chip-add {
+  color: var(--white-35);
+  font-size: 12px;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== PROGRAMS LIST TAB ===== */
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.program-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.program-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.program-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.program-strategy {
+  font-size: 12px;
+  color: var(--white-55);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-active { background: rgba(0,230,138,0.1); color: var(--green); }
+.badge-paused { background: rgba(255,176,32,0.1); color: var(--amber); }
+.badge-closed { background: rgba(255,255,255,0.05); color: var(--white-55); }
+
+.program-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.metric-item {}
+.metric-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 2px;
+}
+.metric-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.program-actions {
+  display: flex;
+  gap: 6px;
+  border-top: 1px solid var(--white-08);
+  padding-top: 12px;
+}
+.action-btn-sm {
+  padding: 6px 12px;
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: var(--white-08);
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+}
+.action-btn-sm:hover { background: var(--white-15); }
+.action-btn-sm.action-fees { color: var(--cyan); }
+.action-btn-sm.action-pause { color: var(--amber); }
+
+/* ===== INVESTMENT OPERATIONS (separate page content) ===== */
+.filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.filter-group { flex: 1; }
+.filter-group label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 4px;
+  display: block;
+}
+.filter-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  color: var(--white-92);
+  font-size: 12px;
+  width: 100%;
+}
+
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 12px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+}
+.data-table td {
+  font-size: 13px; padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+.badge-pending { background: rgba(255,176,32,0.1); color: var(--amber); padding: 2px 10px; border-radius: var(--r-full); font-size: 11px; font-weight: 600; }
+.badge-processed { background: rgba(0,230,138,0.1); color: var(--green); padding: 2px 10px; border-radius: var(--r-full); font-size: 11px; font-weight: 600; }
+.badge-rejected { background: rgba(255,77,106,0.1); color: var(--red); padding: 2px 10px; border-radius: var(--r-full); font-size: 11px; font-weight: 600; }
+
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--white-08);
+}
+.rows-info { font-size: 12px; color: var(--white-55); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Investment Programs</h1>
+
+    <div class="tab-bar">
+      <button class="tab-btn">Create Program</button>
+      <button class="tab-btn active">Programs List</button>
+    </div>
+
+    <!-- ======= CREATE PROGRAM TAB ======= -->
+    <!--
+    <div class="card">
+      <h3 class="card-title">New Investment Program</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="field-label">Program Name</label>
+          <input class="input-field" type="text" placeholder="e.g. Alpha Growth Fund">
+        </div>
+        <div class="form-group">
+          <label class="field-label">Strategy</label>
+          <select class="input-field">
+            <option value="">Select strategy...</option>
+            <option>Conservative</option>
+            <option>Balanced</option>
+            <option>Aggressive</option>
+          </select>
+        </div>
+        <div class="form-group full-width">
+          <label class="field-label">Description</label>
+          <textarea class="input-field" placeholder="Describe the investment program..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Risk Level</label>
+          <select class="input-field">
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Minimum Investment</label>
+          <div class="input-wrapper">
+            <input class="input-field" type="number" placeholder="10000">
+            <span class="input-suffix">USD</span>
+          </div>
+        </div>
+        <div class="form-group full-width">
+          <label class="field-label">Trade Accounts</label>
+          <div class="chip-input">
+            <span class="chip">Bybit Main <span class="chip-remove">&times;</span></span>
+            <span class="chip">Bybit Sub-1 <span class="chip-remove">&times;</span></span>
+            <span class="chip-add">+ Add account</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary">Create Program</button>
+    </div>
+    -->
+
+    <!-- ======= PROGRAMS LIST TAB ======= -->
+    <div class="programs-grid">
+      <div class="program-card">
+        <div class="program-header">
+          <div>
+            <div class="program-name">Alpha Growth Fund</div>
+            <div class="program-strategy">Balanced Strategy</div>
+          </div>
+          <span class="badge badge-active">Active</span>
+        </div>
+        <div class="program-metrics">
+          <div class="metric-item">
+            <div class="metric-label">AUM</div>
+            <div class="metric-value">$1.2M</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Investors</div>
+            <div class="metric-value">12</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">MTD Return</div>
+            <div class="metric-value" style="color:var(--green);">+4.2%</div>
+          </div>
+        </div>
+        <div class="program-actions">
+          <button class="action-btn-sm">Edit</button>
+          <button class="action-btn-sm action-fees">Fee Config</button>
+          <button class="action-btn-sm">Investors</button>
+          <button class="action-btn-sm action-pause">Pause</button>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="program-header">
+          <div>
+            <div class="program-name">Beta Momentum</div>
+            <div class="program-strategy">Aggressive Strategy</div>
+          </div>
+          <span class="badge badge-active">Active</span>
+        </div>
+        <div class="program-metrics">
+          <div class="metric-item">
+            <div class="metric-label">AUM</div>
+            <div class="metric-value">$680K</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Investors</div>
+            <div class="metric-value">6</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">MTD Return</div>
+            <div class="metric-value" style="color:var(--red);">-1.8%</div>
+          </div>
+        </div>
+        <div class="program-actions">
+          <button class="action-btn-sm">Edit</button>
+          <button class="action-btn-sm action-fees">Fee Config</button>
+          <button class="action-btn-sm">Investors</button>
+          <button class="action-btn-sm action-pause">Pause</button>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="program-header">
+          <div>
+            <div class="program-name">Gamma Conservative</div>
+            <div class="program-strategy">Conservative Strategy</div>
+          </div>
+          <span class="badge badge-paused">Paused</span>
+        </div>
+        <div class="program-metrics">
+          <div class="metric-item">
+            <div class="metric-label">AUM</div>
+            <div class="metric-value">$320K</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Investors</div>
+            <div class="metric-value">4</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">MTD Return</div>
+            <div class="metric-value" style="color:var(--white-55);">0.0%</div>
+          </div>
+        </div>
+        <div class="program-actions">
+          <button class="action-btn-sm">Edit</button>
+          <button class="action-btn-sm action-fees">Fee Config</button>
+          <button class="action-btn-sm" style="color:var(--green);">Resume</button>
+        </div>
+      </div>
+
+      <div class="program-card">
+        <div class="program-header">
+          <div>
+            <div class="program-name">Delta Legacy</div>
+            <div class="program-strategy">Balanced Strategy</div>
+          </div>
+          <span class="badge badge-closed">Closed</span>
+        </div>
+        <div class="program-metrics">
+          <div class="metric-item">
+            <div class="metric-label">AUM</div>
+            <div class="metric-value">$0</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Investors</div>
+            <div class="metric-value">0</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-label">Lifetime</div>
+            <div class="metric-value" style="color:var(--green);">+12.4%</div>
+          </div>
+        </div>
+        <div class="program-actions">
+          <button class="action-btn-sm">View History</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= INVESTMENT OPERATIONS (separate /investment-operations page) ======= -->
+    <!--
+    <h1 class="page-title">Investment Operations</h1>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Program</label>
+        <select class="filter-input">
+          <option value="">All Programs</option>
+          <option>Alpha Growth Fund</option>
+          <option>Beta Momentum</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select class="filter-input">
+          <option value="">All</option>
+          <option>Pending</option>
+          <option>Processed</option>
+          <option>Rejected</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Investor</label>
+        <input class="filter-input" type="text" placeholder="Search investor...">
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Investor</th>
+            <th>Program</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mar 4, 2026</td>
+            <td style="font-weight:600;color:var(--white-92);">John Smith</td>
+            <td>Alpha Growth Fund</td>
+            <td style="color:var(--green);font-weight:600;">Deposit</td>
+            <td>$25,000.00</td>
+            <td><span class="badge-pending">Pending</span></td>
+            <td>
+              <div style="display:flex;gap:4px;">
+                <button class="action-btn-sm" style="background:rgba(0,230,138,0.15);color:var(--green);border:none;">Approve</button>
+                <button class="action-btn-sm" style="background:rgba(255,77,106,0.1);color:var(--red);border:none;">Reject</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Mar 3, 2026</td>
+            <td style="font-weight:600;color:var(--white-92);">Sarah Connor</td>
+            <td>Alpha Growth Fund</td>
+            <td style="color:var(--red);font-weight:600;">Withdrawal</td>
+            <td>$10,000.00</td>
+            <td><span class="badge-pending">Pending</span></td>
+            <td>
+              <div style="display:flex;gap:4px;">
+                <button class="action-btn-sm" style="background:rgba(0,230,138,0.15);color:var(--green);border:none;">Approve</button>
+                <button class="action-btn-sm" style="background:rgba(255,77,106,0.1);color:var(--red);border:none;">Reject</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Mar 1, 2026</td>
+            <td style="font-weight:600;color:var(--white-92);">Mike Chen</td>
+            <td>Beta Momentum</td>
+            <td style="color:var(--green);font-weight:600;">Deposit</td>
+            <td>$50,000.00</td>
+            <td><span class="badge-processed">Processed</span></td>
+            <td>&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-footer">
+        <div class="rows-info">1-25 of 38</div>
+      </div>
+    </div>
+    -->
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

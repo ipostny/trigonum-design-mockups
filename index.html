@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Design Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --cyan: #12CCFF;
+  --purple: #AF33FF;
+  --green: #00E68A;
+  --red: #FF4D6A;
+  --amber: #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+.video-bg {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden; pointer-events: none; z-index: 0;
+}
+.video-bg video {
+  position: absolute; top: 50%; left: 50%;
+  width: 100%; height: 100%; object-fit: cover;
+  transform: translate(-50%, -50%); opacity: 0.08;
+}
+.container {
+  position: relative; z-index: 1;
+  max-width: 1100px; margin: 0 auto; padding: 48px 32px;
+}
+.header {
+  text-align: center; margin-bottom: 48px;
+}
+.logo {
+  font-size: 14px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 12px;
+}
+h1 {
+  font-size: 36px; font-weight: 800; margin-bottom: 8px;
+}
+.subtitle {
+  font-size: 15px; color: var(--white-55); max-width: 600px; margin: 0 auto;
+}
+.badge {
+  display: inline-block; padding: 4px 12px; border-radius: 9999px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  background: rgba(175,51,255,0.15); color: var(--purple);
+  margin-top: 12px;
+}
+.section-title {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--cyan); margin-bottom: 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--white-08);
+}
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px; margin-bottom: 40px;
+}
+.card {
+  background: rgba(28,28,69,0.6); border: 1px solid var(--white-08);
+  border-radius: 12px; padding: 16px; text-decoration: none;
+  transition: all 0.2s; display: block;
+}
+.card:hover {
+  border-color: var(--cyan); background: rgba(28,28,69,0.9);
+  transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.card-title {
+  font-size: 14px; font-weight: 600; color: var(--white-92); margin-bottom: 4px;
+}
+.card-desc {
+  font-size: 12px; color: var(--white-55); line-height: 1.4;
+}
+.card .new-badge {
+  display: inline-block; padding: 2px 6px; border-radius: 9999px;
+  font-size: 9px; font-weight: 700; background: rgba(0,230,138,0.15);
+  color: var(--green); margin-left: 6px; vertical-align: middle;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.card .deprecated-badge {
+  display: inline-block; padding: 2px 6px; border-radius: 9999px;
+  font-size: 9px; font-weight: 700; background: rgba(255,176,32,0.15);
+  color: var(--amber); margin-left: 6px; vertical-align: middle;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.footer {
+  text-align: center; padding: 32px 0; border-top: 1px solid var(--white-08);
+  font-size: 12px; color: var(--white-35); margin-top: 32px;
+}
+</style>
+</head>
+<body>
+
+<div class="video-bg">
+  <video src="video-header.mp4" autoplay muted loop playsinline></video>
+</div>
+
+<div class="container">
+
+  <div class="header">
+    <div class="logo">Trigonum Trade</div>
+    <h1>Frontend V2 Design Mockups</h1>
+    <div class="subtitle">Interactive prototypes for the new role-based workspace UI. Click through tabs, buttons, modals, and navigation to see how everything connects.</div>
+    <div class="badge">PROTOTYPE - For Review</div>
+  </div>
+
+  <!-- Role Workspaces -->
+  <div class="section-title">Role Workspaces (NEW)</div>
+  <div class="grid">
+    <a href="role-workspaces.html" class="card">
+      <div class="card-title">Role Workspaces <span class="new-badge">New</span></div>
+      <div class="card-desc">Foundation layout for all 4 roles: Team Lead, Senior Trader, Trader, Risk Manager. Tab structures and routing.</div>
+    </a>
+    <a href="team-analytics.html" class="card">
+      <div class="card-title">Team Analytics <span class="new-badge">New</span></div>
+      <div class="card-desc">Hierarchical team table (ST &rarr; Traders), trade detail modal, capital chart.</div>
+    </a>
+    <a href="risk-management.html" class="card">
+      <div class="card-title">Risk Management <span class="new-badge">New</span></div>
+      <div class="card-desc">RM team table with policy dropdown, risk progress bars, action buttons + confirmation popups.</div>
+    </a>
+    <a href="trader-workspace.html" class="card">
+      <div class="card-title">Trader Workspace <span class="new-badge">New</span></div>
+      <div class="card-desc">Trader overview (positions table), journal (strategy editor + trade history with editable popups).</div>
+    </a>
+    <a href="org-structure.html" class="card">
+      <div class="card-title">Org Structure <span class="new-badge">New</span></div>
+      <div class="card-desc">Org tree view + hierarchy management (assign traders to pairs) + ad-hoc groups.</div>
+    </a>
+  </div>
+
+  <!-- Core Pages -->
+  <div class="section-title">Core Pages</div>
+  <div class="grid">
+    <a href="home.html" class="card">
+      <div class="card-title">Home</div>
+      <div class="card-desc">Public landing page with hero, features, footer.</div>
+    </a>
+    <a href="auth.html" class="card">
+      <div class="card-title">Auth</div>
+      <div class="card-desc">Login, Sign Up, Forgot Password, Reset Password.</div>
+    </a>
+    <a href="dashboard.html" class="card">
+      <div class="card-title">Dashboard</div>
+      <div class="card-desc">Admin overview: balance, DDP limits, Fear & Greed widgets.</div>
+    </a>
+    <a href="trading-terminal.html" class="card">
+      <div class="card-title">Trading Terminal</div>
+      <div class="card-desc">TradingView chart, order form, positions, TP/SL.</div>
+    </a>
+    <a href="reports.html" class="card">
+      <div class="card-title">Reports</div>
+      <div class="card-desc">8 report tabs: Orders, Positions, PnL, Performance, Group, Journal, Lifecycle, Team.</div>
+    </a>
+    <a href="monitoring.html" class="card">
+      <div class="card-title">Monitoring</div>
+      <div class="card-desc">Live orders and positions overview (admin).</div>
+    </a>
+  </div>
+
+  <!-- Analytics Sub-tabs -->
+  <div class="section-title">Analytics Sub-tabs (embedded in Trading &rarr; Analytics)</div>
+  <div class="grid">
+    <a href="coinmarketcap.html" class="card">
+      <div class="card-title">CoinMarketCap <span class="deprecated-badge">Sub-tab</span></div>
+      <div class="card-desc">Crypto market overview table. Now "Basic Info" sub-tab in Analytics.</div>
+    </a>
+    <a href="long-short.html" class="card">
+      <div class="card-title">Long/Short <span class="deprecated-badge">Sub-tab</span></div>
+      <div class="card-desc">Market sentiment ratios. Now sub-tab in Analytics.</div>
+    </a>
+    <a href="greed.html" class="card">
+      <div class="card-title">Fear & Greed <span class="deprecated-badge">Sub-tab</span></div>
+      <div class="card-desc">Fear & Greed Index gauge + chart. Now sub-tab in Analytics.</div>
+    </a>
+    <a href="news.html" class="card">
+      <div class="card-title">News <span class="deprecated-badge">Sub-tab</span></div>
+      <div class="card-desc">Crypto news feed. Now sub-tab in Analytics.</div>
+    </a>
+  </div>
+
+  <!-- Management -->
+  <div class="section-title">Management</div>
+  <div class="grid">
+    <a href="members.html" class="card">
+      <div class="card-title">Members</div>
+      <div class="card-desc">User management with role tabs, member cards, invite dialog.</div>
+    </a>
+    <a href="policy.html" class="card">
+      <div class="card-title">Policy</div>
+      <div class="card-desc">Trading policy rules management. Also embedded in RM tab.</div>
+    </a>
+    <a href="ddp.html" class="card">
+      <div class="card-title">DDP</div>
+      <div class="card-desc">Daily deposit protection rules.</div>
+    </a>
+    <a href="audit-log.html" class="card">
+      <div class="card-title">Audit Log</div>
+      <div class="card-desc">System audit trail with expandable change details.</div>
+    </a>
+    <a href="balance.html" class="card">
+      <div class="card-title">Balance</div>
+      <div class="card-desc">Account balance: Review, Transactions, Allocation tabs.</div>
+    </a>
+    <a href="settings.html" class="card">
+      <div class="card-title">Settings</div>
+      <div class="card-desc">Account, Security, Notifications settings tabs.</div>
+    </a>
+  </div>
+
+  <!-- Admin -->
+  <div class="section-title">Admin</div>
+  <div class="grid">
+    <a href="fee-config.html" class="card">
+      <div class="card-title">Fee Config</div>
+      <div class="card-desc">Management + performance fee configuration.</div>
+    </a>
+    <a href="admin-reports.html" class="card">
+      <div class="card-title">Admin Reports</div>
+      <div class="card-desc">Report list + detail views with financial summary.</div>
+    </a>
+    <a href="wallet-management.html" class="card">
+      <div class="card-title">Wallet Management</div>
+      <div class="card-desc">Create address, address list, enable/disable.</div>
+    </a>
+    <a href="approve-trades.html" class="card">
+      <div class="card-title">Approve Trades</div>
+      <div class="card-desc">Pending trade approval queue.</div>
+    </a>
+  </div>
+
+  <!-- Investor -->
+  <div class="section-title">Investor</div>
+  <div class="grid">
+    <a href="invest-program.html" class="card">
+      <div class="card-title">Invest Programs</div>
+      <div class="card-desc">Create programs, list programs, investment operations.</div>
+    </a>
+    <a href="investor-form.html" class="card">
+      <div class="card-title">Investor Form</div>
+      <div class="card-desc">5-step registration wizard.</div>
+    </a>
+    <a href="investor.html" class="card">
+      <div class="card-title">Investor Portal</div>
+      <div class="card-desc">Investor home with strategy cards and performance.</div>
+    </a>
+  </div>
+
+  <!-- Other -->
+  <div class="section-title">Other</div>
+  <div class="grid">
+    <a href="wiki.html" class="card">
+      <div class="card-title">Wiki</div>
+      <div class="card-desc">Knowledge base with section navigation.</div>
+    </a>
+    <a href="legal.html" class="card">
+      <div class="card-title">Legal</div>
+      <div class="card-desc">Privacy Policy + Terms of Service.</div>
+    </a>
+    <a href="_system.html" class="card">
+      <div class="card-title">Design System</div>
+      <div class="card-desc">Color tokens, typography, component reference.</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    TrigonumTrade Frontend V2 &middot; 29 pages &middot; Interactive Prototypes &middot; March 2026
+  </div>
+
+</div>
+</body>
+</html>

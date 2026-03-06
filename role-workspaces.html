@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Role Workspaces (Team Lead, Senior Trader, Trader, Risk Manager)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --lime:   #81E70B;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * ROLE WORKSPACES — Foundation layout for all 4 trading roles
+ *
+ * ARCHITECTURE:
+ * Each role gets a dedicated workspace layout (like InvestorLayout).
+ * The old sidebar navigation is REPLACED by role-specific tab navigation.
+ * After login, users are routed to their role workspace:
+ *   - TEAM_LEAD    → /workspace/team-lead
+ *   - SENIOR_TRADER → /workspace/senior-trader
+ *   - TRADER        → /workspace/trader
+ *   - RISK_MANAGER  → /workspace/risk-manager
+ *   - INVESTOR      → /investor (already exists)
+ *   - ADMINISTRATOR → /admin (keeps old sidebar layout)
+ *
+ * SHARED LAYOUT PATTERN:
+ * - Left sidebar: brand logo, role badge, user info, navigation tabs (vertical)
+ * - Main content: tab content area
+ * - No horizontal top tabs — sidebar tabs like InvestorLayout
+ *
+ * TAB STRUCTURES BY ROLE:
+ *
+ * Team Lead (6 tabs):
+ *   1. Analytics — Hierarchical team table, capital metrics, chart
+ *   2. Trading — Sub-tabs: Terminal | Analytics (CMP, L/S, Greed, News, Liquidations)
+ *   3. Performance — Sub-tabs: Team Analytics | Trade History
+ *   4. Risk Management — Sub-tabs: Team | Policies. Action buttons included.
+ *   5. Org Structure — Tree view + group management
+ *   6. Investing — Full investment program management (create, list, operations)
+ *
+ * Senior Trader (4 tabs):
+ *   1. Team — Flat list of own traders (same columns as TL Analytics, no hierarchy)
+ *   2. Trading — Same as TL Trading
+ *   3. Performance — Same as TL Performance, scoped to own team
+ *   4. Risk Management — Same as TL RM, scoped to own team, WITH action buttons
+ *
+ * Trader (4 tabs):
+ *   1. Overview — Personal summary, capital chart, open positions table
+ *   2. Trading — Same terminal + analytics sub-tabs
+ *   3. Performance — Personal performance only (no team view)
+ *   4. Journal — Sub-tabs: Trading System (editor) | Trade History (editable)
+ *
+ * Risk Manager (4 tabs):
+ *   1. Risk Management — Sub-tabs: Team | Policies. Full action buttons.
+ *   2. Analytics — Flat list of assigned traders, capital metrics
+ *   3. Trading — Same as TL Trading
+ *   4. Performance — Same as TL Performance, scoped to assigned traders
+ *
+ * CONTENT REUSE:
+ * - Trading tab content = trading-terminal.html + analytics sub-tabs
+ * - Analytics sub-tabs = coinmarketcap, long-short, greed, news (no longer standalone)
+ * - Policies sub-tab = policy.html content
+ * - Investing tab = invest-program.html content
+ * - Performance/Trade History = reports.html patterns
+ * - Trade Detail modal = Trade Lifecycle + Journal data
+ *
+ * SCOPE RULES:
+ * - Trader: sees only their own data
+ * - Senior Trader: sees their direct team's data
+ * - Risk Manager: sees their assigned traders' data
+ * - Team Lead: sees ALL traders hierarchically
+ *
+ * PERMISSIONS:
+ * - Team Lead + Risk Manager: can ban trading, assign testing, ban coins, assign meetings
+ * - Senior Trader: can perform RM actions on their own team
+ * - Trader: can edit own journal/strategy, view-only for others
+ * - All supervisors: read-only access to trader journals
+ *
+ * APIs (role workspace):
+ * - useGetCurrentUserQuery → determines role → routes to workspace
+ * - All existing APIs scoped by role/team via backend filters
+ */
+
+/* ============================================================
+   WORKSPACE LAYOUT — Shared across all roles
+   ============================================================ */
+
+.workspace {
+  display: flex;
+  min-height: 100vh;
+}
+
+.workspace-sidebar {
+  width: 260px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.workspace-brand {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--white-08);
+}
+
+.workspace-brand .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--white-92);
+}
+
+.workspace-brand .logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workspace-brand .logo-icon::after {
+  content: '';
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid white;
+}
+
+.workspace-brand .logo-text {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* Role badge */
+.role-badge {
+  margin: 16px 20px 0;
+  padding: 6px 12px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.role-badge.team-lead { background: rgba(175,51,255,0.2); color: var(--purple); border: 1px solid rgba(175,51,255,0.3); }
+.role-badge.senior-trader { background: rgba(18,204,255,0.15); color: var(--cyan); border: 1px solid rgba(18,204,255,0.25); }
+.role-badge.trader { background: rgba(0,230,138,0.15); color: var(--green); border: 1px solid rgba(0,230,138,0.25); }
+.role-badge.risk-manager { background: rgba(255,176,32,0.15); color: var(--amber); border: 1px solid rgba(255,176,32,0.25); }
+
+.role-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* User info */
+.user-info {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--white-08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy-600), var(--navy-500));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white-75);
+  flex-shrink: 0;
+}
+
+.user-details {
+  overflow: hidden;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white-92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  font-size: 12px;
+  color: var(--white-55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Navigation tabs (vertical) */
+.workspace-nav {
+  padding: 16px 0;
+  flex: 1;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white-55);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-tab:hover {
+  color: var(--white-75);
+  background: var(--white-05);
+}
+
+.nav-tab.active {
+  color: var(--white-92);
+  background: var(--white-08);
+}
+
+.nav-tab.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+}
+
+.nav-tab-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.nav-tab.active .nav-tab-icon {
+  opacity: 1;
+}
+
+/* Bottom section: settings + logout */
+.workspace-bottom {
+  padding: 16px 0;
+  border-top: 1px solid var(--white-08);
+}
+
+.workspace-bottom .nav-tab {
+  font-size: 13px;
+  padding: 10px 20px;
+  color: var(--white-35);
+}
+
+/* Main content area */
+.workspace-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Sub-tab bar (horizontal, within content area) */
+.sub-tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 24px;
+}
+
+.sub-tab {
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.sub-tab:hover { color: var(--white-75); }
+
+.sub-tab.active {
+  color: var(--white-92);
+}
+
+.sub-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  border-radius: 2px;
+}
+
+/* Content header */
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+/* Period selector pills */
+.period-pills {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+}
+
+.period-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  border-radius: var(--r-full);
+  cursor: pointer;
+}
+
+.period-pill:hover { color: var(--white-75); }
+
+.period-pill.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
+
+/* Placeholder content card */
+.placeholder-content {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 48px;
+  text-align: center;
+  color: var(--white-35);
+}
+
+.placeholder-content .label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.placeholder-content .desc {
+  font-size: 14px;
+  color: var(--white-55);
+}
+
+/* Separator for demo sections */
+.demo-separator {
+  margin: 60px 0;
+  padding: 40px 0 0;
+  border-top: 2px dashed var(--white-15);
+}
+
+.demo-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-35);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* ============================================================
+   DEMO PAGE — Shows all 4 role workspaces
+   ============================================================ */
+
+.demo-page {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.demo-title {
+  font-size: 36px;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.demo-subtitle {
+  font-size: 16px;
+  color: var(--white-55);
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+/* Role workspace preview card */
+.role-preview {
+  background: var(--navy-800);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 48px;
+  box-shadow: var(--shadow-card);
+}
+
+.role-preview-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--white-08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.role-preview-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.role-preview-route {
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--cyan);
+  background: rgba(18,204,255,0.1);
+  padding: 4px 10px;
+  border-radius: var(--r-sm);
+}
+
+.role-preview-body {
+  display: flex;
+  min-height: 500px;
+}
+
+.role-preview-sidebar {
+  width: 240px;
+  background: var(--navy-700);
+  border-right: 1px solid var(--white-08);
+  padding: 16px 0;
+  flex-shrink: 0;
+}
+
+.role-preview-content {
+  flex: 1;
+  padding: 24px;
+}
+
+/* Tab items in preview */
+.preview-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white-55);
+  position: relative;
+  cursor: default;
+}
+
+.preview-tab.active {
+  color: var(--white-92);
+  background: var(--white-08);
+}
+
+.preview-tab.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+}
+
+.preview-tab .icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Sub-tab description */
+.sub-tabs-desc {
+  margin-top: 4px;
+  padding-left: 46px;
+  font-size: 11px;
+  color: var(--white-35);
+  padding-bottom: 8px;
+}
+
+/* Content preview sections */
+.content-section {
+  margin-bottom: 20px;
+}
+
+.content-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-35);
+  margin-bottom: 8px;
+}
+
+.content-section-card {
+  background: var(--navy-600);
+  border: 1px dashed var(--white-15);
+  border-radius: var(--r-md);
+  padding: 16px;
+}
+
+.content-section-card p {
+  font-size: 13px;
+  color: var(--white-55);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.content-section-card p:last-child { margin-bottom: 0; }
+
+.content-section-card .ref {
+  font-size: 11px;
+  color: var(--cyan);
+  font-family: monospace;
+}
+
+/* Stat cards row */
+.stat-cards-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card-mini {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  flex: 1;
+}
+
+.stat-card-mini .label {
+  font-size: 11px;
+  color: var(--white-55);
+  margin-bottom: 4px;
+}
+
+.stat-card-mini .value {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.stat-card-mini .change {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.stat-card-mini .change.positive { color: var(--green); }
+.stat-card-mini .change.negative { color: var(--red); }
+
+/* Chart placeholder */
+.chart-placeholder {
+  background: var(--navy-700);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-35);
+  font-size: 13px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-placeholder::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  height: 80px;
+  background: linear-gradient(90deg,
+    transparent 0%, var(--cyan) 15%, var(--green) 35%,
+    var(--red) 55%, var(--green) 75%, var(--cyan) 100%);
+  opacity: 0.15;
+  mask: polygon(0% 80%, 10% 60%, 20% 70%, 35% 30%, 50% 50%, 65% 20%, 80% 40%, 90% 25%, 100% 35%, 100% 100%, 0% 100%);
+  -webkit-mask: polygon(0% 80%, 10% 60%, 20% 70%, 35% 30%, 50% 50%, 65% 20%, 80% 40%, 90% 25%, 100% 35%, 100% 100%, 0% 100%);
+}
+
+/* Table preview */
+.table-preview {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table-preview th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--white-55);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--white-08);
+  background: var(--white-03);
+}
+
+.table-preview td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+}
+
+.table-preview tr:hover td {
+  background: var(--white-03);
+}
+
+.table-preview .expandable {
+  cursor: pointer;
+}
+
+.table-preview .expand-icon {
+  color: var(--white-35);
+  margin-right: 6px;
+}
+
+.table-preview .nested td {
+  padding-left: 40px;
+  font-size: 12px;
+  color: var(--white-55);
+  border-bottom-color: var(--white-03);
+}
+
+.table-preview .pnl-positive { color: var(--green); font-weight: 600; }
+.table-preview .pnl-negative { color: var(--red); font-weight: 600; }
+
+/* Scope badge */
+.scope-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  text-transform: uppercase;
+}
+
+.scope-badge.all { background: rgba(175,51,255,0.2); color: var(--purple); }
+.scope-badge.team { background: rgba(18,204,255,0.15); color: var(--cyan); }
+.scope-badge.self { background: rgba(0,230,138,0.15); color: var(--green); }
+.scope-badge.assigned { background: rgba(255,176,32,0.15); color: var(--amber); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="demo-page">
+  <div class="demo-title">Role Workspaces</div>
+  <div class="demo-subtitle">Each role gets a dedicated workspace layout with role-specific tabs. Replaces the old sidebar navigation.</div>
+
+  <!-- ============================================================
+       TEAM LEAD WORKSPACE
+       ============================================================ -->
+  <div class="role-preview">
+    <div class="role-preview-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="role-preview-title">Team Lead Workspace</div>
+        <span class="scope-badge all">Sees all traders</span>
+      </div>
+      <div class="role-preview-route">/workspace/team-lead</div>
+    </div>
+    <div class="role-preview-body">
+      <div class="role-preview-sidebar">
+        <!-- Brand -->
+        <div style="padding:12px 16px 16px;border-bottom:1px solid var(--white-08);margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:6px;"></div>
+            <span style="font-size:14px;font-weight:700;">TrigonumTrade</span>
+          </div>
+          <div class="role-badge team-lead" style="margin:10px 0 0;">Team Lead</div>
+        </div>
+
+        <!-- Nav tabs -->
+        <div class="preview-tab active">
+          <span class="icon">📊</span> Analytics
+        </div>
+        <div class="sub-tabs-desc">Team hierarchy, capital metrics</div>
+
+        <div class="preview-tab">
+          <span class="icon">📈</span> Trading
+        </div>
+        <div class="sub-tabs-desc">Terminal | CMP | L/S | Greed | News</div>
+
+        <div class="preview-tab">
+          <span class="icon">🏆</span> Performance
+        </div>
+        <div class="sub-tabs-desc">Team Analytics | Trade History</div>
+
+        <div class="preview-tab">
+          <span class="icon">🛡️</span> Risk Management
+        </div>
+        <div class="sub-tabs-desc">Team + Actions | Policies</div>
+
+        <div class="preview-tab">
+          <span class="icon">🏗️</span> Org Structure
+        </div>
+        <div class="sub-tabs-desc">Tree view | Groups</div>
+
+        <div class="preview-tab">
+          <span class="icon">💰</span> Investing
+        </div>
+        <div class="sub-tabs-desc">Programs | Operations</div>
+
+        <!-- Bottom -->
+        <div style="position:absolute;bottom:0;width:240px;border-top:1px solid var(--white-08);padding:8px 0;">
+          <div class="preview-tab" style="color:var(--white-35);font-size:12px;">
+            <span class="icon">⚙️</span> Settings
+          </div>
+          <div class="preview-tab" style="color:var(--white-35);font-size:12px;">
+            <span class="icon">🚪</span> Logout
+          </div>
+        </div>
+      </div>
+
+      <!-- Content: Analytics tab (active) -->
+      <div class="role-preview-content">
+        <div class="content-header">
+          <div class="page-title">Analytics</div>
+          <div class="period-pills">
+            <button class="period-pill">Day</button>
+            <button class="period-pill active">Week</button>
+            <button class="period-pill">Month</button>
+            <button class="period-pill">Quarter</button>
+            <button class="period-pill">Year</button>
+          </div>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="stat-cards-row">
+          <div class="stat-card-mini">
+            <div class="label">Capital Under Management</div>
+            <div class="value">$2,456,789</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Change Today</div>
+            <div class="value">$12,345</div>
+            <div class="change positive">+0.50%</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Change This Week</div>
+            <div class="value">$45,678</div>
+            <div class="change positive">+1.89%</div>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-placeholder">
+          Capital Change — Last 7 Days (Line Chart)
+        </div>
+
+        <!-- Hierarchical team table -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:16px;font-weight:700;">Team</div>
+          <div style="display:flex;gap:8px;">
+            <button style="font-size:11px;color:var(--cyan);background:none;border:1px solid var(--white-15);padding:4px 10px;border-radius:var(--r-sm);cursor:pointer;">Expand All</button>
+            <button style="font-size:11px;color:var(--white-55);background:none;border:1px solid var(--white-15);padding:4px 10px;border-radius:var(--r-sm);cursor:pointer;">Collapse All</button>
+          </div>
+        </div>
+
+        <table class="table-preview">
+          <thead>
+            <tr>
+              <th>Senior Trader</th>
+              <th>Capital</th>
+              <th>Unrealized PnL</th>
+              <th>Realized PnL (Day)</th>
+              <th>Realized PnL (Week)</th>
+              <th>PM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="expandable">
+              <td><span class="expand-icon">▼</span> <strong>Alexei Petrov</strong></td>
+              <td>$845,200</td>
+              <td class="pnl-positive">+$4,230 (+0.50%)</td>
+              <td class="pnl-positive">+$2,100 (+0.25%)</td>
+              <td class="pnl-positive">+$18,400 (+2.22%)</td>
+              <td style="color:var(--cyan);">M. Ivanova</td>
+            </tr>
+            <tr class="nested">
+              <td>Dmitry Volkov</td>
+              <td>$320,000</td>
+              <td class="pnl-positive">+$1,840 (+0.58%)</td>
+              <td class="pnl-positive">+$890 (+0.28%)</td>
+              <td class="pnl-positive">+$7,200 (+2.30%)</td>
+              <td></td>
+            </tr>
+            <tr class="nested">
+              <td>Anna Sokolova</td>
+              <td>$280,000</td>
+              <td class="pnl-negative">-$620 (-0.22%)</td>
+              <td class="pnl-positive">+$410 (+0.15%)</td>
+              <td class="pnl-positive">+$5,100 (+1.86%)</td>
+              <td></td>
+            </tr>
+            <tr class="nested">
+              <td>Igor Morozov</td>
+              <td>$245,200</td>
+              <td class="pnl-positive">+$3,010 (+1.23%)</td>
+              <td class="pnl-positive">+$800 (+0.33%)</td>
+              <td class="pnl-positive">+$6,100 (+2.55%)</td>
+              <td></td>
+            </tr>
+            <tr class="expandable">
+              <td><span class="expand-icon">▶</span> <strong>Maria Kuznetsova</strong></td>
+              <td>$612,400</td>
+              <td class="pnl-negative">-$1,280 (-0.21%)</td>
+              <td class="pnl-negative">-$540 (-0.09%)</td>
+              <td class="pnl-positive">+$9,800 (+1.63%)</td>
+              <td style="color:var(--cyan);">D. Popov</td>
+            </tr>
+            <!-- Collapsed — traders hidden -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SENIOR TRADER WORKSPACE
+       ============================================================ -->
+  <div class="role-preview">
+    <div class="role-preview-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="role-preview-title">Senior Trader Workspace</div>
+        <span class="scope-badge team">Sees own team</span>
+      </div>
+      <div class="role-preview-route">/workspace/senior-trader</div>
+    </div>
+    <div class="role-preview-body">
+      <div class="role-preview-sidebar">
+        <div style="padding:12px 16px 16px;border-bottom:1px solid var(--white-08);margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:6px;"></div>
+            <span style="font-size:14px;font-weight:700;">TrigonumTrade</span>
+          </div>
+          <div class="role-badge senior-trader" style="margin:10px 0 0;">Senior Trader</div>
+        </div>
+
+        <div class="preview-tab active">
+          <span class="icon">👥</span> Team
+        </div>
+        <div class="sub-tabs-desc">Flat list of own traders</div>
+
+        <div class="preview-tab">
+          <span class="icon">📈</span> Trading
+        </div>
+        <div class="sub-tabs-desc">Terminal | Analytics sub-tabs</div>
+
+        <div class="preview-tab">
+          <span class="icon">🏆</span> Performance
+        </div>
+        <div class="sub-tabs-desc">Team Analytics | Trade History</div>
+
+        <div class="preview-tab">
+          <span class="icon">🛡️</span> Risk Management
+        </div>
+        <div class="sub-tabs-desc">Team + Actions | Policies</div>
+      </div>
+
+      <!-- Content: Team tab (active) — Flat trader list -->
+      <div class="role-preview-content">
+        <div class="content-header">
+          <div class="page-title">My Team</div>
+          <div class="period-pills">
+            <button class="period-pill">Day</button>
+            <button class="period-pill active">Week</button>
+            <button class="period-pill">Month</button>
+            <button class="period-pill">Quarter</button>
+            <button class="period-pill">Year</button>
+          </div>
+        </div>
+
+        <div class="stat-cards-row">
+          <div class="stat-card-mini">
+            <div class="label">Team Capital</div>
+            <div class="value">$845,200</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Change This Week</div>
+            <div class="value">$18,400</div>
+            <div class="change positive">+2.22%</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Traders</div>
+            <div class="value">5</div>
+          </div>
+        </div>
+
+        <div class="chart-placeholder">
+          Team Capital Change — Last 7 Days (Line Chart)
+        </div>
+
+        <!-- Flat trader table (no hierarchy) -->
+        <table class="table-preview">
+          <thead>
+            <tr>
+              <th>Trader</th>
+              <th>Capital</th>
+              <th>Unrealized PnL</th>
+              <th>Realized PnL (Day)</th>
+              <th>Realized PnL (Week)</th>
+              <th># Trades</th>
+              <th>Max DrawDown</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Dmitry Volkov</strong></td>
+              <td>$320,000</td>
+              <td class="pnl-positive">+$1,840 (+0.58%)</td>
+              <td class="pnl-positive">+$890 (+0.28%)</td>
+              <td class="pnl-positive">+$7,200 (+2.30%)</td>
+              <td>24</td>
+              <td class="pnl-negative">-3.2%</td>
+            </tr>
+            <tr>
+              <td><strong>Anna Sokolova</strong></td>
+              <td>$280,000</td>
+              <td class="pnl-negative">-$620 (-0.22%)</td>
+              <td class="pnl-positive">+$410 (+0.15%)</td>
+              <td class="pnl-positive">+$5,100 (+1.86%)</td>
+              <td>18</td>
+              <td class="pnl-negative">-1.8%</td>
+            </tr>
+            <tr>
+              <td><strong>Igor Morozov</strong></td>
+              <td>$245,200</td>
+              <td class="pnl-positive">+$3,010 (+1.23%)</td>
+              <td class="pnl-positive">+$800 (+0.33%)</td>
+              <td class="pnl-positive">+$6,100 (+2.55%)</td>
+              <td>31</td>
+              <td class="pnl-negative">-2.1%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TRADER WORKSPACE
+       ============================================================ -->
+  <div class="role-preview">
+    <div class="role-preview-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="role-preview-title">Trader Workspace</div>
+        <span class="scope-badge self">Sees own data only</span>
+      </div>
+      <div class="role-preview-route">/workspace/trader</div>
+    </div>
+    <div class="role-preview-body">
+      <div class="role-preview-sidebar">
+        <div style="padding:12px 16px 16px;border-bottom:1px solid var(--white-08);margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:6px;"></div>
+            <span style="font-size:14px;font-weight:700;">TrigonumTrade</span>
+          </div>
+          <div class="role-badge trader" style="margin:10px 0 0;">Trader</div>
+        </div>
+
+        <div class="preview-tab active">
+          <span class="icon">🏠</span> Overview
+        </div>
+        <div class="sub-tabs-desc">Summary, positions</div>
+
+        <div class="preview-tab">
+          <span class="icon">📈</span> Trading
+        </div>
+        <div class="sub-tabs-desc">Terminal | Analytics sub-tabs</div>
+
+        <div class="preview-tab">
+          <span class="icon">🏆</span> Performance
+        </div>
+        <div class="sub-tabs-desc">Personal analytics</div>
+
+        <div class="preview-tab">
+          <span class="icon">📓</span> Journal
+        </div>
+        <div class="sub-tabs-desc">Strategy | Trade History</div>
+      </div>
+
+      <!-- Content: Overview tab (active) -->
+      <div class="role-preview-content">
+        <div class="content-header">
+          <div class="page-title">Overview</div>
+          <div class="period-pills">
+            <button class="period-pill">Day</button>
+            <button class="period-pill active">Week</button>
+            <button class="period-pill">Month</button>
+            <button class="period-pill">Quarter</button>
+            <button class="period-pill">Year</button>
+          </div>
+        </div>
+
+        <div class="stat-cards-row">
+          <div class="stat-card-mini">
+            <div class="label">My Capital</div>
+            <div class="value">$320,000</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Change This Week</div>
+            <div class="value">+$7,200</div>
+            <div class="change positive">+2.30%</div>
+          </div>
+        </div>
+
+        <div class="chart-placeholder">
+          My Capital Change — Last 7 Days (Line Chart)
+        </div>
+
+        <!-- Open Positions -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:16px;font-weight:700;">Open Positions</div>
+          <div style="font-size:13px;color:var(--white-55);">
+            Open: <strong style="color:var(--white-92);">3</strong> &nbsp;|&nbsp;
+            Floating P&L: <strong class="pnl-positive">+$1,840 (+0.58%)</strong>
+          </div>
+        </div>
+
+        <table class="table-preview">
+          <thead>
+            <tr>
+              <th>Instrument</th>
+              <th>Direction</th>
+              <th>Volume</th>
+              <th>Entry Price</th>
+              <th>Current Price</th>
+              <th>P&L ($)</th>
+              <th>P&L (%)</th>
+              <th>Leverage</th>
+              <th>Duration</th>
+              <th>SL / TP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>BTCUSDT</strong></td>
+              <td><span style="color:var(--green);font-weight:600;">LONG</span></td>
+              <td>0.5 BTC</td>
+              <td>$67,240</td>
+              <td>$67,890</td>
+              <td class="pnl-positive">+$325</td>
+              <td class="pnl-positive">+0.97%</td>
+              <td>10x</td>
+              <td>4h 23m</td>
+              <td>$66,500 / $69,000</td>
+            </tr>
+            <tr>
+              <td><strong>ETHUSDT</strong></td>
+              <td><span style="color:var(--green);font-weight:600;">LONG</span></td>
+              <td>5.0 ETH</td>
+              <td>$3,420</td>
+              <td>$3,485</td>
+              <td class="pnl-positive">+$325</td>
+              <td class="pnl-positive">+1.90%</td>
+              <td>5x</td>
+              <td>1d 2h</td>
+              <td>$3,350 / $3,600</td>
+            </tr>
+            <tr>
+              <td><strong>SOLUSDT</strong></td>
+              <td><span style="color:var(--red);font-weight:600;">SHORT</span></td>
+              <td>100 SOL</td>
+              <td>$142.50</td>
+              <td>$145.20</td>
+              <td class="pnl-negative">-$270</td>
+              <td class="pnl-negative">-1.89%</td>
+              <td>3x</td>
+              <td>45m</td>
+              <td>$148.00 / $138.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RISK MANAGER WORKSPACE
+       ============================================================ -->
+  <div class="role-preview">
+    <div class="role-preview-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="role-preview-title">Risk Manager Workspace</div>
+        <span class="scope-badge assigned">Sees assigned traders</span>
+      </div>
+      <div class="role-preview-route">/workspace/risk-manager</div>
+    </div>
+    <div class="role-preview-body">
+      <div class="role-preview-sidebar">
+        <div style="padding:12px 16px 16px;border-bottom:1px solid var(--white-08);margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:6px;"></div>
+            <span style="font-size:14px;font-weight:700;">TrigonumTrade</span>
+          </div>
+          <div class="role-badge risk-manager" style="margin:10px 0 0;">Risk Manager</div>
+        </div>
+
+        <div class="preview-tab active">
+          <span class="icon">🛡️</span> Risk Management
+        </div>
+        <div class="sub-tabs-desc">Team + Actions | Policies</div>
+
+        <div class="preview-tab">
+          <span class="icon">📊</span> Analytics
+        </div>
+        <div class="sub-tabs-desc">Assigned traders overview</div>
+
+        <div class="preview-tab">
+          <span class="icon">📈</span> Trading
+        </div>
+        <div class="sub-tabs-desc">Terminal | Analytics sub-tabs</div>
+
+        <div class="preview-tab">
+          <span class="icon">🏆</span> Performance
+        </div>
+        <div class="sub-tabs-desc">Team Analytics | Trade History</div>
+      </div>
+
+      <!-- Content: Risk Management tab (active) -->
+      <div class="role-preview-content">
+        <!-- Sub-tabs -->
+        <div class="sub-tab-bar">
+          <button class="sub-tab active">Team</button>
+          <button class="sub-tab">Policies</button>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="stat-cards-row">
+          <div class="stat-card-mini">
+            <div class="label">Total Risk Now (to SL)</div>
+            <div class="value" style="color:var(--amber);">$18,450</div>
+            <div class="change negative">2.1% of capital</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Warnings (Period)</div>
+            <div class="value" style="color:var(--amber);">7</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Forced Closures</div>
+            <div class="value" style="color:var(--red);">2</div>
+          </div>
+          <div class="stat-card-mini">
+            <div class="label">Status</div>
+            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+              <span style="font-size:10px;padding:3px 8px;border-radius:var(--r-full);background:rgba(255,176,32,0.15);color:var(--amber);">Testing: 1</span>
+              <span style="font-size:10px;padding:3px 8px;border-radius:var(--r-full);background:rgba(255,77,106,0.15);color:var(--red);">Banned: 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RM Team table with actions -->
+        <table class="table-preview">
+          <thead>
+            <tr>
+              <th>Trader</th>
+              <th>RM Policy</th>
+              <th>Risk Now (to SL)</th>
+              <th>Risk Budget</th>
+              <th>Warnings</th>
+              <th>Forced Close</th>
+              <th>Positions</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:var(--cyan);">D. Volkov</strong></td>
+              <td>
+                <!-- Inline dropdown -->
+                <select style="background:var(--navy-700);color:var(--white-75);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:4px 8px;font-size:11px;">
+                  <option selected>Conservative</option>
+                  <option>Moderate</option>
+                  <option>Aggressive</option>
+                </select>
+              </td>
+              <td>$4,200</td>
+              <td>
+                <!-- Progress bar -->
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="flex:1;height:6px;background:var(--white-08);border-radius:3px;overflow:hidden;">
+                    <div style="width:35%;height:100%;background:var(--green);border-radius:3px;"></div>
+                  </div>
+                  <span style="font-size:11px;color:var(--white-55);">35%</span>
+                </div>
+              </td>
+              <td style="color:var(--amber);cursor:pointer;">3</td>
+              <td>0</td>
+              <td style="cursor:pointer;color:var(--cyan);">4</td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--white-55);cursor:pointer;">Meeting</button>
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--amber);cursor:pointer;">Test</button>
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--red);cursor:pointer;">Ban</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--cyan);">A. Sokolova</strong></td>
+              <td>
+                <select style="background:var(--navy-700);color:var(--white-75);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:4px 8px;font-size:11px;">
+                  <option>Conservative</option>
+                  <option selected>Moderate</option>
+                  <option>Aggressive</option>
+                </select>
+              </td>
+              <td>$2,100</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="flex:1;height:6px;background:var(--white-08);border-radius:3px;overflow:hidden;">
+                    <div style="width:72%;height:100%;background:var(--amber);border-radius:3px;"></div>
+                  </div>
+                  <span style="font-size:11px;color:var(--white-55);">72%</span>
+                </div>
+              </td>
+              <td style="color:var(--amber);cursor:pointer;">4</td>
+              <td style="color:var(--red);">2</td>
+              <td style="cursor:pointer;color:var(--cyan);">2</td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--white-55);cursor:pointer;">Meeting</button>
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid rgba(255,176,32,0.4);background:rgba(255,176,32,0.1);color:var(--amber);cursor:pointer;">Testing</button>
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--red);cursor:pointer;">Ban</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--cyan);">I. Morozov</strong></td>
+              <td>
+                <select style="background:var(--navy-700);color:var(--white-75);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:4px 8px;font-size:11px;">
+                  <option>Conservative</option>
+                  <option>Moderate</option>
+                  <option selected>Aggressive</option>
+                </select>
+              </td>
+              <td>$8,900</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="flex:1;height:6px;background:var(--white-08);border-radius:3px;overflow:hidden;">
+                    <div style="width:91%;height:100%;background:var(--red);border-radius:3px;"></div>
+                  </div>
+                  <span style="font-size:11px;color:var(--red);">91%</span>
+                </div>
+              </td>
+              <td>0</td>
+              <td>0</td>
+              <td style="cursor:pointer;color:var(--cyan);">6</td>
+              <td>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--white-55);cursor:pointer;">Meeting</button>
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--amber);cursor:pointer;">Test</button>
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--red);cursor:pointer;">Ban</button>
+                  <button style="font-size:10px;padding:3px 6px;border-radius:4px;border:1px solid var(--white-15);background:none;color:var(--purple);cursor:pointer;">Coins</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ROUTING & CONTENT REFERENCE TABLE
+       ============================================================ -->
+  <div style="margin-top:48px;">
+    <div class="demo-label">Routing & Content Reference</div>
+    <div style="background:var(--navy-800);border:1px solid var(--white-08);border-radius:var(--r-lg);padding:24px;overflow-x:auto;">
+      <table class="table-preview" style="min-width:900px;">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Tab</th>
+            <th>Route</th>
+            <th>Content Source</th>
+            <th>Scope</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Team Lead -->
+          <tr><td rowspan="8" style="font-weight:700;color:var(--purple);vertical-align:top;">Team Lead</td>
+            <td>Analytics</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/analytics</td><td>team-analytics.html (hierarchical table)</td><td><span class="scope-badge all">all</span></td></tr>
+          <tr><td>Trading &gt; Terminal</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/trading</td><td>trading-terminal.html</td><td><span class="scope-badge self">self</span></td></tr>
+          <tr><td>Trading &gt; CMP / L&S / Greed / News</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/trading/analytics</td><td>coinmarketcap, long-short, greed, news .html</td><td>global</td></tr>
+          <tr><td>Performance &gt; Team Analytics</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/performance</td><td>team-analytics.html (with trade detail)</td><td><span class="scope-badge all">all</span></td></tr>
+          <tr><td>Performance &gt; Trade History</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/performance/history</td><td>reports.html patterns (orders table)</td><td><span class="scope-badge all">all</span></td></tr>
+          <tr><td>Risk Management</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/risk</td><td>risk-management.html + policy.html</td><td><span class="scope-badge all">all</span></td></tr>
+          <tr><td>Org Structure</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/org</td><td>org-structure.html (NEW)</td><td><span class="scope-badge all">all</span></td></tr>
+          <tr><td>Investing</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/team-lead/investing</td><td>invest-program.html</td><td><span class="scope-badge all">all</span></td></tr>
+
+          <!-- Senior Trader -->
+          <tr><td rowspan="4" style="font-weight:700;color:var(--cyan);vertical-align:top;">Senior Trader</td>
+            <td>Team</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/senior-trader/team</td><td>team-analytics.html (flat, no hierarchy)</td><td><span class="scope-badge team">team</span></td></tr>
+          <tr><td>Trading</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/senior-trader/trading</td><td>trading-terminal.html + analytics</td><td><span class="scope-badge self">self</span></td></tr>
+          <tr><td>Performance</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/senior-trader/performance</td><td>team-analytics.html + trade history</td><td><span class="scope-badge team">team</span></td></tr>
+          <tr><td>Risk Management</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/senior-trader/risk</td><td>risk-management.html + policy.html</td><td><span class="scope-badge team">team</span></td></tr>
+
+          <!-- Trader -->
+          <tr><td rowspan="4" style="font-weight:700;color:var(--green);vertical-align:top;">Trader</td>
+            <td>Overview</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/trader/overview</td><td>trader-workspace.html (summary + positions)</td><td><span class="scope-badge self">self</span></td></tr>
+          <tr><td>Trading</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/trader/trading</td><td>trading-terminal.html + analytics</td><td><span class="scope-badge self">self</span></td></tr>
+          <tr><td>Performance</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/trader/performance</td><td>Personal analytics only</td><td><span class="scope-badge self">self</span></td></tr>
+          <tr><td>Journal</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/trader/journal</td><td>trader-workspace.html (strategy + history)</td><td><span class="scope-badge self">self</span></td></tr>
+
+          <!-- Risk Manager -->
+          <tr><td rowspan="4" style="font-weight:700;color:var(--amber);vertical-align:top;">Risk Manager</td>
+            <td>Risk Management</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/risk-manager/risk</td><td>risk-management.html + policy.html</td><td><span class="scope-badge assigned">assigned</span></td></tr>
+          <tr><td>Analytics</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/risk-manager/analytics</td><td>team-analytics.html (flat, assigned only)</td><td><span class="scope-badge assigned">assigned</span></td></tr>
+          <tr><td>Trading</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/risk-manager/trading</td><td>trading-terminal.html + analytics</td><td><span class="scope-badge self">self</span></td></tr>
+          <tr><td>Performance</td><td style="font-family:monospace;font-size:11px;color:var(--cyan);">/workspace/risk-manager/performance</td><td>team-analytics.html + trade history</td><td><span class="scope-badge assigned">assigned</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

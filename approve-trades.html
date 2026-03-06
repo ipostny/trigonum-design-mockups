@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Approve Trades</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * APPROVE TRADES PAGE — Orders awaiting approval
+ * Route: /approve-trades
+ * Auth required. Uses AppLayout.
+ * Uses OrdersTable with defaultFilters: { orderStatus: ['WaitingApproval'] }
+ * Each row has an "Approve" action button.
+ * Admin/Senior Trader only.
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.page-subtitle {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 24px;
+}
+
+/* Pending count badge */
+.pending-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255,176,32,0.1);
+  border: 1px solid rgba(255,176,32,0.2);
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--amber);
+  margin-bottom: 24px;
+}
+
+/* Table card */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.data-table th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--white-08);
+  background: var(--white-03);
+}
+
+.data-table td {
+  font-size: 13px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+}
+
+.data-table tr:hover td {
+  background: var(--white-03);
+}
+
+/* Side styling */
+.side-buy { color: var(--green); font-weight: 600; }
+.side-sell { color: var(--red); font-weight: 600; }
+
+/* Symbol column */
+.symbol-cell {
+  color: var(--white-92);
+  font-weight: 600;
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.status-waiting {
+  background: rgba(255,176,32,0.1);
+  color: var(--amber);
+}
+
+/* Approve button */
+.btn-approve {
+  background: var(--green);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-approve:hover { opacity: 0.9; }
+
+.btn-reject {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid rgba(255,77,106,0.3);
+  border-radius: var(--r-sm);
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-reject:hover {
+  background: rgba(255,77,106,0.1);
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
+}
+
+/* Trader name */
+.trader-name {
+  color: var(--white-92);
+  font-weight: 500;
+}
+
+/* Timestamp */
+.timestamp {
+  font-size: 12px;
+  color: var(--white-55);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+}
+.empty-check {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.empty-desc {
+  font-size: 13px;
+  color: var(--white-55);
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Approve Trades</h1>
+    <p class="page-subtitle">Review and approve pending trade orders</p>
+
+    <div class="pending-badge">
+      &#9888; 3 orders awaiting approval
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Created</th>
+            <th>Trader</th>
+            <th>Symbol</th>
+            <th>Side</th>
+            <th>Type</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="timestamp">Mar 5, 14:32</td>
+            <td class="trader-name">Alice T.</td>
+            <td class="symbol-cell">BTCUSDT</td>
+            <td class="side-buy">BUY</td>
+            <td>Limit</td>
+            <td>0.25 BTC</td>
+            <td>$93,500.00</td>
+            <td><span class="status-badge status-waiting">Waiting</span></td>
+            <td>
+              <div class="action-group">
+                <button class="btn-approve">Approve</button>
+                <button class="btn-reject">Reject</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="timestamp">Mar 5, 13:18</td>
+            <td class="trader-name">Bob K.</td>
+            <td class="symbol-cell">ETHUSDT</td>
+            <td class="side-sell">SELL</td>
+            <td>Market</td>
+            <td>15 ETH</td>
+            <td>Market</td>
+            <td><span class="status-badge status-waiting">Waiting</span></td>
+            <td>
+              <div class="action-group">
+                <button class="btn-approve">Approve</button>
+                <button class="btn-reject">Reject</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="timestamp">Mar 5, 11:45</td>
+            <td class="trader-name">Carol M.</td>
+            <td class="symbol-cell">SOLUSDT</td>
+            <td class="side-buy">BUY</td>
+            <td>Limit</td>
+            <td>200 SOL</td>
+            <td>$178.50</td>
+            <td><span class="status-badge status-waiting">Waiting</span></td>
+            <td>
+              <div class="action-group">
+                <button class="btn-approve">Approve</button>
+                <button class="btn-reject">Reject</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!--
+    EMPTY STATE (when no orders pending):
+
+    <div class="table-card">
+      <div class="empty-state">
+        <div class="empty-check">&#10003;</div>
+        <div class="empty-title">All caught up</div>
+        <div class="empty-desc">No orders waiting for approval</div>
+      </div>
+    </div>
+    -->
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

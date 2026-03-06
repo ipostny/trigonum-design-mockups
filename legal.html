@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Legal Pages (Privacy Policy + Terms of Service)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * LEGAL PAGES — No sidebar layout (public pages, accessible without auth)
+ * Same pattern as Auth pages: centered content, no AppLayout wrapper.
+ * Two routes: /privacy-policy and /terms-of-service
+ */
+
+.legal-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+/* Back link to login/home */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 32px;
+  transition: opacity 0.2s;
+}
+.back-link:hover { opacity: 0.8; }
+
+/* Page title */
+.legal-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.legal-updated {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 40px;
+}
+
+/* Content card wrapper */
+.legal-content {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Section headings */
+.legal-content h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  color: var(--white-92);
+}
+.legal-content h2:first-child {
+  margin-top: 0;
+}
+
+.legal-content h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  color: var(--white-75);
+}
+
+/* Body text */
+.legal-content p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--white-75);
+  margin-bottom: 12px;
+}
+
+/* Lists */
+.legal-content ul {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+.legal-content li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--white-75);
+  margin-bottom: 4px;
+}
+.legal-content li strong {
+  color: var(--white-92);
+}
+
+/* Contact link */
+.legal-content a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+.legal-content a:hover {
+  text-decoration: underline;
+}
+
+/* Divider between sections */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--white-08);
+  margin: 32px 0;
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<!--
+  PRIVACY POLICY PAGE
+  Route: /privacy-policy
+  Layout: No AppLayout (public page, no sidebar)
+  Back link goes to /auth/login
+-->
+<div class="legal-page">
+  <a href="#" class="back-link">&larr; Back to Login</a>
+
+  <h1 class="legal-title">Privacy Policy</h1>
+  <p class="legal-updated">Last updated: February 2026</p>
+
+  <div class="legal-content">
+    <h2>1. Introduction</h2>
+    <p>This Privacy Policy describes how the service provider ("we", "us", or "our") collects, uses, and protects information when you use our professional trading platform and related services (the "Platform"). This Platform is designed exclusively for professional trading teams, licensed entities, and authorized business users.</p>
+    <p>By accessing or using the Platform, you acknowledge that you have read, understood, and agree to this Privacy Policy.</p>
+
+    <hr class="section-divider">
+
+    <h2>2. Information We Collect</h2>
+
+    <h3>2.1 Account Information</h3>
+    <p>When you register for the Platform, we collect information necessary to create and manage your account, including:</p>
+    <ul>
+      <li>Name and business contact details</li>
+      <li>Email address</li>
+      <li>Organization name and role</li>
+      <li>Authentication credentials</li>
+    </ul>
+
+    <h3>2.2 Trading and Platform Data</h3>
+    <p>In the course of providing our services, we collect and process:</p>
+    <ul>
+      <li>Trading activity and transaction records</li>
+      <li>Platform configuration and preferences</li>
+      <li>API credentials for connected exchange accounts</li>
+      <li>Audit logs and system access records</li>
+    </ul>
+
+    <h3>2.3 Technical Information</h3>
+    <p>We automatically collect certain technical information when you access the Platform:</p>
+    <ul>
+      <li>IP address and device identifiers</li>
+      <li>Browser type and operating system</li>
+      <li>Access timestamps and session duration</li>
+      <li>Platform usage patterns and feature interactions</li>
+    </ul>
+
+    <hr class="section-divider">
+
+    <h2>3. How We Use Your Information</h2>
+    <p>We use the collected information for the following purposes:</p>
+    <ul>
+      <li>Providing and maintaining the Platform and its features</li>
+      <li>Processing and executing trading operations as instructed</li>
+      <li>Authenticating users and securing account access</li>
+      <li>Generating reports and analytics for authorized users</li>
+      <li>Communicating service updates and technical notifications</li>
+      <li>Maintaining audit trails and ensuring regulatory compliance</li>
+    </ul>
+
+    <hr class="section-divider">
+
+    <h2>4. Data Security</h2>
+    <p>We implement appropriate technical and organizational measures to protect your information, including:</p>
+    <ul>
+      <li>Encryption of data in transit and at rest</li>
+      <li>Access controls and authentication requirements</li>
+      <li>Regular security assessments and monitoring</li>
+      <li>Secure storage of API credentials using industry-standard encryption</li>
+    </ul>
+
+    <hr class="section-divider">
+
+    <h2>5. Contact Us</h2>
+    <p>If you have questions about this Privacy Policy or wish to exercise your data protection rights, please contact us at:</p>
+    <p>Email: <a href="mailto:mail@trigonum.ae">mail@trigonum.ae</a></p>
+  </div>
+</div>
+
+<!--
+  NOTE: Terms of Service uses identical layout pattern.
+  Same component, different content. Both are static text pages.
+  Route: /terms-of-service
+-->
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

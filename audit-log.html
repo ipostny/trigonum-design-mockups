@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Audit Log</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * AUDIT LOG PAGE — System audit trail viewer
+ * Route: /audit-log
+ * Auth required. Uses AppLayout. Admin only.
+ *
+ * Features:
+ * - Stats row (total events, today, this week)
+ * - Filter bar (entity, change type, date range, user, IP)
+ * - Expandable table rows (click arrow to see old → new field values)
+ * - Pagination
+ *
+ * APIs:
+ * - useGetAllAuditLogsQuery (paginated, no filters)
+ * - useSearchAuditLogsQuery (paginated, with filters)
+ *
+ * Columns: Expand, Timestamp, Entity, Change Type, Changed By, IP, Fields Changed
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-title { font-size: 32px; font-weight: 800; margin-bottom: 24px; }
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+}
+.stat-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+/* Filters */
+.filters-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filter-group label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 4px;
+  display: block;
+}
+.filter-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  color: var(--white-92);
+  font-size: 12px;
+  width: 100%;
+}
+.filter-input:focus { outline: none; border-color: var(--cyan); }
+
+.filters-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-sm {
+  padding: 6px 16px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+.btn-apply { background: var(--cyan); color: var(--navy-900); }
+.btn-reset { background: var(--white-08); color: var(--white-75); border: 1px solid var(--white-15); }
+
+/* Table */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 12px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+}
+.data-table td {
+  font-size: 13px; padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+/* Expand button */
+.expand-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--white-55);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Change type badges */
+.change-create { color: var(--green); }
+.change-update { color: var(--cyan); }
+.change-delete { color: var(--red); }
+
+/* Expanded row (field changes) */
+.expanded-content {
+  background: var(--white-03);
+  padding: 16px 24px 16px 64px;
+  border-bottom: 1px solid var(--white-08);
+}
+.field-changes { width: 100%; }
+.field-changes th {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55);
+  padding: 6px 12px;
+  text-align: left;
+}
+.field-changes td {
+  font-size: 12px;
+  padding: 6px 12px;
+  color: var(--white-75);
+  font-family: monospace;
+  border-bottom: 1px solid var(--white-05);
+}
+.old-value { color: var(--red); text-decoration: line-through; }
+.new-value { color: var(--green); }
+
+/* Table footer */
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--white-08);
+}
+.rows-info { font-size: 12px; color: var(--white-55); }
+.pagination { display: flex; gap: 4px; }
+.page-btn {
+  min-width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--white-08); border-radius: var(--r-sm);
+  background: transparent; color: var(--white-55); font-size: 12px; cursor: pointer;
+}
+.page-btn.active { background: var(--cyan); color: var(--navy-900); border-color: var(--cyan); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Audit Log</h1>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Events</div>
+        <div class="stat-value">12,847</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Today</div>
+        <div class="stat-value">156</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value">892</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label>Entity</label>
+          <select class="filter-input">
+            <option value="">All Entities</option>
+            <option>User</option>
+            <option>TradeAccount</option>
+            <option>Policy</option>
+            <option>DdpSetting</option>
+            <option>InvestProgram</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Change Type</label>
+          <select class="filter-input">
+            <option value="">All Types</option>
+            <option>CREATE</option>
+            <option>UPDATE</option>
+            <option>DELETE</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Changed By</label>
+          <input class="filter-input" type="text" placeholder="Username...">
+        </div>
+        <div class="filter-group">
+          <label>Start Date</label>
+          <input class="filter-input" type="date">
+        </div>
+        <div class="filter-group">
+          <label>End Date</label>
+          <input class="filter-input" type="date">
+        </div>
+        <div class="filter-group">
+          <label>IP Address</label>
+          <input class="filter-input" type="text" placeholder="e.g. 192.168...">
+        </div>
+      </div>
+      <div class="filters-actions">
+        <button class="btn-sm btn-apply">Apply Filters</button>
+        <button class="btn-sm btn-reset">Clear</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:48px;"></th>
+            <th>Timestamp</th>
+            <th>Entity</th>
+            <th>Change Type</th>
+            <th>Changed By</th>
+            <th>IP Address</th>
+            <th>Fields</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><button class="expand-btn">&#9660;</button></td>
+            <td>Mar 5, 14:32:15</td>
+            <td style="font-weight:600;color:var(--white-92);">Policy</td>
+            <td class="change-update">UPDATE</td>
+            <td>admin@trigonum.ae</td>
+            <td style="font-family:monospace;font-size:12px;">192.168.1.42</td>
+            <td>limit, status</td>
+          </tr>
+          <!-- Expanded row showing field changes -->
+          <tr>
+            <td colspan="7" style="padding:0;">
+              <div class="expanded-content">
+                <table class="field-changes">
+                  <thead>
+                    <tr><th>Field</th><th>Old Value</th><th>New Value</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>limit</td>
+                      <td class="old-value">3000</td>
+                      <td class="new-value">5000</td>
+                    </tr>
+                    <tr>
+                      <td>status</td>
+                      <td class="old-value">DISABLED</td>
+                      <td class="new-value">ACTIVE</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><button class="expand-btn">&#9654;</button></td>
+            <td>Mar 5, 13:18:42</td>
+            <td style="font-weight:600;color:var(--white-92);">User</td>
+            <td class="change-create">CREATE</td>
+            <td>admin@trigonum.ae</td>
+            <td style="font-family:monospace;font-size:12px;">192.168.1.42</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><button class="expand-btn">&#9654;</button></td>
+            <td>Mar 5, 11:45:08</td>
+            <td style="font-weight:600;color:var(--white-92);">TradeAccount</td>
+            <td class="change-update">UPDATE</td>
+            <td>trader@trigonum.ae</td>
+            <td style="font-family:monospace;font-size:12px;">10.0.0.15</td>
+            <td>apiKey</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>Mar 5, 10:20:33</td>
+            <td style="font-weight:600;color:var(--white-92);">DdpSetting</td>
+            <td class="change-delete">DELETE</td>
+            <td>admin@trigonum.ae</td>
+            <td style="font-family:monospace;font-size:12px;">192.168.1.42</td>
+            <td>&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="rows-info">1-25 of 156</div>
+        <div class="pagination">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn">6</button>
+          <button class="page-btn">7</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

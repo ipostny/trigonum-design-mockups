@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Monitoring (Orders + Positions)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * MONITORING PAGE — Live orders and positions overview
+ * Route: /monitoring (tabs: Open Orders, Positions)
+ * Auth required. Uses AppLayout. ADMIN ONLY.
+ * v1 uses SidebarLayout — v2 uses top tabs.
+ *
+ * ROLE-WORKSPACE NOTE (V2):
+ * This page remains as ADMIN-ONLY monitoring (shows ALL users' orders/positions).
+ * Role workspace users see their own scoped data differently:
+ *   - Trader: own positions in Overview tab (trader-workspace.html)
+ *   - Senior Trader / Team Lead: team positions in Performance tab (team-analytics.html)
+ *   - Risk Manager: assigned traders' positions in Risk Management tab (risk-management.html)
+ * No changes needed to this mockup — admin monitoring is unchanged.
+ *
+ * Sub-pages:
+ * - Open Orders: Full-width orders table (all users) with filters
+ * - Positions: Full-width positions table (all users)
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-title { font-size: 32px; font-weight: 800; margin-bottom: 24px; }
+
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 24px;
+}
+.tab-btn {
+  padding: 12px 24px;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55);
+  background: none; border: none; cursor: pointer;
+  position: relative;
+}
+.tab-btn:hover { color: var(--white-75); }
+.tab-btn.active { color: var(--white-92); }
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 24px; right: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+
+/* Count badge on tab */
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--cyan);
+  color: var(--navy-900);
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 8px;
+  padding: 0 6px;
+}
+
+/* Table */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 14px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+  white-space: nowrap;
+}
+.data-table td {
+  font-size: 13px; padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+  white-space: nowrap;
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+.side-buy { color: var(--green); font-weight: 600; }
+.side-sell { color: var(--red); font-weight: 600; }
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.status-new { background: rgba(18,204,255,0.1); color: var(--cyan); }
+.status-partial { background: rgba(255,176,32,0.1); color: var(--amber); }
+.status-filled { background: rgba(0,230,138,0.1); color: var(--green); }
+
+/* Trader column */
+.trader-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.trader-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--white-08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--white-75);
+  flex-shrink: 0;
+}
+
+.pnl-positive { color: var(--green); font-weight: 600; }
+.pnl-negative { color: var(--red); font-weight: 600; }
+
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--white-08);
+}
+.rows-info { font-size: 12px; color: var(--white-55); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Monitoring</h1>
+
+    <div class="tab-bar">
+      <button class="tab-btn active">Open Orders <span class="tab-count">12</span></button>
+      <button class="tab-btn">Positions <span class="tab-count">7</span></button>
+    </div>
+
+    <!-- ======= OPEN ORDERS TAB ======= -->
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Trader</th>
+            <th>Symbol</th>
+            <th>Side</th>
+            <th>Type</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Filled</th>
+            <th>Status</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="trader-cell">
+                <div class="trader-avatar">AT</div>
+                Alice T.
+              </div>
+            </td>
+            <td style="font-weight:600;color:var(--white-92);">BTCUSDT</td>
+            <td class="side-buy">BUY</td>
+            <td>Limit</td>
+            <td>0.5 BTC</td>
+            <td>$93,200.00</td>
+            <td>0%</td>
+            <td><span class="status-badge status-new">New</span></td>
+            <td style="font-size:12px;">Mar 5, 14:32</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="trader-cell">
+                <div class="trader-avatar">BK</div>
+                Bob K.
+              </div>
+            </td>
+            <td style="font-weight:600;color:var(--white-92);">ETHUSDT</td>
+            <td class="side-sell">SELL</td>
+            <td>Limit</td>
+            <td>10 ETH</td>
+            <td>$3,600.00</td>
+            <td>40%</td>
+            <td><span class="status-badge status-partial">Partial</span></td>
+            <td style="font-size:12px;">Mar 5, 13:15</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="trader-cell">
+                <div class="trader-avatar">CM</div>
+                Carol M.
+              </div>
+            </td>
+            <td style="font-weight:600;color:var(--white-92);">SOLUSDT</td>
+            <td class="side-buy">BUY</td>
+            <td>Stop Limit</td>
+            <td>100 SOL</td>
+            <td>$185.00</td>
+            <td>0%</td>
+            <td><span class="status-badge status-new">New</span></td>
+            <td style="font-size:12px;">Mar 5, 11:48</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="rows-info">Showing 3 of 12 open orders</div>
+      </div>
+    </div>
+
+    <!-- ======= POSITIONS TAB (commented) ======= -->
+    <!--
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Trader</th>
+            <th>Symbol</th>
+            <th>Side</th>
+            <th>Size</th>
+            <th>Entry Price</th>
+            <th>Mark Price</th>
+            <th>Leverage</th>
+            <th>Unrealized PnL</th>
+            <th>Margin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="trader-cell">
+                <div class="trader-avatar">AT</div>
+                Alice T.
+              </div>
+            </td>
+            <td style="font-weight:600;color:var(--white-92);">BTCUSDT</td>
+            <td class="side-buy">LONG</td>
+            <td>0.25 BTC</td>
+            <td>$92,800.00</td>
+            <td>$94,250.00</td>
+            <td>10x</td>
+            <td class="pnl-positive">+$362.50</td>
+            <td>$2,320.00</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="trader-cell">
+                <div class="trader-avatar">BK</div>
+                Bob K.
+              </div>
+            </td>
+            <td style="font-weight:600;color:var(--white-92);">ETHUSDT</td>
+            <td class="side-sell">SHORT</td>
+            <td>5 ETH</td>
+            <td>$3,620.00</td>
+            <td>$3,560.00</td>
+            <td>5x</td>
+            <td class="pnl-positive">+$300.00</td>
+            <td>$3,560.00</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="trader-cell">
+                <div class="trader-avatar">CM</div>
+                Carol M.
+              </div>
+            </td>
+            <td style="font-weight:600;color:var(--white-92);">SOLUSDT</td>
+            <td class="side-buy">LONG</td>
+            <td>200 SOL</td>
+            <td>$180.20</td>
+            <td>$178.40</td>
+            <td>3x</td>
+            <td class="pnl-negative">-$360.00</td>
+            <td>$11,893.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="rows-info">Showing 3 of 7 positions</div>
+      </div>
+    </div>
+    -->
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

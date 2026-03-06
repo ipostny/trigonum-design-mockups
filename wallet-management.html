@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Wallet Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * WALLET MANAGEMENT PAGE — Admin crypto address management
+ * Route: /wallet-management (tabs: Create Address, Address List)
+ * Auth required. Uses AppLayout. Admin only.
+ *
+ * CREATE ADDRESS TAB:
+ * - Form: coin select, network select, label input
+ * - Generate address button
+ * - Recently created addresses list
+ *
+ * ADDRESS LIST TAB:
+ * - Filter by coin, network, status
+ * - Table: coin, network, address, label, status (active/disabled), actions
+ * - Copy address button, enable/disable toggle
+ *
+ * APIs:
+ * - useGetAllWalletAddressesQuery (list)
+ * - useCreateWalletAddressMutation (create)
+ * - useUpdateWalletAddressStatusMutation (toggle)
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-title { font-size: 32px; font-weight: 800; margin-bottom: 24px; }
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 28px;
+}
+.tab-btn {
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.tab-btn:hover { color: var(--white-75); }
+.tab-btn.active { color: var(--white-92); }
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 24px;
+  right: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-group {}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  color: var(--white-92);
+  font-size: 14px;
+  width: 100%;
+}
+.input-field:focus { outline: none; border-color: var(--cyan); }
+
+select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Recently created */
+.recent-section {
+  margin-top: 28px;
+}
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white-55);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.address-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--white-03);
+  border: 1px solid var(--white-05);
+  border-radius: var(--r-md);
+  margin-bottom: 8px;
+}
+
+.address-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.coin-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--white-08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.address-details {}
+.address-label-text {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.address-meta {
+  font-size: 11px;
+  color: var(--white-55);
+}
+.address-hash {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--white-55);
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-copy {
+  background: var(--white-08);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 6px 12px;
+  color: var(--white-75);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* ADDRESS LIST TAB */
+.filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: flex-end;
+}
+.filter-group { flex: 1; }
+.filter-group label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 4px;
+  display: block;
+}
+.filter-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  color: var(--white-92);
+  font-size: 12px;
+  width: 100%;
+}
+
+/* Table */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 12px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+}
+.data-table td {
+  font-size: 13px; padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+.badge-active {
+  background: rgba(0,230,138,0.1);
+  color: var(--green);
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-disabled {
+  background: rgba(255,255,255,0.05);
+  color: var(--white-55);
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.toggle-mini {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--white-15);
+  position: relative;
+  cursor: pointer;
+}
+.toggle-mini.on { background: var(--green); }
+.toggle-mini::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+}
+.toggle-mini.on::after { transform: translateX(16px); }
+
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--white-08);
+}
+.rows-info { font-size: 12px; color: var(--white-55); }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <h1 class="page-title">Wallet Management</h1>
+
+    <div class="tab-bar">
+      <button class="tab-btn active">Create Address</button>
+      <button class="tab-btn">Address List</button>
+    </div>
+
+    <!-- ======= CREATE ADDRESS TAB ======= -->
+    <div class="card">
+      <h3 class="card-title">Generate New Wallet Address</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="field-label">Coin</label>
+          <select class="input-field">
+            <option value="">Select coin...</option>
+            <option>BTC</option>
+            <option>ETH</option>
+            <option>USDT</option>
+            <option>USDC</option>
+            <option>SOL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Network</label>
+          <select class="input-field">
+            <option value="">Select network...</option>
+            <option>BTC</option>
+            <option>ERC-20</option>
+            <option>TRC-20</option>
+            <option>SOL</option>
+            <option>BEP-20</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Label</label>
+          <input class="input-field" type="text" placeholder="e.g. Main deposit">
+        </div>
+      </div>
+
+      <button class="btn-primary">Generate Address</button>
+    </div>
+
+    <div class="recent-section">
+      <div class="section-title">Recently Created</div>
+
+      <div class="address-card">
+        <div class="address-info">
+          <div class="coin-icon">BTC</div>
+          <div class="address-details">
+            <div class="address-label-text">Main BTC Deposit</div>
+            <div class="address-meta">BTC Network &bull; Created 5 min ago</div>
+          </div>
+        </div>
+        <div class="address-hash">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+        <button class="btn-copy">Copy</button>
+      </div>
+
+      <div class="address-card">
+        <div class="address-info">
+          <div class="coin-icon">ETH</div>
+          <div class="address-details">
+            <div class="address-label-text">ETH ERC-20</div>
+            <div class="address-meta">ERC-20 &bull; Created 2 hours ago</div>
+          </div>
+        </div>
+        <div class="address-hash">0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18</div>
+        <button class="btn-copy">Copy</button>
+      </div>
+    </div>
+
+    <!-- ======= ADDRESS LIST TAB (commented) ======= -->
+    <!--
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Coin</label>
+        <select class="filter-input">
+          <option value="">All Coins</option>
+          <option>BTC</option>
+          <option>ETH</option>
+          <option>USDT</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Network</label>
+        <select class="filter-input">
+          <option value="">All Networks</option>
+          <option>BTC</option>
+          <option>ERC-20</option>
+          <option>TRC-20</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select class="filter-input">
+          <option value="">All</option>
+          <option>Active</option>
+          <option>Disabled</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Coin</th>
+            <th>Network</th>
+            <th>Address</th>
+            <th>Label</th>
+            <th>Status</th>
+            <th>Enabled</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">BTC</td>
+            <td>BTC</td>
+            <td style="font-family:monospace;font-size:12px;">bc1qxy2kgd...x0wlh</td>
+            <td>Main BTC Deposit</td>
+            <td><span class="badge-active">Active</span></td>
+            <td><div class="toggle-mini on"></div></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">ETH</td>
+            <td>ERC-20</td>
+            <td style="font-family:monospace;font-size:12px;">0x742d35Cc...2bD18</td>
+            <td>ETH ERC-20</td>
+            <td><span class="badge-active">Active</span></td>
+            <td><div class="toggle-mini on"></div></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;color:var(--white-92);">USDT</td>
+            <td>TRC-20</td>
+            <td style="font-family:monospace;font-size:12px;">TJmF5r...k7pYR</td>
+            <td>USDT Tron</td>
+            <td><span class="badge-disabled">Disabled</span></td>
+            <td><div class="toggle-mini"></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-footer">
+        <div class="rows-info">1-10 of 12</div>
+      </div>
+    </div>
+    -->
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

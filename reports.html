@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Reports (Orders, Positions, PnL, Performance, Group, Journal, Lifecycle, Team)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * REPORTS SECTION — Comprehensive trading reports
+ * Route: /reports (tabs for sub-pages)
+ * Auth required. Uses AppLayout. Multiple report types.
+ *
+ * ROLE-WORKSPACE NOTE (V2):
+ * This reports page remains as the ADMIN/STANDALONE reports view.
+ * Role workspaces have their own Performance tabs with SCOPED data:
+ *   - Team Lead Performance → see team-analytics.html (hierarchical view, all traders)
+ *   - Senior Trader Performance → same UI, scoped to own team (flat list)
+ *   - Trader Performance → same data, self-only (see trader-workspace.html)
+ *   - Risk Manager Performance → same data, assigned traders only
+ * The admin Reports page shows ALL data with no role scoping — it remains unchanged.
+ * Journal content is also available in the Trader workspace's Journal tab (trader-workspace.html).
+ *
+ * SUB-PAGES (each as a tab):
+ * 1. Orders — All orders with advanced filters
+ * 2. Positions — Open/closed positions
+ * 3. PnL — Profit and loss breakdown
+ * 4. Performance — Account performance analytics
+ * 5. Group — Multi-account group reports
+ * 6. Trading Journal — Personal trade notes/journal
+ * 7. Trade Lifecycle — Full lifecycle of individual trades
+ * 8. Team Analytics — Team-wide performance comparison
+ *
+ * COMMON PATTERNS:
+ * - All tabs share: date range filter, account selector, export button
+ * - Tables use TanStack Table with sorting, filtering, pagination
+ * - Charts use Recharts (BarChart, LineChart, PieChart)
+ * - Export to CSV/XLSX
+ *
+ * APIs:
+ * - useGetOrdersReportQuery
+ * - useGetPositionsReportQuery
+ * - useGetPnlReportQuery
+ * - useGetPerformanceReportQuery
+ * - useGetGroupReportQuery
+ * - useGetJournalEntriesQuery
+ * - useGetTradeLifecyclesQuery
+ * - useGetTeamAnalyticsQuery
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: var(--navy-800); border-right: 1px solid var(--white-08); padding: 24px 0; flex-shrink: 0; }
+.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; max-height: 100vh; }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.page-title { font-size: 32px; font-weight: 800; }
+
+.btn-export {
+  background: var(--white-08);
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Report tabs — scrollable */
+.report-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+.report-tab {
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+}
+.report-tab:hover { color: var(--white-75); }
+.report-tab.active { color: var(--white-92); }
+.report-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+
+/* Common filters bar */
+.filters-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.filter-group {}
+.filter-group label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 4px;
+  display: block;
+}
+.filter-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  color: var(--white-92);
+  font-size: 12px;
+  min-width: 140px;
+}
+.filter-input:focus { outline: none; border-color: var(--cyan); }
+
+.btn-apply {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Table */
+.table-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table th {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); padding: 12px 16px; text-align: left;
+  border-bottom: 1px solid var(--white-08); background: var(--white-03);
+  cursor: pointer;
+}
+.data-table th:hover { color: var(--white-75); }
+.sort-icon { font-size: 10px; margin-left: 4px; }
+.data-table td {
+  font-size: 13px; padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05); color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--white-08);
+}
+.rows-info { font-size: 12px; color: var(--white-55); }
+.pagination { display: flex; gap: 4px; }
+.page-btn {
+  min-width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--white-08); border-radius: var(--r-sm);
+  background: transparent; color: var(--white-55); font-size: 12px; cursor: pointer;
+}
+.page-btn.active { background: var(--cyan); color: var(--navy-900); border-color: var(--cyan); }
+
+/* Stats cards */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+}
+.stat-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); margin-bottom: 6px;
+}
+.stat-value { font-size: 24px; font-weight: 800; }
+.stat-sub { font-size: 12px; color: var(--white-55); margin-top: 4px; }
+
+/* Chart area */
+.chart-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+}
+.card-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.chart-area {
+  height: 240px;
+  background: var(--white-03);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-35);
+  font-size: 13px;
+}
+
+/* Charts row */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Side badges */
+.side-buy { color: var(--green); font-weight: 600; }
+.side-sell { color: var(--red); font-weight: 600; }
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-filled { background: rgba(0,230,138,0.1); color: var(--green); }
+.badge-partial { background: rgba(255,176,32,0.1); color: var(--amber); }
+.badge-cancelled { background: rgba(255,255,255,0.05); color: var(--white-55); }
+.badge-open { background: rgba(18,204,255,0.1); color: var(--cyan); }
+.badge-closed { background: rgba(255,255,255,0.05); color: var(--white-55); }
+
+/* Journal-specific */
+.journal-entry {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+.journal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.journal-symbol { font-weight: 600; font-size: 14px; }
+.journal-date { font-size: 12px; color: var(--white-55); }
+.journal-body { font-size: 13px; color: var(--white-75); line-height: 1.5; }
+.journal-tags { display: flex; gap: 6px; margin-top: 8px; }
+.journal-tag {
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  font-size: 10px;
+  background: var(--white-05);
+  color: var(--white-55);
+  border: 1px solid var(--white-08);
+}
+
+/* Team member row */
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.team-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.team-name { font-size: 13px; font-weight: 500; }
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Reports</h1>
+      <button class="btn-export">&#8615; Export</button>
+    </div>
+
+    <div class="report-tabs">
+      <button class="report-tab active">Orders</button>
+      <button class="report-tab">Positions</button>
+      <button class="report-tab">PnL</button>
+      <button class="report-tab">Performance</button>
+      <button class="report-tab">Group</button>
+      <button class="report-tab">Journal</button>
+      <button class="report-tab">Lifecycle</button>
+      <button class="report-tab">Team Analytics</button>
+    </div>
+
+    <!-- ===== ORDERS TAB (active) ===== -->
+    <div class="filters-bar">
+      <div class="filter-group">
+        <label>Account</label>
+        <select class="filter-input">
+          <option value="">All Accounts</option>
+          <option>Bybit Main</option>
+          <option>Bybit Sub-1</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Symbol</label>
+        <select class="filter-input">
+          <option value="">All Symbols</option>
+          <option>BTCUSDT</option>
+          <option>ETHUSDT</option>
+          <option>SOLUSDT</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Side</label>
+        <select class="filter-input">
+          <option value="">All</option>
+          <option>Buy</option>
+          <option>Sell</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Start Date</label>
+        <input class="filter-input" type="date">
+      </div>
+      <div class="filter-group">
+        <label>End Date</label>
+        <input class="filter-input" type="date">
+      </div>
+      <button class="btn-apply">Apply</button>
+    </div>
+
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date <span class="sort-icon">&#9660;</span></th>
+            <th>Symbol</th>
+            <th>Side</th>
+            <th>Type</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Avg Fill</th>
+            <th>Filled %</th>
+            <th>Fee</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mar 5, 14:32</td>
+            <td style="font-weight:600;color:var(--white-92);">BTCUSDT</td>
+            <td class="side-buy">Buy</td>
+            <td>Market</td>
+            <td>0.5</td>
+            <td>&mdash;</td>
+            <td>$85,100.00</td>
+            <td>100%</td>
+            <td>$42.55</td>
+            <td><span class="badge badge-filled">Filled</span></td>
+          </tr>
+          <tr>
+            <td>Mar 5, 12:15</td>
+            <td style="font-weight:600;color:var(--white-92);">ETHUSDT</td>
+            <td class="side-sell">Sell</td>
+            <td>Limit</td>
+            <td>10.0</td>
+            <td>$3,450.00</td>
+            <td>$3,448.50</td>
+            <td>100%</td>
+            <td>$34.49</td>
+            <td><span class="badge badge-filled">Filled</span></td>
+          </tr>
+          <tr>
+            <td>Mar 5, 10:03</td>
+            <td style="font-weight:600;color:var(--white-92);">SOLUSDT</td>
+            <td class="side-buy">Buy</td>
+            <td>Limit</td>
+            <td>100.0</td>
+            <td>$148.00</td>
+            <td>$148.00</td>
+            <td>65%</td>
+            <td>$9.62</td>
+            <td><span class="badge badge-partial">Partial</span></td>
+          </tr>
+          <tr>
+            <td>Mar 4, 22:48</td>
+            <td style="font-weight:600;color:var(--white-92);">BTCUSDT</td>
+            <td class="side-sell">Sell</td>
+            <td>Limit</td>
+            <td>0.3</td>
+            <td>$86,000.00</td>
+            <td>&mdash;</td>
+            <td>0%</td>
+            <td>&mdash;</td>
+            <td><span class="badge badge-cancelled">Cancelled</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="rows-info">1-25 of 1,247</div>
+        <div class="pagination">
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">...</button>
+          <button class="page-btn">50</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PNL TAB (commented) ===== -->
+    <!--
+    <div class="stats-row">
+      <div class="card">
+        <div class="stat-label">Total PnL</div>
+        <div class="stat-value" style="color:var(--green);">+$18,420</div>
+        <div class="stat-sub">Last 30 days</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Realized PnL</div>
+        <div class="stat-value" style="color:var(--green);">+$15,200</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Unrealized PnL</div>
+        <div class="stat-value" style="color:var(--green);">+$3,220</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Total Fees</div>
+        <div class="stat-value" style="color:var(--red);">-$1,840</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3 class="card-title">Daily PnL</h3>
+      <div class="chart-area">
+        [Recharts BarChart — daily PnL bars, green positive / red negative]
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3 class="card-title">PnL by Symbol</h3>
+        <div class="chart-area" style="height:200px;">
+          [Recharts PieChart — PnL distribution by symbol]
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3 class="card-title">PnL by Side</h3>
+        <div class="chart-area" style="height:200px;">
+          [Recharts BarChart — Long vs Short PnL comparison]
+        </div>
+      </div>
+    </div>
+
+    PnL Table:
+    <table> Date, Symbol, Side, Entry, Exit, Volume, PnL ($), PnL (%), Fee </table>
+    -->
+
+    <!-- ===== PERFORMANCE TAB (commented) ===== -->
+    <!--
+    Stats: Win Rate, Avg Win, Avg Loss, Profit Factor, Sharpe Ratio, Max Drawdown
+    Charts: Equity curve (line), Monthly returns (bar), Drawdown chart (area)
+    -->
+
+    <!-- ===== GROUP TAB (commented) ===== -->
+    <!--
+    Group selector (compare multiple accounts)
+    Aggregated stats across selected accounts
+    Comparison chart (overlay line charts per account)
+    Table: Account, Trades, Win Rate, PnL, Max DD, Sharpe
+    -->
+
+    <!-- ===== JOURNAL TAB (commented) ===== -->
+    <!--
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="font-size:18px;font-weight:700;">Trading Journal</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-apply">+ New Entry</button>
+        <button class="btn-export">Sync from Trades</button>
+      </div>
+    </div>
+
+    <div class="journal-entry">
+      <div class="journal-header">
+        <div>
+          <span class="journal-symbol">BTCUSDT</span>
+          <span class="side-buy" style="margin-left:8px;font-size:12px;">Long</span>
+          <span style="font-size:12px;color:var(--green);margin-left:8px;">+$450.00</span>
+        </div>
+        <span class="journal-date">Mar 5, 2026 14:32</span>
+      </div>
+      <div class="journal-body">
+        Entered long on BTC breakout above 85K resistance. Strong volume confirmation.
+        Took partial profit at 85.5K, let rest ride. Closed at 85.1K on trailing stop.
+        Good execution but could have held longer — trend continued to 86K.
+      </div>
+      <div class="journal-tags">
+        <span class="journal-tag">breakout</span>
+        <span class="journal-tag">trend-follow</span>
+        <span class="journal-tag">partial-profit</span>
+      </div>
+    </div>
+
+    <div class="journal-entry">
+      <div class="journal-header">
+        <div>
+          <span class="journal-symbol">ETHUSDT</span>
+          <span class="side-sell" style="margin-left:8px;font-size:12px;">Short</span>
+          <span style="font-size:12px;color:var(--red);margin-left:8px;">-$120.00</span>
+        </div>
+        <span class="journal-date">Mar 4, 2026 09:15</span>
+      </div>
+      <div class="journal-body">
+        Shorted ETH on failed support break. Turned out to be a fake breakdown —
+        should have waited for retest confirmation. Stopped out quickly.
+        Lesson: patience on breakdown setups.
+      </div>
+      <div class="journal-tags">
+        <span class="journal-tag">breakdown</span>
+        <span class="journal-tag">fake-out</span>
+        <span class="journal-tag">lesson</span>
+      </div>
+    </div>
+    -->
+
+    <!-- ===== LIFECYCLE TAB (commented) ===== -->
+    <!--
+    Table: Trade ID, Symbol, Side, Entry Time, Exit Time, Duration, Entry Price,
+           Exit Price, Volume, PnL, Fees, # Orders
+    Each row expandable to show all orders in the lifecycle
+    -->
+
+    <!-- ===== TEAM ANALYTICS TAB (commented) ===== -->
+    <!--
+    <div class="stats-row">
+      <div class="card">
+        <div class="stat-label">Team Total PnL</div>
+        <div class="stat-value" style="color:var(--green);">+$45,680</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Active Traders</div>
+        <div class="stat-value">6</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Avg Win Rate</div>
+        <div class="stat-value">58.3%</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Best Performer</div>
+        <div class="stat-value" style="font-size:16px;">Jack T.</div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Trader</th>
+          <th>Trades</th>
+          <th>Win Rate</th>
+          <th>PnL</th>
+          <th>Avg Trade</th>
+          <th>Max Drawdown</th>
+          <th>Profit Factor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="team-row">
+              <div class="team-avatar">JT</div>
+              <span class="team-name">Jack Thompson</span>
+            </div>
+          </td>
+          <td>142</td>
+          <td style="color:var(--green);">64.1%</td>
+          <td style="color:var(--green);">+$18,420</td>
+          <td>$129.72</td>
+          <td style="color:var(--red);">-4.2%</td>
+          <td>2.14</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="team-row">
+              <div class="team-avatar">DK</div>
+              <span class="team-name">David Kim</span>
+            </div>
+          </td>
+          <td>98</td>
+          <td style="color:var(--green);">59.2%</td>
+          <td style="color:var(--green);">+$12,800</td>
+          <td>$130.61</td>
+          <td style="color:var(--red);">-6.8%</td>
+          <td>1.76</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="team-row">
+              <div class="team-avatar">AS</div>
+              <span class="team-name">Alex Sato</span>
+            </div>
+          </td>
+          <td>210</td>
+          <td>51.4%</td>
+          <td style="color:var(--green);">+$8,960</td>
+          <td>$42.67</td>
+          <td style="color:var(--red);">-8.1%</td>
+          <td>1.34</td>
+        </tr>
+      </tbody>
+    </table>
+    -->
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

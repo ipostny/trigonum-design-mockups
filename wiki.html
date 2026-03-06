@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Wiki</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+/*
+ * WIKI PAGE — Knowledge base / documentation viewer
+ * Route: /wiki, /wiki/:pageId, /wiki/search?q=...
+ * Auth required. Uses AppLayout.
+ * Layout: Sidebar navigation (section list) + Content area
+ * API: useGetWikiNavigationQuery(), wiki page content endpoints
+ * Admin can refresh cache via useRefreshWikiCacheMutation()
+ */
+
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: var(--navy-800);
+  border-right: 1px solid var(--white-08);
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+.main-content {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Page header with search */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Search input */
+.search-input {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 8px 16px 8px 40px;
+  color: var(--white-92);
+  font-size: 13px;
+  width: 260px;
+  transition: border-color 0.2s;
+  position: relative;
+}
+.search-input:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+.search-wrapper {
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--white-35);
+  font-size: 14px;
+}
+
+/* Refresh button (admin only) */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--white-55);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.icon-btn:hover {
+  border-color: var(--white-35);
+  color: var(--white-75);
+}
+
+/* Wiki layout: section nav + content */
+.wiki-layout {
+  display: flex;
+  gap: 24px;
+}
+
+/* Left: section navigation */
+.wiki-nav {
+  width: 260px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--white-08);
+  padding-right: 20px;
+}
+
+.wiki-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  color: var(--white-55);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+}
+.wiki-nav-item:hover {
+  background: var(--white-05);
+  color: var(--white-75);
+}
+.wiki-nav-item.active {
+  background: var(--cyan);
+  color: var(--navy-900);
+  font-weight: 600;
+}
+.wiki-nav-icon {
+  font-size: 16px;
+}
+
+/* Right: page content */
+.wiki-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Wiki rendered content styling */
+.wiki-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.wiki-page-updated {
+  font-size: 12px;
+  color: var(--white-35);
+  margin-bottom: 28px;
+}
+
+.wiki-body h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--white-08);
+}
+
+.wiki-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  color: var(--white-92);
+}
+
+.wiki-body p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--white-75);
+  margin-bottom: 12px;
+}
+
+.wiki-body ul, .wiki-body ol {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.wiki-body li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--white-75);
+  margin-bottom: 4px;
+}
+
+.wiki-body code {
+  background: var(--white-08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.wiki-body pre {
+  background: var(--navy-800);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-md);
+  padding: 16px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+.wiki-body pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Not configured state */
+.wiki-empty {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 48px;
+  text-align: center;
+}
+.wiki-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+.wiki-empty-text {
+  font-size: 14px;
+  color: var(--white-55);
+  margin-bottom: 4px;
+}
+.wiki-empty-hint {
+  font-size: 12px;
+  color: var(--white-35);
+}
+</style>
+<link rel="stylesheet" href="shared-interactive.css">
+</head>
+<body>
+<div class="video-bg-container"><video src="video-header.mp4" autoplay muted loop playsinline></video></div>
+<div class="prototype-badge">PROTOTYPE</div>
+
+<div class="app-shell">
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Wiki</h1>
+      <div class="header-actions">
+        <div class="search-wrapper">
+          <span class="search-icon">&#128269;</span>
+          <input class="search-input" type="text" placeholder="Search wiki...">
+        </div>
+        <!-- Admin only -->
+        <button class="icon-btn" title="Refresh cache">&#8635;</button>
+      </div>
+    </div>
+
+    <div class="wiki-layout">
+      <!-- Section navigation -->
+      <nav class="wiki-nav">
+        <div class="wiki-nav-item active">
+          <span class="wiki-nav-icon">&#128218;</span>
+          Getting Started
+        </div>
+        <div class="wiki-nav-item">
+          <span class="wiki-nav-icon">&#128200;</span>
+          Trading Guide
+        </div>
+        <div class="wiki-nav-item">
+          <span class="wiki-nav-icon">&#128274;</span>
+          Risk Management
+        </div>
+        <div class="wiki-nav-item">
+          <span class="wiki-nav-icon">&#128101;</span>
+          Team Management
+        </div>
+        <div class="wiki-nav-item">
+          <span class="wiki-nav-icon">&#128202;</span>
+          Reports & Analytics
+        </div>
+        <div class="wiki-nav-item">
+          <span class="wiki-nav-icon">&#128176;</span>
+          Investor Portal
+        </div>
+        <div class="wiki-nav-item">
+          <span class="wiki-nav-icon">&#9881;</span>
+          API & Integrations
+        </div>
+        <div class="wiki-nav-item">
+          <span class="wiki-nav-icon">&#10067;</span>
+          FAQ
+        </div>
+      </nav>
+
+      <!-- Page content -->
+      <div class="wiki-content">
+        <h2 class="wiki-page-title">Getting Started</h2>
+        <p class="wiki-page-updated">Last updated: March 2026</p>
+
+        <div class="wiki-body">
+          <h2>Welcome to TrigonumTrade</h2>
+          <p>TrigonumTrade is a professional crypto trading platform designed for teams. This guide will help you get started with the key features and workflows.</p>
+
+          <h3>Quick Setup</h3>
+          <ol>
+            <li>Connect your Bybit exchange account via API keys</li>
+            <li>Configure your trading preferences and risk limits</li>
+            <li>Set up your team members with appropriate roles</li>
+            <li>Start trading from the Terminal page</li>
+          </ol>
+
+          <h2>Key Features</h2>
+          <p>The platform provides several core capabilities:</p>
+          <ul>
+            <li><strong>Trading Terminal</strong> — Real-time charting with TradingView and order management</li>
+            <li><strong>Risk Management</strong> — Daily limits, position controls, and policy enforcement</li>
+            <li><strong>Reports</strong> — Comprehensive P&L analysis, performance tracking, and exports</li>
+            <li><strong>Investor Portal</strong> — Dedicated interface for investment program management</li>
+          </ul>
+
+          <h3>System Requirements</h3>
+          <p>TrigonumTrade works best with modern browsers:</p>
+          <ul>
+            <li>Chrome 100+ (recommended)</li>
+            <li>Firefox 100+</li>
+            <li>Safari 16+</li>
+            <li>Edge 100+</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="shared-interactive.js"></script>
+</body>
+</html>

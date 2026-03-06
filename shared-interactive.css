@@ -1,0 +1,249 @@
+/**
+ * TrigonumTrade Design Mockups — Shared Interactive Styles
+ * Video background, toast notifications, navigation menu, section jumps.
+ * Injected into all mockups alongside shared-interactive.js.
+ */
+
+/* ===== VIDEO BACKGROUND ===== */
+.video-bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.video-bg-container video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  opacity: 0.06;
+}
+
+/* Ensure all content sits above video */
+.app-shell,
+.page-container,
+.demo-sections,
+main,
+.main-content,
+.sidebar,
+body > div:not(.video-bg-container):not(#mockup-nav):not(#mockup-toast):not(.section-jump-nav) {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+#mockup-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(18, 204, 255, 0.95);
+  color: #0D0D24;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-shadow: 0 4px 24px rgba(18, 204, 255, 0.3);
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#mockup-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== FLOATING NAV MENU ===== */
+#mockup-nav {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.mockup-nav-toggle {
+  width: 40px;
+  height: 40px;
+  background: rgba(18, 204, 255, 0.9);
+  color: #0D0D24;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+  margin-left: auto;
+}
+
+.mockup-nav-toggle:hover {
+  transform: scale(1.1);
+}
+
+.mockup-nav-panel {
+  display: none;
+  background: rgba(13, 13, 36, 0.97);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+  max-height: 80vh;
+  overflow-y: auto;
+  min-width: 220px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  backdrop-filter: blur(12px);
+}
+
+.mockup-nav-panel.open {
+  display: block;
+}
+
+.mockup-nav-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.mockup-nav-section {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.mockup-nav-link {
+  display: block;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.mockup-nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.92);
+}
+
+.mockup-nav-link.current {
+  background: rgba(18, 204, 255, 0.12);
+  color: #12CCFF;
+  font-weight: 600;
+}
+
+/* ===== SECTION JUMP NAV ===== */
+.section-jump-nav {
+  position: fixed;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9998;
+  background: rgba(13, 13, 36, 0.9);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px;
+  max-height: 60vh;
+  overflow-y: auto;
+  width: 200px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.section-jump-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 8px;
+}
+
+.section-jump-link {
+  display: block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+
+.section-jump-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.92);
+}
+
+/* ===== INTERACTIVE CURSOR HINTS ===== */
+.btn, button, .tab-btn, .toggle-btn, .sub-tab, .pill,
+.expand-toggle, .tree-node, .nav-item, .nav-link,
+select, .member-chip .remove, .remove-btn, .add-trader-btn,
+.clickable-count, .assigned-trader, table tbody tr {
+  cursor: pointer !important;
+}
+
+/* Hover effects for interactive elements */
+table tbody tr:hover {
+  background: rgba(255,255,255,0.03) !important;
+}
+
+.btn:active, button:active {
+  transform: scale(0.97);
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.mockup-nav-panel::-webkit-scrollbar,
+.section-jump-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mockup-nav-panel::-webkit-scrollbar-track,
+.section-jump-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mockup-nav-panel::-webkit-scrollbar-thumb,
+.section-jump-nav::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+
+/* ===== PROTOTYPE BADGE ===== */
+.prototype-badge {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(175, 51, 255, 0.9);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  z-index: 9999;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 12px rgba(175, 51, 255, 0.3);
+}
