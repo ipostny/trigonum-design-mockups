@@ -1,19 +1,16 @@
-# QA Prompts — One Per Page
+# QA Full Report — All 6 Pages
 
-Run each prompt separately in the browser extension. Do NOT run them all at once.
+First read the full requirements spec at https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md — you will need it for every page below.
 
-The full requirements spec is at:
-https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md
+Go through all 6 pages one by one. For each page, navigate to the URL, verify every checkbox below, and mark each as PASS, FAIL, or PARTIAL with a short note explaining what you see. At the end, produce a summary table with total PASS/FAIL/PARTIAL counts per page.
 
 ---
 
-## Prompt 1 — Team Analytics
+## Page 1 — Team Analytics
 
 Navigate to: `https://ipostny.github.io/trigonum-design-mockups/team-analytics.html`
 
-First read the requirements spec at https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md — sections "1. Team Lead — Analytics Tab" and "3. Team Lead — Performance Tab".
-
-This is the Team Lead's Analytics page. Verify each requirement against the actual mockup:
+Requirements: ТЗ sections "1. Team Lead — Analytics Tab" and "3. Team Lead — Performance Tab".
 
 **Summary Cards (from ТЗ 01_team_lead_analytics):**
 - [ ] "Capital under management" card present with dollar value
@@ -50,17 +47,13 @@ This is the Team Lead's Analytics page. Verify each requirement against the actu
 - [ ] Sidebar shows 6 tabs: Analytics, Trading, Risk Management, My Workspace, Org Structure, Investing
 - [ ] "Analytics" tab is highlighted as active
 
-List every item above as PASS, FAIL, or PARTIAL with a note explaining what you see.
-
 ---
 
-## Prompt 2 — Trading Terminal
+## Page 2 — Trading Terminal
 
 Navigate to: `https://ipostny.github.io/trigonum-design-mockups/trading-terminal.html`
 
-First read the requirements spec at https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md — section "2. Team Lead — Trading Tab".
-
-This is the Trading page with embedded analytics. Verify each requirement:
+Requirements: ТЗ section "2. Team Lead — Trading Tab".
 
 **Top-Level Tabs (from ТЗ 02_team_lead_trading):**
 - [ ] Two top tabs visible: "Terminal" and "Analytics" (or equivalent like "Trading" / "Analytics")
@@ -89,17 +82,13 @@ This is the Trading page with embedded analytics. Verify each requirement:
 - [ ] Sidebar shows 6 tabs
 - [ ] "Trading" tab is highlighted as active
 
-List every item above as PASS, FAIL, or PARTIAL with a note.
-
 ---
 
-## Prompt 3 — Risk Management
+## Page 3 — Risk Management
 
 Navigate to: `https://ipostny.github.io/trigonum-design-mockups/risk-management.html`
 
-First read the requirements spec at https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md — sections "4. Team Lead — Risk Management Tab" and "8. Risk Manager — Risk Management Tab".
-
-This page serves both Team Lead and Risk Manager roles. Verify each requirement:
+Requirements: ТЗ sections "4. Team Lead — Risk Management Tab" and "8. Risk Manager — Risk Management Tab".
 
 **Sub-Tabs (from ТЗ 04_team_lead_risk_mgmt):**
 - [ ] "Team" sub-tab present and clickable
@@ -144,17 +133,13 @@ This page serves both Team Lead and Risk Manager roles. Verify each requirement:
 - [ ] Left sidebar present with unified navigation
 - [ ] "Risk Management" tab is highlighted as active
 
-List every item above as PASS, FAIL, or PARTIAL with a note.
-
 ---
 
-## Prompt 4 — Org Structure
+## Page 4 — Org Structure
 
 Navigate to: `https://ipostny.github.io/trigonum-design-mockups/org-structure.html`
 
-First read the requirements spec at https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md — section "5. Team Lead — Org Structure Tab".
-
-This is the organizational hierarchy tree page. Verify each requirement:
+Requirements: ТЗ section "5. Team Lead — Org Structure Tab".
 
 **View Toggle (from ТЗ 05_team_lead_org_structure):**
 - [ ] Toggle present at top: "List view" / "Org Structure" (or "Tree view")
@@ -190,17 +175,13 @@ This is the organizational hierarchy tree page. Verify each requirement:
 - [ ] Left sidebar present with unified navigation
 - [ ] "Org Structure" tab is highlighted as active
 
-List every item above as PASS, FAIL, or PARTIAL with a note.
-
 ---
 
-## Prompt 5 — Trader Workspace
+## Page 5 — Trader Workspace
 
 Navigate to: `https://ipostny.github.io/trigonum-design-mockups/trader-workspace.html`
 
-First read the requirements spec at https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md — sections "6. Trader — Overview Tab" and "7. Trader — Journal Tab".
-
-This is the Trader's personal workspace. Verify each requirement:
+Requirements: ТЗ sections "6. Trader — Overview Tab" and "7. Trader — Journal Tab".
 
 **Overview Tab (from ТЗ 06_trader_overview):**
 - [ ] "Overview" tab present and active by default
@@ -250,17 +231,13 @@ This is the Trader's personal workspace. Verify each requirement:
 - [ ] OR unified 6-tab sidebar (if V3 unified navigation applies to all roles)
 - [ ] Active tab highlighted
 
-List every item above as PASS, FAIL, or PARTIAL with a note.
-
 ---
 
-## Prompt 6 — Role Workspaces
+## Page 6 — Role Workspaces
 
 Navigate to: `https://ipostny.github.io/trigonum-design-mockups/role-workspaces.html`
 
-First read the requirements spec at https://raw.githubusercontent.com/ipostny/trigonum-design-mockups/main/REQUIREMENTS-REVIEW.md — section "Mockup Changes Required > A. NEW MOCKUP: role-workspaces.html" and "Confirmed Decisions".
-
-This reference page shows all 4 role workspace layouts side by side. Verify each role matches the ТЗ:
+Requirements: ТЗ section "Mockup Changes Required > A. NEW MOCKUP: role-workspaces.html" and "Confirmed Decisions".
 
 **Team Lead Workspace:**
 - [ ] Section clearly labeled "Team Lead"
@@ -302,4 +279,20 @@ This reference page shows all 4 role workspace layouts side by side. Verify each
 - [ ] Team Lead has full RM capability reflected in having Risk Management tab (Decision #3)
 - [ ] Team Lead has Investing tab for investment management (Decision #4)
 
-List every item above as PASS, FAIL, or PARTIAL with a note.
+---
+
+## Final Summary
+
+After completing all 6 pages, produce a summary table:
+
+| Page | Total Checks | PASS | FAIL | PARTIAL | Score |
+|------|-------------|------|------|---------|-------|
+| 1. Team Analytics | | | | | |
+| 2. Trading Terminal | | | | | |
+| 3. Risk Management | | | | | |
+| 4. Org Structure | | | | | |
+| 5. Trader Workspace | | | | | |
+| 6. Role Workspaces | | | | | |
+| **TOTAL** | | | | | |
+
+Then list the top 5 most critical FAIL items that should be fixed first.
