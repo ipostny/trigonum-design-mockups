@@ -405,6 +405,41 @@ body {
   text-transform: uppercase; color: var(--white-35);
   text-align: center; margin-bottom: 24px;
 }
+
+/* Button outline */
+.btn-outline {
+  font-size: 11px; font-weight: 600;
+  color: var(--white-55);
+  background: none;
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.btn-outline:hover { color: var(--white-75); border-color: var(--white-35); }
+
+/* Period pills */
+.period-pills {
+  display: flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+}
+.period-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  border-radius: var(--r-full);
+  cursor: pointer;
+}
+.period-pill:hover { color: var(--white-75); }
+.period-pill.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
 </style>
 <link rel="stylesheet" href="shared-interactive.css">
 </head>
