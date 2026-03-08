@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrigonumTrade — Trader Analytics (Елизавета)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--navy-900);
+  color: var(--white-92);
+  min-height: 100vh;
+}
+
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+/* ── Breadcrumbs ── */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--white-55);
+  margin-bottom: 24px;
+}
+.breadcrumbs a {
+  color: var(--white-55);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.breadcrumbs a:hover { color: var(--cyan); }
+.breadcrumbs .sep { color: var(--white-35); }
+.breadcrumbs .current { color: var(--white-92); }
+
+/* ── Header ── */
+.page-header {
+  margin-bottom: 28px;
+}
+.page-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.page-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white-92);
+}
+.badge-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,230,138,0.12);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+}
+.badge-active::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+}
+.page-header .subtitle {
+  font-size: 13px;
+  color: var(--white-55);
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white-75);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Trader Info Table ── */
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.info-table td {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--white-08);
+  vertical-align: middle;
+}
+.info-table tr:last-child td { border-bottom: none; }
+.info-table .label {
+  color: var(--white-55);
+  font-size: 13px;
+  width: 240px;
+}
+.info-table .value {
+  color: var(--white-92);
+  font-size: 14px;
+  font-weight: 500;
+}
+.info-table .value-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  border-radius: var(--r-sm);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.2s;
+}
+.btn-outline:hover { background: rgba(18,204,255,0.1); }
+
+.btn-small {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+/* ── Selects ── */
+select {
+  background: var(--white-05);
+  color: var(--white-92);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-sm);
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  outline: none;
+  appearance: auto;
+}
+select:focus { border-color: var(--cyan); }
+select option { background: var(--navy-800); color: var(--white-92); }
+
+/* ── Document Cards ── */
+.docs-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+.docs-row .card { flex: 1; }
+
+.upload-zone {
+  border: 2px dashed var(--white-15);
+  border-radius: var(--r-md);
+  padding: 32px;
+  text-align: center;
+  color: var(--white-35);
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+.upload-zone:hover { border-color: var(--white-35); }
+.upload-zone .upload-text {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.upload-zone .upload-hint {
+  font-size: 11px;
+  color: var(--white-35);
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--white-05);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-sm);
+  padding: 10px 14px;
+}
+.file-item .file-name {
+  font-size: 13px;
+  color: var(--white-92);
+  font-weight: 500;
+}
+.file-item .file-date {
+  font-size: 11px;
+  color: var(--white-35);
+  margin-top: 2px;
+}
+
+/* ── Tabs ── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--white-08);
+  margin-bottom: 24px;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--white-55);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font);
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--white-92); }
+.tab-btn.active {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Analytics Grid ── */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ── Period Selector ── */
+.period-selector {
+  display: flex;
+  gap: 4px;
+  background: var(--white-05);
+  border-radius: var(--r-sm);
+  padding: 2px;
+}
+.period-btn {
+  background: none;
+  border: none;
+  color: var(--white-55);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.period-btn:hover { color: var(--white-92); }
+.period-btn.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.widget-header .card-title { margin-bottom: 0; }
+
+/* ── PnL summary ── */
+.pnl-summary {
+  display: flex;
+  gap: 24px;
+  font-size: 12px;
+  color: var(--white-55);
+  margin-top: 12px;
+}
+.pnl-summary span { font-weight: 600; }
+
+/* ── Gauge ── */
+.gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+}
+.gauge-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--red);
+  margin-top: -60px;
+}
+.gauge-label {
+  font-size: 12px;
+  color: var(--white-55);
+  margin-top: 4px;
+}
+
+/* ── Calendar ── */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.calendar-header .month-nav {
+  background: none;
+  border: none;
+  color: var(--white-55);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+}
+.calendar-header .month-nav:hover { color: var(--white-92); }
+.calendar-header .month-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white-92);
+}
+
+.calendar-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.calendar-stat {
+  font-size: 12px;
+  color: var(--white-55);
+}
+.calendar-stat .stat-val {
+  font-weight: 700;
+  font-size: 13px;
+}
+.calendar-stat .stat-val.green { color: var(--green); }
+.calendar-stat .stat-val.red { color: var(--red); }
+
+.calendar-sub-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.cal-sub-tab {
+  background: var(--white-05);
+  border: none;
+  color: var(--white-55);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font);
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cal-sub-tab.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal-day-header {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--white-35);
+  text-align: center;
+  padding: 4px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cal-day {
+  background: var(--white-03);
+  border-radius: 4px;
+  padding: 4px 5px;
+  min-height: 48px;
+  position: relative;
+}
+.cal-day.empty { background: transparent; }
+.cal-day .day-num {
+  font-size: 10px;
+  color: var(--white-35);
+  margin-bottom: 4px;
+}
+.cal-day .day-bar {
+  height: 16px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--white-92);
+}
+.day-bar.bar-green { background: rgba(0,230,138,0.25); color: var(--green); }
+.day-bar.bar-red   { background: rgba(255,77,106,0.25); color: var(--red); }
+
+/* ── Donut ── */
+.donut-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+}
+.donut-legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--white-75);
+}
+.donut-legend .dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.donut-profit {
+  font-size: 13px;
+  color: var(--white-55);
+  margin-top: 8px;
+}
+.donut-profit span { color: var(--green); font-weight: 600; }
+
+/* ── Trades Table ── */
+.filter-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-table th {
+  color: var(--white-55);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--white-15);
+  white-space: nowrap;
+}
+.data-table td {
+  font-size: 13px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--white-08);
+  color: var(--white-75);
+  white-space: nowrap;
+}
+.data-table tbody tr:hover { background: var(--white-05); }
+
+.pnl-up   { color: var(--green) !important; font-weight: 600; }
+.pnl-down { color: var(--red) !important; font-weight: 600; }
+
+.reason-filled { color: var(--cyan); font-size: 12px; }
+.reason-empty  { color: var(--white-35); font-size: 12px; }
+
+.badge-long {
+  background: rgba(0,230,138,0.12);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}
+.badge-short {
+  background: rgba(255,77,106,0.12);
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.show {
+  display: flex;
+}
+.modal-content {
+  background: var(--navy-800);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  max-width: 900px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: var(--shadow-elevated);
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--white-55);
+  font-size: 22px;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--white-08); color: var(--white-92); }
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.modal-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.chart-placeholder {
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--white-35);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+.chart-placeholder .chart-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.modal-params-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.modal-params-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--white-08);
+  font-size: 13px;
+}
+.modal-params-table .param-label { color: var(--white-55); width: 130px; }
+.modal-params-table .param-value { color: var(--white-92); font-weight: 500; }
+
+.modal-section {
+  margin-bottom: 20px;
+}
+.modal-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white-75);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.modal-section p {
+  font-size: 13px;
+  color: var(--white-75);
+  line-height: 1.6;
+}
+
+.history-log {
+  list-style: none;
+}
+.history-log li {
+  font-size: 12px;
+  color: var(--white-55);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--white-05);
+  display: flex;
+  gap: 12px;
+}
+.history-log .log-time {
+  color: var(--white-35);
+  flex-shrink: 0;
+  width: 110px;
+}
+</style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <!-- ── 1. Breadcrumbs ── -->
+  <div class="breadcrumbs">
+    <a href="home.html">Результативность</a>
+    <span class="sep">&rarr;</span>
+    <a href="team-analytics.html">Аналитика команды</a>
+    <span class="sep">&rarr;</span>
+    <span class="current">Елизавета</span>
+  </div>
+
+  <!-- ── 2. Header ── -->
+  <div class="page-header">
+    <div class="page-header-row">
+      <h2>Аналитика трейдера &mdash; Елизавета</h2>
+      <span class="badge-active">Активен</span>
+    </div>
+    <div class="subtitle">Старший трейдер: Alex Voronov &middot; PM: Elena Petrova</div>
+  </div>
+
+  <!-- ── 3. Trader Card ── -->
+  <div class="card" style="margin-bottom: 24px;">
+    <table class="info-table">
+      <tr>
+        <td class="label">Трейдер</td>
+        <td class="value">Елизавета</td>
+      </tr>
+      <tr>
+        <td class="label">Субаккаунт</td>
+        <td class="value">
+          <select>
+            <option>eliza.sub1</option>
+            <option>eliza.sub2</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="label">Баланс</td>
+        <td class="value">
+          <div class="value-row">
+            <span>10,000.00 USDT</span>
+            <button class="btn-primary btn-small">Пополнить</button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="label">Политика риск-менеджмента</td>
+        <td class="value">
+          <select>
+            <option>1% &mdash; Консервативная</option>
+            <option selected>3% &mdash; Умеренная</option>
+            <option>5% &mdash; Агрессивная</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ── 4. Document Cards ── -->
+  <div class="docs-row">
+    <div class="card">
+      <div class="card-title">Профайлинг</div>
+      <div class="upload-zone">
+        <div class="upload-text">Перетащите файл или нажмите для загрузки</div>
+        <div class="upload-hint">PDF, DOCX &mdash; макс. 10 МБ</div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="file-name">профайлинг_елизавета_v2.pdf</div>
+          <div class="file-date">Загружено: 15.01.2026</div>
+        </div>
+        <button class="btn-outline btn-small">Скачать</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Торговая стратегия</div>
+      <div class="upload-zone">
+        <div class="upload-text">Перетащите файл или нажмите для загрузки</div>
+        <div class="upload-hint">PDF, DOCX &mdash; макс. 10 МБ</div>
+      </div>
+      <div class="file-item">
+        <div>
+          <div class="file-name">стратегия_скальпинг_v3.docx</div>
+          <div class="file-date">Загружено: 22.02.2026</div>
+        </div>
+        <button class="btn-outline btn-small">Скачать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. Tabs ── -->
+  <div data-tab-group="trader-tabs">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab-target="tab-analytics">Аналитика</button>
+      <button class="tab-btn" data-tab-target="tab-trades">Сделки</button>
+    </div>
+
+    <!-- ── Tab 1: Аналитика ── -->
+    <div class="tab-panel active" data-tab-panel="tab-analytics">
+      <div class="analytics-grid">
+
+        <!-- Widget A: График P&L -->
+        <div class="card">
+          <div class="widget-header">
+            <div class="card-title">График P&amp;L</div>
+            <div class="period-selector">
+              <button class="period-btn active">Неделя</button>
+              <button class="period-btn">Месяц</button>
+              <button class="period-btn">Квартал</button>
+              <button class="period-btn">Год</button>
+            </div>
+          </div>
+          <svg viewBox="0 0 600 220" width="100%" height="200" style="display:block;">
+            <!-- Grid lines -->
+            <line x1="50" y1="30" x2="580" y2="30" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="50" y1="70" x2="580" y2="70" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="50" y1="110" x2="580" y2="110" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="50" y1="150" x2="580" y2="150" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="50" y1="190" x2="580" y2="190" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+            <!-- Y-axis labels -->
+            <text x="44" y="34" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="end">+80</text>
+            <text x="44" y="74" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="end">+40</text>
+            <text x="44" y="114" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="end">0</text>
+            <text x="44" y="154" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="end">-40</text>
+            <text x="44" y="194" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="end">-80</text>
+
+            <!-- Zero line -->
+            <line x1="50" y1="110" x2="580" y2="110" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="4,3"/>
+
+            <!-- Green area (above zero) -->
+            <path d="M50,110 L50,110 L120,88 L190,72 L260,62 L330,78 L330,110 L260,110 L190,110 L120,110 Z" fill="rgba(0,230,138,0.15)"/>
+            <!-- Red area (below zero) -->
+            <path d="M330,110 L330,130 L400,148 L470,165 L540,172 L580,175 L580,110 L540,110 L470,110 L400,110 Z" fill="rgba(255,77,106,0.15)"/>
+
+            <!-- PnL line -->
+            <polyline points="50,110 120,88 190,72 260,62 330,78 330,130 400,148 470,165 540,172 580,175"
+                      fill="none" stroke="#12CCFF" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+
+            <!-- Data points -->
+            <circle cx="120" cy="88" r="3" fill="#12CCFF"/>
+            <circle cx="190" cy="72" r="3" fill="#12CCFF"/>
+            <circle cx="260" cy="62" r="3" fill="#00E68A"/>
+            <circle cx="330" cy="78" r="3" fill="#12CCFF"/>
+            <circle cx="400" cy="148" r="3" fill="#FF4D6A"/>
+            <circle cx="470" cy="165" r="3" fill="#FF4D6A"/>
+            <circle cx="540" cy="172" r="3" fill="#FF4D6A"/>
+            <circle cx="580" cy="175" r="3" fill="#FF4D6A"/>
+
+            <!-- X-axis labels -->
+            <text x="120" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-21</text>
+            <text x="190" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-22</text>
+            <text x="260" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-23</text>
+            <text x="330" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-24</text>
+            <text x="400" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-25</text>
+            <text x="470" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-26</text>
+            <text x="540" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-27</text>
+            <text x="580" y="212" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">08-28</text>
+          </svg>
+          <div class="pnl-summary">
+            <div>Общий P&amp;L: <span class="pnl-down">-63.95 USD</span></div>
+            <div>Суточный P&amp;L: <span class="pnl-down">-0.80 USD</span></div>
+          </div>
+        </div>
+
+        <!-- Widget B: Винрейт -->
+        <div class="card">
+          <div class="widget-header">
+            <div class="card-title">Процент минусовых сделок</div>
+          </div>
+          <div class="gauge-container">
+            <svg viewBox="0 0 250 150" width="250" height="150">
+              <!-- Background arc -->
+              <path d="M 25 130 A 100 100 0 0 1 225 130" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="18" stroke-linecap="round"/>
+
+              <!-- Green segment (0-30%) — 0 to 54 degrees from left -->
+              <path d="M 25 130 A 100 100 0 0 1 71.7 42.7" fill="none" stroke="#00E68A" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+
+              <!-- Yellow segment (30-60%) — 54 to 108 degrees -->
+              <path d="M 71.7 42.7 A 100 100 0 0 1 178.3 42.7" fill="none" stroke="#FFB020" stroke-width="18" opacity="0.7"/>
+
+              <!-- Red segment (60-100%) — 108 to 180 degrees -->
+              <path d="M 178.3 42.7 A 100 100 0 0 1 225 130" fill="none" stroke="#FF4D6A" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+
+              <!-- Needle: 65% = 117 degrees from left = pointing into red zone -->
+              <!-- 65% of 180deg = 117deg from start. Start angle = 180deg (left). Actual angle = 180 - 117 = 63deg from horizontal -->
+              <line x1="125" y1="130" x2="191" y2="53" stroke="var(--white-92)" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="125" cy="130" r="5" fill="var(--white-92)"/>
+
+              <!-- Tick marks -->
+              <text x="20" y="145" fill="rgba(255,255,255,0.35)" font-size="9">0%</text>
+              <text x="65" y="30" fill="rgba(255,255,255,0.35)" font-size="9">30%</text>
+              <text x="170" y="30" fill="rgba(255,255,255,0.35)" font-size="9">60%</text>
+              <text x="218" y="145" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">100%</text>
+            </svg>
+            <div class="gauge-value">65%</div>
+            <div class="gauge-label">23 сделки</div>
+          </div>
+        </div>
+
+        <!-- Widget C: Календарь сделок -->
+        <div class="card">
+          <div class="widget-header">
+            <div class="card-title">Чистая прибыль к убытку</div>
+          </div>
+          <div class="calendar-header">
+            <button class="month-nav">&laquo;</button>
+            <span class="month-name">Сентябрь</span>
+            <button class="month-nav">&raquo;</button>
+          </div>
+          <div class="calendar-stats">
+            <div class="calendar-stat"><span class="stat-val green">685 $</span> Доход</div>
+            <div class="calendar-stat"><span class="stat-val red">-968 $</span> Убыток</div>
+            <div class="calendar-stat"><span class="stat-val">-284 $</span> Чистая прибыль</div>
+            <div class="calendar-stat"><span class="stat-val">-56.72 $</span> Средн. прибыль/день</div>
+          </div>
+          <div class="calendar-sub-tabs">
+            <button class="cal-sub-tab active">Подробно</button>
+            <button class="cal-sub-tab">Итог</button>
+          </div>
+          <div class="calendar-grid">
+            <!-- Day headers -->
+            <div class="cal-day-header">ПН</div>
+            <div class="cal-day-header">ВТ</div>
+            <div class="cal-day-header">СР</div>
+            <div class="cal-day-header">ЧТ</div>
+            <div class="cal-day-header">ПТ</div>
+            <div class="cal-day-header">СБ</div>
+            <div class="cal-day-header">ВС</div>
+
+            <!-- Week 1 -->
+            <div class="cal-day">
+              <div class="day-num">1</div>
+              <div class="day-bar bar-red">-398</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">2</div>
+              <div class="day-bar bar-green">161</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">3</div>
+              <div class="day-bar bar-green">154</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">4</div>
+              <div class="day-bar bar-red">-146</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">5</div>
+              <div class="day-bar bar-red">-215</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">6</div>
+              <div class="day-bar bar-green">163</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">7</div>
+              <div class="day-bar bar-red">-208</div>
+            </div>
+
+            <!-- Week 2 -->
+            <div class="cal-day">
+              <div class="day-num">8</div>
+              <div class="day-bar bar-green">187</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">9</div>
+              <div class="day-bar bar-green">20.03</div>
+            </div>
+            <div class="cal-day">
+              <div class="day-num">10</div>
+              <div class="day-bar bar-red">-0.82</div>
+            </div>
+            <div class="cal-day"><div class="day-num">11</div></div>
+            <div class="cal-day"><div class="day-num">12</div></div>
+            <div class="cal-day"><div class="day-num">13</div></div>
+            <div class="cal-day"><div class="day-num">14</div></div>
+
+            <!-- Week 3 -->
+            <div class="cal-day"><div class="day-num">15</div></div>
+            <div class="cal-day"><div class="day-num">16</div></div>
+            <div class="cal-day"><div class="day-num">17</div></div>
+            <div class="cal-day"><div class="day-num">18</div></div>
+            <div class="cal-day"><div class="day-num">19</div></div>
+            <div class="cal-day"><div class="day-num">20</div></div>
+            <div class="cal-day"><div class="day-num">21</div></div>
+
+            <!-- Week 4 -->
+            <div class="cal-day"><div class="day-num">22</div></div>
+            <div class="cal-day"><div class="day-num">23</div></div>
+            <div class="cal-day"><div class="day-num">24</div></div>
+            <div class="cal-day"><div class="day-num">25</div></div>
+            <div class="cal-day"><div class="day-num">26</div></div>
+            <div class="cal-day"><div class="day-num">27</div></div>
+            <div class="cal-day"><div class="day-num">28</div></div>
+
+            <!-- Week 5 -->
+            <div class="cal-day"><div class="day-num">29</div></div>
+            <div class="cal-day"><div class="day-num">30</div></div>
+            <div class="cal-day empty"></div>
+            <div class="cal-day empty"></div>
+            <div class="cal-day empty"></div>
+            <div class="cal-day empty"></div>
+            <div class="cal-day empty"></div>
+          </div>
+        </div>
+
+        <!-- Widget D: Распределение Long/Short -->
+        <div class="card">
+          <div class="widget-header">
+            <div class="card-title">Распределение по лонг/шорт</div>
+          </div>
+          <div class="donut-container">
+            <svg viewBox="0 0 200 200" width="200" height="200">
+              <!-- Donut background -->
+              <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="30"/>
+
+              <!-- SHORT segment: 47.5% = 171 degrees, starting from top (rotated -90deg) -->
+              <!-- circumference = 2*pi*70 = 439.82 -->
+              <!-- LONG: 52.5% = 230.9 -->
+              <!-- SHORT: 47.5% = 208.9 -->
+              <circle cx="100" cy="100" r="70" fill="none"
+                      stroke="#00E68A" stroke-width="30"
+                      stroke-dasharray="230.9 208.9"
+                      stroke-dashoffset="110"
+                      style="transform: rotate(-90deg); transform-origin: 100px 100px;"/>
+              <circle cx="100" cy="100" r="70" fill="none"
+                      stroke="#12CCFF" stroke-width="30"
+                      stroke-dasharray="208.9 230.9"
+                      stroke-dashoffset="-120.9"
+                      style="transform: rotate(-90deg); transform-origin: 100px 100px;"/>
+
+              <!-- Center text -->
+              <text x="100" y="96" fill="var(--white-92)" font-size="14" font-weight="700" text-anchor="middle">360</text>
+              <text x="100" y="112" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">сделок</text>
+
+              <!-- Labels -->
+              <text x="30" y="50" fill="#00E68A" font-size="11" font-weight="600">LONG</text>
+              <text x="145" y="170" fill="#12CCFF" font-size="11" font-weight="600">SHORT</text>
+            </svg>
+            <div class="donut-legend">
+              <span><span class="dot" style="background:#00E68A;"></span>LONG: 189 (52.5%)</span>
+              <span><span class="dot" style="background:#12CCFF;"></span>SHORT: 171 (47.5%)</span>
+            </div>
+            <div class="donut-profit">Прибыль ($): <span>256 $</span></div>
+          </div>
+        </div>
+
+      </div><!-- /analytics-grid -->
+    </div><!-- /tab-analytics -->
+
+    <!-- ── Tab 2: Сделки ── -->
+    <div class="tab-panel" data-tab-panel="tab-trades">
+      <div class="card">
+        <div class="filter-row">
+          <select>
+            <option>Период: Последние 7 дней</option>
+            <option>Период: Последние 30 дней</option>
+            <option>Период: Последние 90 дней</option>
+            <option>Период: Все время</option>
+          </select>
+          <select>
+            <option>Инструмент: Все</option>
+            <option>BTCUSDT</option>
+            <option>ETHUSDT</option>
+            <option>SOLUSDT</option>
+          </select>
+          <select>
+            <option>Направление: Все</option>
+            <option>Long</option>
+            <option>Short</option>
+          </select>
+          <select>
+            <option>Статус: Закрытые</option>
+            <option>Статус: Открытые</option>
+            <option>Статус: Все</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Дата/время</th>
+                <th>Инструмент</th>
+                <th>Направление</th>
+                <th>Объём</th>
+                <th>Цена входа</th>
+                <th>Цена выхода</th>
+                <th>P&amp;L $</th>
+                <th>P&amp;L %</th>
+                <th>TP</th>
+                <th>SL</th>
+                <th>Причины входа</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2025-08-28 14:32</td>
+                <td>BTCUSDT</td>
+                <td><span class="badge-long">Long</span></td>
+                <td>0.015</td>
+                <td>62,450.20</td>
+                <td>62,812.50</td>
+                <td class="pnl-up">+54.35</td>
+                <td class="pnl-up">+0.58%</td>
+                <td>63,200</td>
+                <td>62,100</td>
+                <td><span class="reason-filled">&#x270E; Заполнено</span></td>
+                <td><button class="btn-outline btn-small" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+              </tr>
+              <tr>
+                <td>2025-08-27 09:15</td>
+                <td>ETHUSDT</td>
+                <td><span class="badge-short">Short</span></td>
+                <td>0.25</td>
+                <td>2,685.40</td>
+                <td>2,721.80</td>
+                <td class="pnl-down">-9.10</td>
+                <td class="pnl-down">-1.36%</td>
+                <td>2,640</td>
+                <td>2,730</td>
+                <td><span class="reason-empty">&mdash; Пусто</span></td>
+                <td><button class="btn-outline btn-small" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+              </tr>
+              <tr>
+                <td>2025-08-26 16:48</td>
+                <td>SOLUSDT</td>
+                <td><span class="badge-long">Long</span></td>
+                <td>5.0</td>
+                <td>142.35</td>
+                <td>145.80</td>
+                <td class="pnl-up">+17.25</td>
+                <td class="pnl-up">+2.42%</td>
+                <td>148.00</td>
+                <td>140.50</td>
+                <td><span class="reason-filled">&#x270E; Заполнено</span></td>
+                <td><button class="btn-outline btn-small" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+              </tr>
+              <tr>
+                <td>2025-08-25 11:03</td>
+                <td>BTCUSDT</td>
+                <td><span class="badge-short">Short</span></td>
+                <td>0.010</td>
+                <td>63,120.00</td>
+                <td>63,580.40</td>
+                <td class="pnl-down">-46.04</td>
+                <td class="pnl-down">-0.73%</td>
+                <td>62,500</td>
+                <td>63,600</td>
+                <td><span class="reason-empty">&mdash; Пусто</span></td>
+                <td><button class="btn-outline btn-small" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+              </tr>
+              <tr>
+                <td>2025-08-24 08:22</td>
+                <td>ETHUSDT</td>
+                <td><span class="badge-long">Long</span></td>
+                <td>0.50</td>
+                <td>2,590.10</td>
+                <td>2,648.30</td>
+                <td class="pnl-up">+29.10</td>
+                <td class="pnl-up">+2.25%</td>
+                <td>2,700</td>
+                <td>2,560</td>
+                <td><span class="reason-filled">&#x270E; Заполнено</span></td>
+                <td><button class="btn-outline btn-small" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /tab-trades -->
+
+  </div><!-- /tab-group -->
+
+</div><!-- /page-container -->
+
+<!-- ── 6. Trade Detail Modal ── -->
+<div class="modal-overlay" data-modal="modal-trade-detail">
+  <div class="modal-content">
+    <button class="modal-close" data-modal-close>&times;</button>
+    <div class="modal-title">Детали сделки &mdash; BTCUSDT</div>
+    <div class="modal-2col">
+      <div class="chart-placeholder">
+        <div class="chart-icon">&#x1F4C8;</div>
+        <div>График инструмента<br>(маркеры входа / выхода / SL / TP)</div>
+      </div>
+      <div>
+        <table class="modal-params-table">
+          <tr><td class="param-label">Трейдер</td><td class="param-value">Елизавета</td></tr>
+          <tr><td class="param-label">Инструмент</td><td class="param-value">BTCUSDT</td></tr>
+          <tr><td class="param-label">Направление</td><td class="param-value"><span class="badge-long">Long</span></td></tr>
+          <tr><td class="param-label">Объём</td><td class="param-value">0.015 BTC</td></tr>
+          <tr><td class="param-label">Плечо</td><td class="param-value">10x</td></tr>
+          <tr><td class="param-label">Цена входа</td><td class="param-value">62,450.20</td></tr>
+          <tr><td class="param-label">Цена выхода</td><td class="param-value">62,812.50</td></tr>
+          <tr><td class="param-label">SL</td><td class="param-value">62,100.00</td></tr>
+          <tr><td class="param-label">TP</td><td class="param-value">63,200.00</td></tr>
+          <tr><td class="param-label">Комиссия</td><td class="param-value">-1.88 USDT</td></tr>
+          <tr><td class="param-label">P&amp;L</td><td class="param-value pnl-up">+54.35 USDT (+0.58%)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Описание из дневника</div>
+      <p>Вход по тренду после отскока от уровня поддержки 62,400. Подтверждение через рост объёмов на 5-минутном ТФ и бычью дивергенцию RSI. Целевой уровень &mdash; верхняя граница канала 63,200. Риск/прибыль 1:2.1. Частичное закрытие на 50% позиции при достижении +0.3%.</p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">История изменений</div>
+      <ul class="history-log">
+        <li>
+          <span class="log-time">28.08.2025 14:32</span>
+          <span>Позиция открыта: Long BTCUSDT 0.015 @ 62,450.20</span>
+        </li>
+        <li>
+          <span class="log-time">28.08.2025 15:08</span>
+          <span>Частичное закрытие: 50% позиции @ 62,638.10 (+2.82 USDT)</span>
+        </li>
+        <li>
+          <span class="log-time">28.08.2025 16:45</span>
+          <span>Позиция закрыта: остаток @ 62,812.50 (+51.53 USDT). Итого P&amp;L: +54.35 USDT</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="shared-interactive.css">
+<script src="shared-interactive.js"></script>
+</body>
+</html>
