@@ -377,6 +377,7 @@
   // ============================================================
   function initTableRows() {
     document.querySelectorAll('table tbody tr:not(.expandable):not(.nested)').forEach(row => {
+      if (row.hasAttribute('data-row-modal')) return;
       row.style.cursor = 'pointer';
       row.addEventListener('click', function(e) {
         if (e.target.closest('button, a, select, input, .btn')) return;
@@ -524,6 +525,7 @@
   }
 
   function initViewToggles() {
+    if (document.querySelector('.tree-container, .org-tree')) return;
     document.querySelectorAll('.view-toggle').forEach(group => {
       const btns = group.querySelectorAll('.toggle-btn, button');
       btns.forEach(btn => {
@@ -619,6 +621,166 @@
   }
 
   // ============================================================
+  // 20. ORG SEARCH — filter org-node elements
+  // ============================================================
+  function initOrgSearch() {
+    var searchInput = document.querySelector('.org-search-input, input[placeholder*="search" i][placeholder*="org" i], .org-controls input[type="text"], .org-controls input[type="search"]');
+    if (!searchInput) return;
+    var treeContainer = document.querySelector('.tree-container, .org-tree');
+    if (!treeContainer) return;
+
+    var nothingFound = document.createElement('div');
+    nothingFound.style.cssText = 'text-align:center;padding:40px 20px;color:rgba(255,255,255,0.35);font-size:14px;display:none;';
+    nothingFound.textContent = 'Nothing found';
+    treeContainer.parentNode.insertBefore(nothingFound, treeContainer.nextSibling);
+
+    searchInput.addEventListener('input', function() {
+      var query = this.value.trim().toLowerCase();
+      var nodes = treeContainer.querySelectorAll('.org-node');
+      if (!query) {
+        nodes.forEach(function(n) { n.style.display = ''; });
+        treeContainer.style.display = '';
+        nothingFound.style.display = 'none';
+        return;
+      }
+      var matchCount = 0;
+      nodes.forEach(function(n) {
+        var text = (n.textContent || '').toLowerCase();
+        if (text.indexOf(query) >= 0) {
+          n.style.display = '';
+          matchCount++;
+        } else {
+          n.style.display = 'none';
+        }
+      });
+      if (matchCount === 0) {
+        treeContainer.style.display = 'none';
+        nothingFound.style.display = '';
+      } else {
+        treeContainer.style.display = '';
+        nothingFound.style.display = 'none';
+      }
+    });
+  }
+
+  // ============================================================
+  // 21. ORG VIEW TOGGLE — Tree / List toggle on org-structure
+  // ============================================================
+  function initOrgViewToggle() {
+    var viewToggle = document.querySelector('.org-controls .view-toggle, .org-view-toggle');
+    if (!viewToggle) return;
+    var btns = viewToggle.querySelectorAll('.toggle-btn, button');
+    btns.forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        btns.forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        toast('View: ' + this.textContent.trim());
+      });
+    });
+  }
+
+  // ============================================================
+  // 22. COLUMN SORTING — click-to-sort on table headers
+  // ============================================================
+  function initColumnSorting() {
+    document.querySelectorAll('.data-table').forEach(function(table) {
+      var headers = table.querySelectorAll('th');
+      headers.forEach(function(th, colIndex) {
+        var sortIcon = th.querySelector('.sort-icon');
+        if (!sortIcon) return;
+        th.style.cursor = 'pointer';
+        th.addEventListener('click', function() {
+          var tbody = table.querySelector('tbody');
+          if (!tbody) return;
+          var rows = Array.from(tbody.querySelectorAll('tr'));
+          // Separate parent and child rows for grouping
+          var topRows = [];
+          var childMap = {};
+          var currentParent = null;
+          rows.forEach(function(row) {
+            if (row.classList.contains('row-child') || row.classList.contains('nested')) {
+              if (currentParent) {
+                if (!childMap[currentParent]) childMap[currentParent] = [];
+                childMap[currentParent].push(row);
+              }
+            } else {
+              currentParent = row;
+              topRows.push(row);
+            }
+          });
+
+          var ascending = sortIcon.textContent === '⇅' || sortIcon.textContent === '▲';
+          // Reset all sort icons in this table
+          headers.forEach(function(h) {
+            var si = h.querySelector('.sort-icon');
+            if (si && si !== sortIcon) si.textContent = '⇅';
+          });
+          sortIcon.textContent = ascending ? '▼' : '▲';
+
+          topRows.sort(function(a, b) {
+            var cellA = a.querySelectorAll('td')[colIndex];
+            var cellB = b.querySelectorAll('td')[colIndex];
+            if (!cellA || !cellB) return 0;
+            var textA = cellA.textContent.replace(/[▼▶\s$,%+()]/g, '').trim();
+            var textB = cellB.textContent.replace(/[▼▶\s$,%+()]/g, '').trim();
+            var numA = parseFloat(textA);
+            var numB = parseFloat(textB);
+            var result;
+            if (!isNaN(numA) && !isNaN(numB)) {
+              result = numA - numB;
+            } else {
+              result = textA.localeCompare(textB);
+            }
+            return ascending ? result : -result;
+          });
+
+          // Rebuild tbody preserving parent/child grouping
+          topRows.forEach(function(parent) {
+            tbody.appendChild(parent);
+            if (childMap[parent]) {
+              childMap[parent].forEach(function(child) {
+                tbody.appendChild(child);
+              });
+            }
+          });
+          toast('Sorted by ' + th.textContent.replace(/[▼▲⇅]/g, '').trim());
+        });
+      });
+    });
+  }
+
+  // ============================================================
+  // 23. ANALYTICS POPUP CLOSE — Escape and outside-click
+  // ============================================================
+  function initAnalyticsPopupClose() {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.analytics-popup').forEach(function(popup) {
+          if (popup.style.display === 'block' || popup.style.display === 'flex') {
+            popup.style.display = 'none';
+            toast('Closed');
+          }
+        });
+        document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+          if (overlay.style.display === 'flex' || overlay.style.display === 'block') {
+            overlay.style.display = 'none';
+          }
+        });
+      }
+    });
+    document.addEventListener('click', function(e) {
+      document.querySelectorAll('.analytics-popup').forEach(function(popup) {
+        if ((popup.style.display === 'block' || popup.style.display === 'flex') && !popup.contains(e.target) && !e.target.closest('.tree-node')) {
+          popup.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  // ============================================================
   // INIT
   // ============================================================
   function init() {
@@ -641,7 +803,11 @@
     initFloatingNav();
     initClickableCounts();
     initProgressBars();
+    initOrgViewToggle();
+    initOrgSearch();
     initViewToggles();
+    initColumnSorting();
+    initAnalyticsPopupClose();
     document.addEventListener('click', function(e) {
       const el = e.target.closest('button, .btn, .preview-tab, .toggle-btn, .period-pill, .tree-node, .expand-toggle, tr.expandable, .member-chip .remove, .add-trader-btn, .remove-btn, select, a.mockup-nav-link, a.section-jump-link, .group-card .btn, .assigned-trader .remove-btn');
       if (el) { el.style.transform = 'scale(0.96)'; setTimeout(() => { el.style.transform = ''; }, 150); }
