@@ -523,7 +523,11 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
     <div class="strategy-section">
       <div class="strategy-header">
         <div class="title">My Trading Strategy</div>
-        <div class="meta">Last updated: 03/04/2026 14:30 by Dmitry Volkov</div>
+      </div>
+
+      <!-- Last updated timestamp -->
+      <div style="font-size: 12px; color: var(--white-35); margin-bottom: 16px;">
+        Последнее обновление: 22.02.2026 14:30, Елизавета
       </div>
 
       <!-- Editor toolbar -->
@@ -567,21 +571,21 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
       </div>
 
       <!-- Uploaded file -->
-      <div class="file-card">
-        <div class="file-icon">📄</div>
-        <div class="file-info">
-          <div class="name">Trading_Strategy_v2.pdf</div>
-          <div class="meta">248 KB · Uploaded 03/01/2026</div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--white-05); border: 1px solid var(--white-08); border-radius: var(--r-sm); margin-top: 16px;">
+        <div style="font-size: 18px;">📄</div>
+        <div style="flex: 1;">
+          <div style="font-size: 14px; font-weight: 600; color: var(--white-92);">стратегия_скальпинг_v3.docx</div>
+          <div style="font-size: 12px; color: var(--white-35); margin-top: 2px;">245 КБ</div>
         </div>
-        <div class="file-actions">
-          <button class="btn-sm">Download</button>
-          <button class="btn-sm">Replace</button>
-        </div>
+        <button style="background: none; border: none; color: var(--cyan); font-size: 13px; font-weight: 600; cursor: pointer;">Скачать</button>
       </div>
 
-      <div class="editor-actions">
-        <button class="btn secondary">Cancel</button>
-        <button class="btn primary">Save Strategy</button>
+      <!-- Action buttons -->
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button style="border: 1px solid var(--white-15); background: none; color: var(--white-55); padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer;">Редактировать</button>
+        <button style="border: 1px solid var(--white-15); background: none; color: var(--white-55); padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer;">Загрузить файл</button>
+        <button style="background: var(--cyan); color: var(--navy-900); font-weight: 600; padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; border: none; opacity: 0.5;">Сохранить</button>
+        <button style="border: 1px solid var(--white-15); background: none; color: var(--white-55); padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer;">Отмена</button>
       </div>
     </div>
 

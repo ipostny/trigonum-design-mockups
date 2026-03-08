@@ -440,6 +440,34 @@ body {
   background: var(--white-15);
   color: var(--white-92);
 }
+
+/* PnL colors */
+.pnl-up { color: var(--green) !important; }
+.pnl-down { color: var(--red) !important; }
+
+/* Pill sub-tabs */
+.pill-tabs {
+  display: inline-flex;
+  background: var(--white-05);
+  border-radius: var(--r-full);
+  padding: 3px;
+  margin-bottom: 20px;
+}
+.pill-tab {
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  border-radius: var(--r-full);
+  cursor: pointer;
+}
+.pill-tab:hover { color: var(--white-75); }
+.pill-tab.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
 </style>
 <link rel="stylesheet" href="shared-interactive.css">
 </head>
@@ -469,6 +497,7 @@ body {
       <button class="sub-tab active" data-tab-target="panel-rm-team">Team</button>
       <button class="sub-tab" data-tab-target="panel-rm-policies">Policies</button>
       <button class="sub-tab" data-tab-target="panel-rm-analytics">RM Analytics</button>
+      <button class="sub-tab" data-tab-target="panel-rm-performance">Результативность</button>
     </div>
 
     <!-- ====== PANEL: TEAM ====== -->
@@ -922,6 +951,225 @@ body {
       </div>
     </div><!-- /panel-rm-analytics -->
 
+    <!-- ====== PANEL: РЕЗУЛЬТАТИВНОСТЬ ====== -->
+    <div id="panel-rm-performance" data-tab-panel data-tab-group="rm-tabs" style="display:none;">
+
+      <!-- Sub-tabs (pill style) -->
+      <div class="pill-tabs" data-tab-group="rm-perf-tabs">
+        <button class="pill-tab active" data-tab-target="panel-perf-team-analytics">Аналитика команды</button>
+        <button class="pill-tab" data-tab-target="panel-perf-trade-history">История сделок</button>
+      </div>
+
+      <!-- ====== SUB-PANEL: Аналитика команды ====== -->
+      <div id="panel-perf-team-analytics" data-tab-panel data-tab-group="rm-perf-tabs">
+
+        <!-- Period selector -->
+        <div class="period-pills" style="display:inline-flex;gap:0;margin-bottom:20px;">
+          <button class="period-pill">День</button>
+          <button class="period-pill active" style="background:var(--cyan);color:var(--navy-900);">Неделя</button>
+          <button class="period-pill">Месяц</button>
+          <button class="period-pill">Квартал</button>
+          <button class="period-pill">Год</button>
+        </div>
+
+        <!-- Summary cards -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+          <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-lg);padding:24px;">
+            <div style="font-size:12px;color:var(--white-55);margin-bottom:8px;">Капитал под управлением</div>
+            <div style="font-size:28px;font-weight:800;">$87,420</div>
+          </div>
+          <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-lg);padding:24px;">
+            <div style="font-size:12px;color:var(--white-55);margin-bottom:8px;">Изменение за период</div>
+            <div style="font-size:28px;font-weight:800;color:var(--green);">+$1,280</div>
+            <div style="font-size:13px;color:var(--green);margin-top:4px;">(+1.5%)</div>
+          </div>
+        </div>
+
+        <!-- Trader table -->
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--white-08);">
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Трейдер</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Капитал</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Unrealized PnL</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Realized PnL (день)</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Realized PnL (неделя)</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Сделок</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Max DrawDown</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--white-05);">
+              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Pavel Sidorov</a></td>
+              <td style="text-align:right;padding:10px 12px;">$22,400</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$340</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$180</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$520</td>
+              <td style="text-align:right;padding:10px 12px;">12</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-2.1%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--white-05);">
+              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Maria Ivanova</a></td>
+              <td style="text-align:right;padding:10px 12px;">$18,600</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-$120</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$95</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$310</td>
+              <td style="text-align:right;padding:10px 12px;">8</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-1.8%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--white-05);">
+              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Oleg Kuznetsov</a></td>
+              <td style="text-align:right;padding:10px 12px;">$15,200</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$85</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-$45</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-$180</td>
+              <td style="text-align:right;padding:10px 12px;">15</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-3.4%</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Sergey Lebedev</a></td>
+              <td style="text-align:right;padding:10px 12px;">$31,220</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$210</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$340</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$890</td>
+              <td style="text-align:right;padding:10px 12px;">22</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-1.2%</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div><!-- /panel-perf-team-analytics -->
+
+      <!-- ====== SUB-PANEL: История сделок ====== -->
+      <div id="panel-perf-trade-history" data-tab-panel data-tab-group="rm-perf-tabs" style="display:none;">
+
+        <!-- Filters row -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;">
+          <select style="background:var(--white-05);color:var(--white-92);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:6px 12px;font-size:13px;font-family:var(--font);">
+            <option>Трейдер</option>
+            <option>Pavel Sidorov</option>
+            <option>Maria Ivanova</option>
+            <option>Oleg Kuznetsov</option>
+            <option>Sergey Lebedev</option>
+          </select>
+          <select style="background:var(--white-05);color:var(--white-92);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:6px 12px;font-size:13px;font-family:var(--font);">
+            <option>Период</option>
+            <option>Сегодня</option>
+            <option>Неделя</option>
+            <option>Месяц</option>
+            <option>Квартал</option>
+          </select>
+          <select style="background:var(--white-05);color:var(--white-92);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:6px 12px;font-size:13px;font-family:var(--font);">
+            <option>Инструмент</option>
+            <option>BTCUSDT</option>
+            <option>ETHUSDT</option>
+            <option>SOLUSDT</option>
+            <option>XRPUSDT</option>
+          </select>
+          <select style="background:var(--white-05);color:var(--white-92);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:6px 12px;font-size:13px;font-family:var(--font);">
+            <option>Направление</option>
+            <option>Long</option>
+            <option>Short</option>
+          </select>
+          <select style="background:var(--white-05);color:var(--white-92);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:6px 12px;font-size:13px;font-family:var(--font);">
+            <option>Статус</option>
+            <option>Открыта</option>
+            <option>Закрыта</option>
+          </select>
+          <button class="btn-outline" style="padding:6px 14px;font-size:12px;">Сбросить</button>
+          <button class="btn-outline" style="padding:6px 14px;font-size:12px;background:var(--cyan);color:var(--navy-900);border-color:var(--cyan);">Применить</button>
+        </div>
+
+        <!-- Trade table -->
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--white-08);">
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Трейдер</th>
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Инструмент</th>
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Позиция</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Объём</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Плечо</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Цена входа</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Цена выхода</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Unrealized PnL</th>
+              <th style="text-align:right;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Realized PnL</th>
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Дата входа</th>
+              <th style="text-align:center;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--white-05);">
+              <td style="padding:10px 12px;">Pavel Sidorov</td>
+              <td style="padding:10px 12px;">BTCUSDT</td>
+              <td style="padding:10px 12px;"><span style="color:var(--green);font-weight:600;">Long</span></td>
+              <td style="text-align:right;padding:10px 12px;">0.15 BTC</td>
+              <td style="text-align:right;padding:10px 12px;">10x</td>
+              <td style="text-align:right;padding:10px 12px;">$96,450</td>
+              <td style="text-align:right;padding:10px 12px;">$97,120</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$100.50</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$100.50</td>
+              <td style="padding:10px 12px;font-size:12px;color:var(--white-55);">2026-03-07 14:32</td>
+              <td style="text-align:center;padding:10px 12px;"><button class="btn-outline" style="padding:4px 10px;font-size:11px;" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--white-05);">
+              <td style="padding:10px 12px;">Maria Ivanova</td>
+              <td style="padding:10px 12px;">ETHUSDT</td>
+              <td style="padding:10px 12px;"><span style="color:var(--red);font-weight:600;">Short</span></td>
+              <td style="text-align:right;padding:10px 12px;">2.5 ETH</td>
+              <td style="text-align:right;padding:10px 12px;">5x</td>
+              <td style="text-align:right;padding:10px 12px;">$3,842</td>
+              <td style="text-align:right;padding:10px 12px;">$3,790</td>
+              <td style="text-align:right;padding:10px 12px;">—</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$130.00</td>
+              <td style="padding:10px 12px;font-size:12px;color:var(--white-55);">2026-03-07 11:05</td>
+              <td style="text-align:center;padding:10px 12px;"><button class="btn-outline" style="padding:4px 10px;font-size:11px;" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--white-05);">
+              <td style="padding:10px 12px;">Oleg Kuznetsov</td>
+              <td style="padding:10px 12px;">SOLUSDT</td>
+              <td style="padding:10px 12px;"><span style="color:var(--green);font-weight:600;">Long</span></td>
+              <td style="text-align:right;padding:10px 12px;">120 SOL</td>
+              <td style="text-align:right;padding:10px 12px;">3x</td>
+              <td style="text-align:right;padding:10px 12px;">$142.80</td>
+              <td style="text-align:right;padding:10px 12px;">—</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-$85.20</td>
+              <td style="text-align:right;padding:10px 12px;">—</td>
+              <td style="padding:10px 12px;font-size:12px;color:var(--white-55);">2026-03-08 09:15</td>
+              <td style="text-align:center;padding:10px 12px;"><button class="btn-outline" style="padding:4px 10px;font-size:11px;" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--white-05);">
+              <td style="padding:10px 12px;">Sergey Lebedev</td>
+              <td style="padding:10px 12px;">BTCUSDT</td>
+              <td style="padding:10px 12px;"><span style="color:var(--red);font-weight:600;">Short</span></td>
+              <td style="text-align:right;padding:10px 12px;">0.08 BTC</td>
+              <td style="text-align:right;padding:10px 12px;">20x</td>
+              <td style="text-align:right;padding:10px 12px;">$97,200</td>
+              <td style="text-align:right;padding:10px 12px;">$96,850</td>
+              <td style="text-align:right;padding:10px 12px;">—</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$280.00</td>
+              <td style="padding:10px 12px;font-size:12px;color:var(--white-55);">2026-03-06 16:48</td>
+              <td style="text-align:center;padding:10px 12px;"><button class="btn-outline" style="padding:4px 10px;font-size:11px;" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+            </tr>
+            <tr>
+              <td style="padding:10px 12px;">Pavel Sidorov</td>
+              <td style="padding:10px 12px;">XRPUSDT</td>
+              <td style="padding:10px 12px;"><span style="color:var(--green);font-weight:600;">Long</span></td>
+              <td style="text-align:right;padding:10px 12px;">5,000 XRP</td>
+              <td style="text-align:right;padding:10px 12px;">5x</td>
+              <td style="text-align:right;padding:10px 12px;">$2.34</td>
+              <td style="text-align:right;padding:10px 12px;">$2.28</td>
+              <td style="text-align:right;padding:10px 12px;">—</td>
+              <td style="text-align:right;padding:10px 12px;" class="pnl-down">-$300.00</td>
+              <td style="padding:10px 12px;font-size:12px;color:var(--white-55);">2026-03-05 08:22</td>
+              <td style="text-align:center;padding:10px 12px;"><button class="btn-outline" style="padding:4px 10px;font-size:11px;" data-modal-trigger="modal-trade-detail">Подробности</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div><!-- /panel-perf-trade-history -->
+
+    </div><!-- /panel-rm-performance -->
+
   </div>
 </div>
 
@@ -1017,6 +1265,59 @@ body {
     <div class="modal-actions">
       <button class="btn-cancel" data-modal-close>Cancel</button>
       <button class="btn-confirm">Apply Policy</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 5: Trade Detail -->
+<div class="modal-overlay" id="modal-trade-detail" data-modal>
+  <div class="modal-content" style="max-width:520px;">
+    <button class="modal-close-btn" data-modal-close>&times;</button>
+    <div class="modal-title">Детали сделки</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;margin-top:16px;">
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Трейдер</div>
+        <div style="font-weight:600;">Pavel Sidorov</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Инструмент</div>
+        <div style="font-weight:600;">BTCUSDT</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Позиция</div>
+        <div style="font-weight:600;color:var(--green);">Long</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Плечо</div>
+        <div style="font-weight:600;">10x</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Объём</div>
+        <div style="font-weight:600;">0.15 BTC</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Цена входа</div>
+        <div style="font-weight:600;">$96,450</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Цена выхода</div>
+        <div style="font-weight:600;">$97,120</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Realized PnL</div>
+        <div style="font-weight:600;color:var(--green);">+$100.50</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Дата входа</div>
+        <div style="font-weight:600;">2026-03-07 14:32</div>
+      </div>
+      <div>
+        <div style="color:var(--white-55);font-size:11px;margin-bottom:4px;">Дата выхода</div>
+        <div style="font-weight:600;">2026-03-07 18:45</div>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="btn-cancel" data-modal-close>Закрыть</button>
     </div>
   </div>
 </div>

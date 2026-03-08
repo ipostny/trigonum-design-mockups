@@ -639,6 +639,46 @@ body {
 }
 
 .pagination .page-btn.active { background: var(--white-15); color: var(--white-92); }
+
+/* ============================================================
+   SECTION 3: BY API KEYS SUB-TAB
+   Performance → По ключам
+   ============================================================ */
+
+.h-bar-row { display: flex; align-items: center; gap: 12px; padding: 4px 0; }
+.h-bar-label { width: 200px; font-size: 12px; color: var(--white-75); text-align: right; flex-shrink: 0; }
+.h-bar-track { flex: 1; height: 24px; background: var(--white-03); border-radius: 4px; position: relative; }
+.h-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.h-bar-fill.green { background: var(--green); }
+.h-bar-fill.red { background: var(--red); }
+.h-bar-value { font-size: 12px; color: var(--white-75); width: 120px; flex-shrink: 0; }
+
+.api-keys-card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+}
+
+.api-keys-card .card-title {
+  font-size: 16px; font-weight: 700; margin-bottom: 4px;
+}
+
+.api-keys-card .card-subtitle {
+  font-size: 13px; color: var(--white-55); margin-bottom: 20px;
+}
+
+/* Bidirectional bar chart */
+.bidir-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.bidir-label { width: 200px; font-size: 12px; color: var(--white-75); text-align: right; flex-shrink: 0; }
+.bidir-chart { flex: 1; display: flex; height: 24px; position: relative; }
+.bidir-left { flex: 1; display: flex; justify-content: flex-end; }
+.bidir-right { flex: 1; display: flex; justify-content: flex-start; }
+.bidir-zero { width: 2px; background: var(--white-15); flex-shrink: 0; }
+.bidir-bar { height: 24px; border-radius: 4px; transition: width 0.3s; }
+.bidir-bar.red { background: var(--red); }
+.bidir-bar.green { background: var(--green); }
+.bidir-value { font-size: 12px; color: var(--white-75); width: 160px; flex-shrink: 0; }
 </style>
 <link rel="stylesheet" href="shared-interactive.css">
 </head>
@@ -676,6 +716,7 @@ body {
     <div class="sub-tabs" data-tab-group="perf-tabs">
       <button class="sub-tab-btn active" data-tab-target="panel-team-analytics">Team Analytics</button>
       <button class="sub-tab-btn" data-tab-target="panel-trade-history">Trade History</button>
+      <button class="sub-tab-btn" data-tab-target="panel-by-api-keys">По ключам</button>
     </div>
 
     <!-- ====== PANEL: TEAM ANALYTICS ====== -->
@@ -790,7 +831,7 @@ body {
 
         <!-- Trader 1 under Alexei (SELECTED — has drill-down) -->
         <tr class="row-child" style="background:rgba(18,204,255,0.05);">
-          <td><a class="trader-link">Dmitry Volkov</a></td>
+          <td><a class="trader-link" href="trader-analytics.html" style="color:var(--cyan);" target="_blank">Dmitry Volkov</a></td>
           <td>$320,000</td>
           <td class="pnl-up">+$1,840 (+0.58%)</td>
           <td class="pnl-up">+$7,200 (+2.30%)</td>
@@ -874,7 +915,7 @@ body {
 
         <!-- Trader 2 under Alexei -->
         <tr class="row-child">
-          <td><a class="trader-link">Anna Sokolova</a></td>
+          <td><a class="trader-link" href="trader-analytics.html" style="color:var(--cyan);" target="_blank">Anna Sokolova</a></td>
           <td>$280,000</td>
           <td class="pnl-down">-$620 (-0.22%)</td>
           <td class="pnl-up">+$5,100 (+1.86%)</td>
@@ -884,7 +925,7 @@ body {
 
         <!-- Trader 3 under Alexei -->
         <tr class="row-child">
-          <td><a class="trader-link">Igor Morozov</a></td>
+          <td><a class="trader-link" href="trader-analytics.html" style="color:var(--cyan);" target="_blank">Igor Morozov</a></td>
           <td>$245,200</td>
           <td class="pnl-up">+$3,010 (+1.23%)</td>
           <td class="pnl-up">+$6,100 (+2.55%)</td>
@@ -1005,7 +1046,7 @@ body {
       </thead>
       <tbody>
         <tr>
-          <td><strong>D. Volkov</strong></td>
+          <td><strong><a href="trader-analytics.html" style="color:var(--cyan);" target="_blank">D. Volkov</a></strong></td>
           <td>BTCUSDT</td>
           <td class="direction-long">LONG</td>
           <td>0.3 BTC</td>
@@ -1023,7 +1064,7 @@ body {
           <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;" data-modal-trigger="modal-trade-detail">Details</button></td>
         </tr>
         <tr>
-          <td><strong>A. Sokolova</strong></td>
+          <td><strong><a href="trader-analytics.html" style="color:var(--cyan);" target="_blank">A. Sokolova</a></strong></td>
           <td>SOLUSDT</td>
           <td class="direction-short">SHORT</td>
           <td>200 SOL</td>
@@ -1041,7 +1082,7 @@ body {
           <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;" data-modal-trigger="modal-trade-detail">Details</button></td>
         </tr>
         <tr>
-          <td><strong>I. Morozov</strong></td>
+          <td><strong><a href="trader-analytics.html" style="color:var(--cyan);" target="_blank">I. Morozov</a></strong></td>
           <td>ETHUSDT</td>
           <td class="direction-long">LONG</td>
           <td>3.0 ETH</td>
@@ -1059,7 +1100,7 @@ body {
           <td><button class="btn-outline" style="padding:4px 8px;font-size:10px;" data-modal-trigger="modal-trade-detail">Details</button></td>
         </tr>
         <tr>
-          <td><strong>D. Volkov</strong></td>
+          <td><strong><a href="trader-analytics.html" style="color:var(--cyan);" target="_blank">D. Volkov</a></strong></td>
           <td>AVAXUSDT</td>
           <td class="direction-long">LONG</td>
           <td>50 AVAX</td>
@@ -1091,6 +1132,208 @@ body {
     </div>
 
     </div><!-- /panel-trade-history -->
+
+    <!-- ====== PANEL: BY API KEYS ====== -->
+    <div id="panel-by-api-keys" data-tab-panel data-tab-group="perf-tabs" style="display:none;">
+
+    <div style="display:flex;flex-direction:column;gap:24px;">
+
+    <!-- Widget 1: Балансы по API-ключам трейдеров -->
+    <div class="api-keys-card">
+      <div class="card-title">Балансы по API-ключам трейдеров</div>
+      <div class="card-subtitle">Общий баланс Trigonum: 200,001 $</div>
+
+      <div class="h-bar-row">
+        <div class="h-bar-label">Nikita (438081106)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:100%;"></div></div>
+        <div class="h-bar-value">81,079.00 $</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">pporox (231899377)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:12.05%;"></div></div>
+        <div class="h-bar-value">9,764.00 $</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">Rodion (442634699)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:12.31%;"></div></div>
+        <div class="h-bar-value">9,978.00 $</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">aproskurin (348987445)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:11.28%;"></div></div>
+        <div class="h-bar-value">9,142.00 $</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">Slava (458111128)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:6.05%;"></div></div>
+        <div class="h-bar-value">4,903.00 $</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">Liza (454020085)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:5.25%;"></div></div>
+        <div class="h-bar-value">4,257.00 $</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">Sergey (491421273)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:1.22%;"></div></div>
+        <div class="h-bar-value">987.00 $</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">Egor (433171610)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:1.03%;"></div></div>
+        <div class="h-bar-value">836.00 $</div>
+      </div>
+    </div>
+
+    <!-- Widget 2: Прибыль по каждому API ключу ($) -->
+    <div class="api-keys-card">
+      <div class="card-title">Прибыль по каждому API ключу ($)</div>
+      <div style="margin-top:16px;">
+
+      <!-- Max abs value is 218 for scaling -->
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio02 (435582116)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"><div class="bidir-bar red" style="width:100%;"></div></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"></div>
+        </div>
+        <div class="bidir-value">-218.00 $ (10)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio07 (496235268)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"><div class="bidir-bar red" style="width:26.7%;"></div></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"></div>
+        </div>
+        <div class="bidir-value">-58.33 $ (24)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio01 (435581949)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"><div class="bidir-bar red" style="width:11.8%;"></div></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"></div>
+        </div>
+        <div class="bidir-value">-25.67 $ (38)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio10 (496235934)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"><div class="bidir-bar red" style="width:5.8%;"></div></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"></div>
+        </div>
+        <div class="bidir-value">-12.57 $ (42)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio09 (496235756)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"><div class="bidir-bar red" style="width:5.4%;"></div></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"></div>
+        </div>
+        <div class="bidir-value">-11.67 $ (37)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio04 (435582931)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"><div class="bidir-bar red" style="width:5.2%;"></div></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"></div>
+        </div>
+        <div class="bidir-value">-11.24 $ (44)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio05 (480235812)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"><div class="bidir-bar green" style="width:3.3%;"></div></div>
+        </div>
+        <div class="bidir-value">+7.24 $ (41)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio08 (496235614)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"><div class="bidir-bar green" style="width:3.7%;"></div></div>
+        </div>
+        <div class="bidir-value">+8.02 $ (42)</div>
+      </div>
+      <div class="bidir-row">
+        <div class="bidir-label">ttportfolio03 (435582742)</div>
+        <div class="bidir-chart">
+          <div class="bidir-left"></div>
+          <div class="bidir-zero"></div>
+          <div class="bidir-right"><div class="bidir-bar green" style="width:15.1%;"></div></div>
+        </div>
+        <div class="bidir-value">+32.99 $ (41)</div>
+      </div>
+
+      </div>
+    </div>
+
+    <!-- Widget 3: Счётчик сделок по API ключу -->
+    <div class="api-keys-card">
+      <div class="card-title">Счётчик сделок по API ключу</div>
+      <div style="margin-top:16px;">
+
+      <!-- Max count is 42 for scaling -->
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio08 (496235614)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:100%;"></div></div>
+        <div class="h-bar-value">42</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio10 (496235934)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:100%;"></div></div>
+        <div class="h-bar-value">42</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio06 (496234716)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:97.6%;"></div></div>
+        <div class="h-bar-value">41</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio03 (435582742)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:97.6%;"></div></div>
+        <div class="h-bar-value">41</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio05 (480235812)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:97.6%;"></div></div>
+        <div class="h-bar-value">41</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio01 (435581949)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:90.5%;"></div></div>
+        <div class="h-bar-value">38</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio09 (496235756)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:88.1%;"></div></div>
+        <div class="h-bar-value">37</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio07 (496235268)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:57.1%;"></div></div>
+        <div class="h-bar-value">24</div>
+      </div>
+      <div class="h-bar-row">
+        <div class="h-bar-label">ttportfolio02 (435582116)</div>
+        <div class="h-bar-track"><div class="h-bar-fill green" style="width:23.8%;"></div></div>
+        <div class="h-bar-value">10</div>
+      </div>
+
+      </div>
+    </div>
+
+    </div><!-- /gap container -->
+
+    </div><!-- /panel-by-api-keys -->
 
   </div>
 </div>
