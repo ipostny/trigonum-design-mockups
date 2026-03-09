@@ -352,6 +352,38 @@ svg text { font-family: var(--font); }
 
 /* Lifecycle metrics grid scaling */
 .stat-metrics-grid { gap: clamp(4px, 1.5cqi, 16px) !important; margin-top: clamp(4px, 1cqi, 12px) !important; }
+/* ---- Page size presets ---- */
+.page-size-bar {
+  display: none; align-items: center; gap: 6px;
+  margin-left: auto; font-size: 11px; color: var(--white-55);
+}
+.grid-stack-editing ~ .page-size-bar,
+.page-size-bar.visible { display: flex; }
+.page-size-btn {
+  padding: 4px 10px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600;
+  background: var(--white-05); border: 1px solid var(--white-08); color: var(--white-55);
+  cursor: pointer; font-family: var(--font); transition: all 0.15s;
+}
+.page-size-btn:hover { background: var(--white-08); color: var(--white-75); }
+.page-size-btn.active { background: rgba(18,204,255,0.15); color: var(--cyan); border-color: rgba(18,204,255,0.3); }
+
+/* ---- Per-card padding density ---- */
+.card-padding-btn {
+  display: none; position: absolute; top: 6px; right: 32px; z-index: 20;
+  width: 22px; height: 22px; border-radius: 6px;
+  background: rgba(18,204,255,0.1); border: 1px solid rgba(18,204,255,0.2);
+  color: rgba(18,204,255,0.7); font-size: 12px; line-height: 1;
+  cursor: pointer; align-items: center; justify-content: center;
+  font-family: var(--font); transition: all 0.15s;
+}
+.card-padding-btn:hover { background: rgba(18,204,255,0.25); color: #fff; }
+.grid-stack.grid-stack-editing .card-padding-btn { display: flex; }
+/* Padding tiers */
+.grid-stack-item-content.pad-compact { padding: 8px !important; }
+.grid-stack-item-content.pad-compact .chart-title { margin-bottom: 4px; }
+.grid-stack-item-content.pad-normal  { padding: 20px !important; }
+.grid-stack-item-content.pad-roomy   { padding: 32px !important; }
+
 /* Gridstack drag/resize handles — only visible in edit mode */
 .ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
 .grid-stack.grid-stack-editing .ui-resizable-handle { opacity: 0.6; }
@@ -508,9 +540,15 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Customize controls -->
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
         <button class="customize-toggle" id="customize-btn">&#9881; Customize Layout</button>
         <button class="customize-toggle" id="reset-btn" style="display:none;">&#8634; Reset Layout</button>
+        <div class="page-size-bar" id="page-size-bar">
+          <span style="margin-right:2px;">Page:</span>
+          <button class="page-size-btn" data-width="1000">S</button>
+          <button class="page-size-btn" data-width="1280">M</button>
+          <button class="page-size-btn active" data-width="0">Full</button>
+        </div>
       </div>
 
       <!-- Hidden widgets restore panel -->
@@ -2027,11 +2065,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var hiddenChips = document.getElementById('hidden-chips');
   var hiddenItems = []; // { el, title, savedData }
 
-  // Inject close button into every card
-  document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
+  // Padding density levels
+  var padLevels = ['pad-normal', 'pad-compact', 'pad-roomy'];
+  var padIcons  = ['\u2630', '\u2013', '\u2750']; // ☰ – ❐
+  var padTitles = ['Normal padding', 'Compact padding', 'Roomy padding'];
+
+  function addCardButtons(item) {
     var content = item.querySelector('.grid-stack-item-content');
     if (!content) return;
     content.style.position = 'relative';
+    // Close button
     var closeBtn = document.createElement('button');
     closeBtn.className = 'card-hide-btn';
     closeBtn.innerHTML = '&times;';
@@ -2042,6 +2085,29 @@ document.addEventListener('DOMContentLoaded', function() {
       hideCard(item);
     });
     content.appendChild(closeBtn);
+    // Padding toggle button
+    var padBtn = document.createElement('button');
+    padBtn.className = 'card-padding-btn';
+    padBtn.innerHTML = padIcons[0];
+    padBtn.title = padTitles[0];
+    padBtn.setAttribute('data-pad-idx', '0');
+    padBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      var idx = (parseInt(this.getAttribute('data-pad-idx')) + 1) % padLevels.length;
+      this.setAttribute('data-pad-idx', String(idx));
+      this.innerHTML = padIcons[idx];
+      this.title = padTitles[idx];
+      // Remove all pad classes, add the new one
+      padLevels.forEach(function(c) { content.classList.remove(c); });
+      content.classList.add(padLevels[idx]);
+    });
+    content.appendChild(padBtn);
+  }
+
+  // Inject buttons into every card
+  document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
+    addCardButtons(item);
   });
 
   function getCardTitle(item) {
@@ -2075,15 +2141,8 @@ document.addEventListener('DOMContentLoaded', function() {
       h: entry.savedData.h,
       autoPosition: true
     });
-    // Re-attach close button handler to the new element
-    var closeBtn = newEl.querySelector('.card-hide-btn');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        hideCard(newEl);
-      });
-    }
+    // Re-attach card buttons (close + padding toggle)
+    addCardButtons(newEl);
     refreshHiddenPanel();
   }
 
@@ -2130,12 +2189,20 @@ document.addEventListener('DOMContentLoaded', function() {
         wrapper.className = 'grid-stack-item';
         wrapper.innerHTML = entry.html;
         var newEl = grid.addWidget(wrapper, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
-        var cb = newEl.querySelector('.card-hide-btn');
-        if (cb) { cb.addEventListener('click', function(e) { e.stopPropagation(); e.preventDefault(); hideCard(this.closest('.grid-stack-item')); }); }
+        addCardButtons(newEl);
       }
       refreshHiddenPanel();
       // Reset positions
       grid.load(defaultLayout);
+      // Reset all padding to normal
+      document.querySelectorAll('#perf-grid .grid-stack-item-content').forEach(function(c) {
+        padLevels.forEach(function(p) { c.classList.remove(p); });
+      });
+      // Reset page size to full
+      var gridEl = document.getElementById('perf-grid');
+      gridEl.style.maxWidth = '';
+      gridEl.style.margin = '';
+      pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
       // Exit customize mode
       if (btn.classList.contains('active')) {
         btn.classList.remove('active');
@@ -2143,6 +2210,40 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.grid-stack').classList.remove('grid-stack-editing');
         hiddenPanel.classList.remove('editing');
         resetBtn.style.display = 'none';
+        pageSizeBar.classList.remove('visible');
+      }
+    });
+  }
+
+  // ---- Page size selector ----
+  var pageSizeBar = document.getElementById('page-size-bar');
+  var pageSizeBtns = pageSizeBar ? pageSizeBar.querySelectorAll('.page-size-btn') : [];
+  var gridEl = document.getElementById('perf-grid');
+
+  pageSizeBtns.forEach(function(psBtn) {
+    psBtn.addEventListener('click', function() {
+      var w = parseInt(this.getAttribute('data-width'));
+      pageSizeBtns.forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      if (w > 0) {
+        gridEl.style.maxWidth = w + 'px';
+        gridEl.style.margin = '0 auto';
+      } else {
+        gridEl.style.maxWidth = '';
+        gridEl.style.margin = '';
+      }
+      // Trigger Gridstack re-layout after width change
+      setTimeout(function() { grid.onParentResize(); }, 50);
+    });
+  });
+
+  // Show/hide page size bar with customize mode
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('active')) {
+        pageSizeBar.classList.add('visible');
+      } else {
+        pageSizeBar.classList.remove('visible');
       }
     });
   }
