@@ -1978,11 +1978,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var hiddenChips = document.getElementById('hidden-chips');
   var hiddenItems = []; // { el, title, savedData }
 
-  // Hidden element storage (off-screen, out of grid)
-  var hiddenStore = document.createElement('div');
-  hiddenStore.style.display = 'none';
-  document.body.appendChild(hiddenStore);
-
   // Inject close button into every card
   document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
     var content = item.querySelector('.grid-stack-item-content');
@@ -2011,10 +2006,10 @@ document.addEventListener('DOMContentLoaded', function() {
       w: parseInt(item.getAttribute('gs-w')) || 6,
       h: parseInt(item.getAttribute('gs-h')) || 8
     };
-    // Remove from Gridstack + move element to hidden storage
+    // Save full HTML before Gridstack destroys the element
+    var html = item.querySelector('.grid-stack-item-content').outerHTML;
     grid.removeWidget(item, true);
-    hiddenStore.appendChild(item);
-    hiddenItems.push({ el: item, title: title, savedData: savedData });
+    hiddenItems.push({ html: html, title: title, savedData: savedData });
     refreshHiddenPanel();
   }
 
@@ -2022,11 +2017,25 @@ document.addEventListener('DOMContentLoaded', function() {
     var entry = hiddenItems[index];
     if (!entry) return;
     hiddenItems.splice(index, 1);
-    // Clean Gridstack attributes so addWidget treats it fresh
-    entry.el.removeAttribute('gs-x');
-    entry.el.removeAttribute('gs-y');
-    grid.addWidget(entry.el, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
-    scaleObserver.observe(entry.el);
+    // Create fresh element from saved HTML
+    var wrapper = document.createElement('div');
+    wrapper.className = 'grid-stack-item';
+    wrapper.innerHTML = entry.html;
+    var newEl = grid.addWidget(wrapper, {
+      w: entry.savedData.w,
+      h: entry.savedData.h,
+      autoPosition: true
+    });
+    // Re-attach close button handler to the new element
+    var closeBtn = newEl.querySelector('.card-hide-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        hideCard(newEl);
+      });
+    }
+    scaleObserver.observe(newEl);
     refreshHiddenPanel();
   }
 
@@ -2067,10 +2076,13 @@ document.addEventListener('DOMContentLoaded', function() {
       // Restore all hidden cards first
       while (hiddenItems.length > 0) {
         var entry = hiddenItems.pop();
-        entry.el.removeAttribute('gs-x');
-        entry.el.removeAttribute('gs-y');
-        grid.addWidget(entry.el, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
-        scaleObserver.observe(entry.el);
+        var wrapper = document.createElement('div');
+        wrapper.className = 'grid-stack-item';
+        wrapper.innerHTML = entry.html;
+        var newEl = grid.addWidget(wrapper, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
+        var cb = newEl.querySelector('.card-hide-btn');
+        if (cb) { cb.addEventListener('click', function(e) { e.stopPropagation(); e.preventDefault(); hideCard(this.closest('.grid-stack-item')); }); }
+        scaleObserver.observe(newEl);
       }
       refreshHiddenPanel();
       // Reset positions
