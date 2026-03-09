@@ -72,18 +72,28 @@ body {
  * - TradingView Advanced Chart widget (real-time via WebSocket)
  * - Symbol selector (dropdown with search)
  * - Account selector (trade account dropdown)
- * - Order form:
- *   - Order type tabs: Market, Limit, Stop
- *   - Side toggle: Buy (green) / Sell (red)
+ * - Order form (matches real FuturesForm.tsx):
+ *   - Order type tabs: Limit, Market, Conditional
+ *   - Side toggle: Buy/Long (green) / Sell/Short (red)
+ *   - Conditional fields: trigger price + trigger by (Last/Mark/Index) + sub-order type
+ *   - Price input (for Limit/Conditional-Limit — hidden for Market)
+ *   - Qty/Value toggle (BTC quantity vs USDT value)
  *   - Quantity input with quick-fill buttons (25%, 50%, 75%, 100%)
- *   - Price input (for Limit/Stop)
- *   - TP/SL inputs (optional, expandable)
- *   - Leverage slider
- *   - Order value display (calculated)
- *   - Submit button
- * - Position panel (current open position for selected symbol)
- * - Open orders table (bottom panel)
- * - Order confirmation dialog
+ *   - Leverage: fixed options (1x, 2x, 5x, 10x, 25x, 50x) matching Margin.tsx
+ *   - Time in Force selector (GTC, IOC, FOK, Post Only)
+ *   - Reduce Only checkbox (Limit), Close on Trigger (Conditional)
+ *   - Breakeven settings toggle with trigger type + value
+ *   - TP/SL: checkbox + summary cards + full modal (ROI%, Change%, P&L modes)
+ *   - Order summary + submit button → confirmation dialog
+ * - Position panel (current open position):
+ *   - PnL highlight, position grid, TP/SL cards
+ *   - Trailing Stop status + modal (retracement + activation price)
+ *   - Breakeven status badge
+ *   - Risk budget / max drawdown indicator
+ *   - Close Position → modal (Market/Limit, percentage slider, qty input)
+ *   - Edit TP/SL, Trailing Stop, Breakeven action buttons
+ * - Open orders table (bottom panel, includes Conditional type)
+ * - Modals: Order Confirmation, TP/SL, Close Position, Trailing Stop
  *
  * APIs:
  * - WebSocket: real-time price, orderbook, position updates
@@ -579,6 +589,230 @@ body {
   cursor: pointer;
 }
 
+/* Qty / Value toggle select */
+.qty-value-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.qty-value-select {
+  background: var(--white-05);
+  border: 1px solid var(--white-08);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--white-75);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+/* Conditional order fields */
+.conditional-fields {
+  margin-bottom: 8px;
+  padding: 10px;
+  background: var(--white-03);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-sm);
+}
+.trigger-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.trigger-input-wrap {
+  flex: 2;
+  position: relative;
+}
+.trigger-input {
+  width: 100%;
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: 6px;
+  padding: 8px 60px 8px 10px;
+  color: var(--white-92);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font);
+}
+.trigger-unit {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--white-35);
+  font-weight: 600;
+}
+.trigger-by-select {
+  flex: 1;
+  background: var(--white-05);
+  border: 1px solid var(--white-08);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: var(--white-75);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+/* Checkbox row (ReduceOnly, CloseOnTrigger, Breakeven) */
+.form-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  margin-bottom: 4px;
+}
+.form-checkbox {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1.5px solid var(--white-35);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.form-checkbox.checked {
+  background: var(--cyan);
+  border-color: var(--cyan);
+}
+.form-checkbox.checked::after {
+  content: '✓';
+  color: var(--navy-900);
+  font-size: 9px;
+  font-weight: 900;
+}
+.form-checkbox-label {
+  font-size: 11px;
+  color: var(--white-55);
+  font-weight: 500;
+}
+
+/* MUI-style switch toggle */
+.toggle-switch {
+  width: 32px;
+  height: 16px;
+  background: var(--white-15);
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-switch.on {
+  background: var(--cyan);
+}
+.toggle-switch .toggle-knob {
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: left 0.15s ease;
+}
+.toggle-switch.on .toggle-knob {
+  left: 18px;
+}
+
+/* Close Position Modal extras */
+.close-slider-track {
+  width: 100%;
+  height: 6px;
+  background: var(--white-08);
+  border-radius: 3px;
+  position: relative;
+  margin: 12px 0 8px;
+}
+.close-slider-fill {
+  height: 100%;
+  background: var(--red);
+  border-radius: 3px;
+  width: 50%;
+}
+.close-slider-thumb {
+  width: 16px;
+  height: 16px;
+  background: white;
+  border: 2px solid var(--red);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.close-slider-marks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+.close-slider-mark {
+  font-size: 9px;
+  color: var(--white-35);
+  font-weight: 500;
+}
+.close-quick-btns {
+  display: flex;
+  gap: 0;
+  margin: 8px 0;
+  background: var(--white-05);
+  border-radius: var(--r-sm);
+  padding: 2px;
+  border: 1px solid var(--white-08);
+}
+.close-quick-btn {
+  flex: 1;
+  padding: 6px 2px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--white-45);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.close-quick-btn.active {
+  background: var(--white-15);
+  color: var(--white-92);
+}
+
+/* Trailing Stop / Breakeven status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-badge.active {
+  background: rgba(0,230,138,0.12);
+  color: var(--green);
+}
+.status-badge.inactive {
+  background: var(--white-05);
+  color: var(--white-35);
+}
+.status-badge .badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.status-badge.active .badge-dot { background: var(--green); }
+.status-badge.inactive .badge-dot { background: var(--white-35); }
+
 /* Bottom panel — Open Orders */
 .bottom-panel {
   grid-column: 1 / -1;
@@ -798,9 +1032,30 @@ body {
           <button class="side-btn sell">Sell / Short</button>
         </div>
 
-        <!-- Price (for Limit/Stop, hidden for Market) -->
-        <!--
-        <div class="order-field">
+        <!-- Conditional Order Fields (shown when Conditional tab is active) -->
+        <!-- In the real app, these appear above the price input when formType=Conditional -->
+        <div class="conditional-fields" style="display:none;" id="conditional-fields">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--white-45);margin-bottom:6px;">Trigger Condition</div>
+          <div class="trigger-row">
+            <div class="trigger-input-wrap">
+              <input type="number" class="trigger-input" value="86500" placeholder="Trigger Price">
+              <span class="trigger-unit">USDT</span>
+            </div>
+            <select class="trigger-by-select">
+              <option>Last Price</option>
+              <option selected>Mark Price</option>
+              <option>Index Price</option>
+            </select>
+          </div>
+          <!-- Order type sub-selector (Market/Limit within Conditional) -->
+          <div style="display:flex;gap:0;background:var(--white-05);border-radius:6px;padding:2px;border:1px solid var(--white-08);">
+            <button style="flex:1;padding:5px;border:none;border-radius:4px;background:var(--white-15);color:var(--white-85);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);">Limit</button>
+            <button style="flex:1;padding:5px;border:none;border-radius:4px;background:transparent;color:var(--white-45);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);">Market</button>
+          </div>
+        </div>
+
+        <!-- Price (for Limit/Conditional-Limit — hidden for Market) -->
+        <div class="order-field" id="price-field" style="display:none;">
           <div class="order-field-label">
             <span>Price</span>
             <span class="order-field-hint">Last: 85,142.50</span>
@@ -810,17 +1065,21 @@ body {
             <span class="order-input-unit">USDT</span>
           </div>
         </div>
-        -->
 
-        <!-- Quantity -->
+        <!-- Quantity with Qty/Value toggle -->
         <div class="order-field">
           <div class="order-field-label">
-            <span>Quantity</span>
+            <div class="qty-value-toggle">
+              <select class="qty-value-select">
+                <option value="qty" selected>Qty</option>
+                <option value="value">Value</option>
+              </select>
+            </div>
             <span class="order-field-hint">Available: 0.582 BTC</span>
           </div>
           <div class="order-input-wrapper">
             <input class="order-input" type="number" placeholder="0.000" value="0.100">
-            <span class="order-input-unit">BTC</span>
+            <span class="order-input-unit" id="qty-unit">BTC</span>
           </div>
           <div class="quick-fill">
             <button class="quick-btn">25%</button>
@@ -843,7 +1102,7 @@ body {
           </div>
         </div>
         <!-- Margin type + Time in Force -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <span class="margin-type">Unified 10x</span>
           <select style="background:var(--white-05);border:1px solid var(--white-08);border-radius:6px;padding:4px 8px;color:var(--white-75);font-size:10px;font-weight:600;font-family:var(--font);cursor:pointer;">
             <option>GTC</option>
@@ -851,6 +1110,39 @@ body {
             <option>FOK</option>
             <option>Post Only</option>
           </select>
+        </div>
+
+        <!-- Reduce Only checkbox (shown for Limit orders) -->
+        <div class="form-checkbox-row" id="reduce-only-row">
+          <div class="form-checkbox" onclick="this.classList.toggle('checked')"></div>
+          <span class="form-checkbox-label">Reduce Only</span>
+        </div>
+
+        <!-- Close on Trigger checkbox (shown for Conditional orders only) -->
+        <div class="form-checkbox-row" id="close-on-trigger-row" style="display:none;">
+          <div class="form-checkbox" onclick="this.classList.toggle('checked')"></div>
+          <span class="form-checkbox-label">Close on Trigger</span>
+        </div>
+
+        <!-- Breakeven Settings toggle -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;margin-bottom:4px;">
+          <span class="form-checkbox-label">Breakeven</span>
+          <div class="toggle-switch" onclick="this.classList.toggle('on');this.nextElementSibling&&(this.nextElementSibling.style.display=this.classList.contains('on')?'flex':'none')">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <!-- Breakeven sub-fields (hidden until toggle is ON) -->
+        <div style="display:none;flex-direction:column;gap:6px;margin-bottom:8px;padding:8px;background:var(--white-03);border:1px solid var(--white-08);border-radius:6px;">
+          <div style="display:flex;gap:6px;">
+            <select style="flex:1;background:var(--white-05);border:1px solid var(--white-08);border-radius:6px;padding:5px 8px;color:var(--white-75);font-size:10px;font-weight:600;font-family:var(--font);cursor:pointer;">
+              <option>Fixed Price</option>
+              <option selected>Percent Move</option>
+            </select>
+            <div style="flex:1;position:relative;">
+              <input type="number" value="0.5" style="width:100%;background:var(--white-05);border:1px solid var(--white-08);border-radius:6px;padding:5px 30px 5px 8px;color:var(--white-92);font-size:11px;font-weight:500;font-family:var(--font);">
+              <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--white-35);font-weight:600;">%</span>
+            </div>
+          </div>
         </div>
 
         <!-- TP/SL — checkbox + summary (matches real platform modal pattern) -->
@@ -967,6 +1259,33 @@ body {
           </div>
         </div>
 
+        <!-- Trailing Stop section -->
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--white-08);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--white-45);">Trailing Stop</span>
+            <span class="status-badge active"><span class="badge-dot"></span> Active</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div>
+              <div style="font-size:9px;color:var(--white-35);">Retracement</div>
+              <div style="font-size:11px;font-weight:600;color:var(--white-75);">1.5%</div>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--white-35);">Activation Price</div>
+              <div style="font-size:11px;font-weight:600;color:var(--white-75);">$87,000.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Breakeven status -->
+        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--white-03);border:1px solid var(--white-08);border-radius:6px;">
+          <div>
+            <div style="font-size:9px;color:var(--white-35);">Breakeven</div>
+            <div style="font-size:10px;font-weight:600;color:var(--white-75);">Percent Move @ 0.5%</div>
+          </div>
+          <span class="status-badge active"><span class="badge-dot"></span> Active</span>
+        </div>
+
         <!-- Drawdown indicator -->
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--white-08);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
@@ -984,9 +1303,14 @@ body {
           </div>
         </div>
 
+        <!-- Position action buttons -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;">
-          <button class="btn-close-position" style="margin-top:0;">Close Position</button>
-          <button style="padding:6px;border:1px solid rgba(18,204,255,0.3);border-radius:var(--r-sm);background:rgba(18,204,255,0.08);color:var(--cyan);font-size:11px;font-weight:600;cursor:pointer;">Edit TP/SL</button>
+          <button class="btn-close-position" style="margin-top:0;" data-modal-trigger="modal-close-position">Close Position</button>
+          <button style="padding:6px;border:1px solid rgba(18,204,255,0.3);border-radius:var(--r-sm);background:rgba(18,204,255,0.08);color:var(--cyan);font-size:11px;font-weight:600;cursor:pointer;" data-modal-trigger="modal-tpsl">Edit TP/SL</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+          <button style="padding:6px;border:1px solid rgba(175,51,255,0.3);border-radius:var(--r-sm);background:rgba(175,51,255,0.08);color:var(--purple);font-size:10px;font-weight:600;cursor:pointer;" data-modal-trigger="modal-trailing-stop">Trailing Stop</button>
+          <button style="padding:6px;border:1px solid var(--white-15);border-radius:var(--r-sm);background:var(--white-03);color:var(--white-55);font-size:10px;font-weight:600;cursor:pointer;">Breakeven</button>
         </div>
       </div>
     </div>
@@ -1042,12 +1366,12 @@ body {
           <tr>
             <td style="font-weight:600;color:var(--white-92);">SOLUSDT</td>
             <td style="color:var(--green);font-weight:600;">Buy</td>
-            <td>Stop</td>
+            <td>Conditional</td>
             <td>50.0</td>
             <td>$152.00</td>
             <td style="color:var(--white-35);font-size:10px;">— / —</td>
             <td>0%</td>
-            <td>New</td>
+            <td>Untriggered</td>
             <td>12:15:44</td>
             <td><button class="btn-cancel-order">Cancel</button></td>
           </tr>
@@ -1304,6 +1628,186 @@ body {
   </div>
 </div>
 
+<!-- ===== CLOSE POSITION MODAL ===== -->
+<div class="confirm-overlay" data-modal="modal-close-position" style="display:none;">
+  <div class="confirm-card" style="width:400px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 class="confirm-title" style="margin-bottom:0;font-size:16px;">Close Position</h2>
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="background:none;border:none;color:var(--white-55);font-size:18px;cursor:pointer;padding:4px;">✕</button>
+    </div>
+
+    <!-- Market / Limit toggle -->
+    <div style="display:flex;gap:0;margin-bottom:16px;background:var(--white-05);border-radius:var(--r-sm);padding:2px;border:1px solid var(--white-08);">
+      <button style="flex:1;padding:7px;border:none;border-radius:6px;background:var(--white-15);color:var(--white-92);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);">Market</button>
+      <button style="flex:1;padding:7px;border:none;border-radius:6px;background:transparent;color:var(--white-45);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);">Limit</button>
+    </div>
+
+    <!-- Position Info -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:10px;color:var(--white-45);margin-bottom:2px;">Entry Price (Buy)</div>
+        <div style="font-size:14px;font-weight:600;color:var(--white-92);">$84,200.00</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:10px;color:var(--white-45);margin-bottom:2px;">Market Price (Buy)</div>
+        <div style="font-size:14px;font-weight:600;color:var(--green);">$85,142.50</div>
+      </div>
+    </div>
+
+    <!-- Percentage Slider -->
+    <div style="margin-bottom:4px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+        <span style="font-size:10px;color:var(--white-45);font-weight:600;">Close percentage</span>
+        <span style="font-size:11px;font-weight:700;color:var(--white-92);">50%</span>
+      </div>
+      <div class="close-slider-track">
+        <div class="close-slider-fill"></div>
+        <div class="close-slider-thumb"></div>
+      </div>
+      <div class="close-slider-marks">
+        <span class="close-slider-mark">0%</span>
+        <span class="close-slider-mark">25%</span>
+        <span class="close-slider-mark">50%</span>
+        <span class="close-slider-mark">75%</span>
+        <span class="close-slider-mark">100%</span>
+      </div>
+    </div>
+
+    <!-- Quick buttons -->
+    <div class="close-quick-btns">
+      <button class="close-quick-btn">25%</button>
+      <button class="close-quick-btn active">50%</button>
+      <button class="close-quick-btn">75%</button>
+      <button class="close-quick-btn">100%</button>
+    </div>
+
+    <!-- Quantity input -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:10px;color:var(--white-45);margin-bottom:4px;font-weight:600;">Order quantity</div>
+      <div style="position:relative;">
+        <input type="number" value="0.2500" style="width:100%;background:var(--white-05);border:1px solid var(--white-15);border-radius:6px;padding:8px 50px 8px 10px;color:var(--white-92);font-size:13px;font-weight:500;font-family:var(--font);">
+        <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--white-35);font-weight:600;">BTC</span>
+      </div>
+      <div style="font-size:9px;color:var(--white-45);margin-top:4px;">Remaining: 50% / 0.2500 BTC</div>
+    </div>
+
+    <!-- Post Only checkbox (Limit only) -->
+    <!--
+    <div class="form-checkbox-row">
+      <div class="form-checkbox" onclick="this.classList.toggle('checked')"></div>
+      <span class="form-checkbox-label">Post Only</span>
+    </div>
+    -->
+
+    <!-- Actions -->
+    <div style="display:flex;gap:8px;">
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="flex:1;padding:10px;border:1px solid var(--white-15);border-radius:var(--r-md);background:transparent;color:var(--white-75);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">Cancel</button>
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="flex:1;padding:10px;border:none;border-radius:var(--r-md);background:linear-gradient(180deg,#FF4D6A,#E6445E);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(255,77,106,0.25);">Confirm Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TRAILING STOP MODAL ===== -->
+<div class="confirm-overlay" data-modal="modal-trailing-stop" style="display:none;">
+  <div class="confirm-card" style="width:400px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 class="confirm-title" style="margin-bottom:0;font-size:16px;">Trailing Stop</h2>
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="background:none;border:none;color:var(--white-55);font-size:18px;cursor:pointer;padding:4px;">✕</button>
+    </div>
+
+    <!-- Position info row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;padding:10px;background:var(--white-03);border:1px solid var(--white-08);border-radius:var(--r-sm);">
+      <div>
+        <div style="font-size:9px;color:var(--white-45);">Entry Price</div>
+        <div style="font-size:12px;font-weight:600;color:var(--white-92);">$84,200.00</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:9px;color:var(--white-45);">Market Price</div>
+        <div style="font-size:12px;font-weight:600;color:var(--green);">$85,142.50</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:9px;color:var(--white-45);">Liq Price</div>
+        <div style="font-size:12px;font-weight:600;color:var(--red);">$75,960.00</div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--white-08);margin-bottom:16px;"></div>
+
+    <!-- Retracement input -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--white-75);font-weight:600;margin-bottom:6px;">Retracement</div>
+      <div style="position:relative;">
+        <input type="number" value="1.5" style="width:100%;background:var(--white-05);border:1px solid rgba(175,51,255,0.3);border-radius:6px;padding:8px 30px 8px 10px;color:var(--white-92);font-size:13px;font-weight:500;font-family:var(--font);">
+        <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--white-35);font-weight:600;">%</span>
+      </div>
+    </div>
+
+    <!-- Activation Price toggle -->
+    <div style="margin-bottom:12px;">
+      <div class="form-checkbox-row" style="margin-bottom:6px;">
+        <div class="form-checkbox checked" onclick="this.classList.toggle('checked');this.closest('div').nextElementSibling&&(this.closest('div').nextElementSibling.style.display=this.classList.contains('checked')?'block':'none')"></div>
+        <span class="form-checkbox-label">Activation Price</span>
+      </div>
+      <div style="position:relative;">
+        <input type="number" value="87000" style="width:100%;background:var(--white-05);border:1px solid var(--white-15);border-radius:6px;padding:8px 60px 8px 10px;color:var(--white-92);font-size:13px;font-weight:500;font-family:var(--font);">
+        <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--white-35);font-weight:600;">USDT</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:8px;">
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="flex:1;padding:10px;border:1px solid var(--white-15);border-radius:var(--r-md);background:transparent;color:var(--white-75);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">Cancel</button>
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="flex:1;padding:10px;border:none;border-radius:var(--r-md);background:linear-gradient(180deg,#AF33FF,#9926E0);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(175,51,255,0.25);">Confirm Trailing Stop</button>
+    </div>
+  </div>
+</div>
+
 <script src="shared-interactive.js"></script>
+<script>
+// Order type tab switching — show/hide conditional fields and price field
+document.querySelectorAll('.order-type-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.order-type-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const type = this.textContent.trim();
+    const condFields = document.getElementById('conditional-fields');
+    const priceField = document.getElementById('price-field');
+    const reduceRow = document.getElementById('reduce-only-row');
+    const closeOnTrigger = document.getElementById('close-on-trigger-row');
+
+    if (type === 'Conditional') {
+      condFields.style.display = 'block';
+      priceField.style.display = 'block';
+      reduceRow.style.display = 'none';
+      closeOnTrigger.style.display = 'flex';
+    } else if (type === 'Limit') {
+      condFields.style.display = 'none';
+      priceField.style.display = 'block';
+      reduceRow.style.display = 'flex';
+      closeOnTrigger.style.display = 'none';
+    } else { // Market
+      condFields.style.display = 'none';
+      priceField.style.display = 'none';
+      reduceRow.style.display = 'flex';
+      closeOnTrigger.style.display = 'none';
+    }
+  });
+});
+
+// Qty/Value toggle
+document.querySelector('.qty-value-select')?.addEventListener('change', function() {
+  document.getElementById('qty-unit').textContent = this.value === 'value' ? 'USDT' : 'BTC';
+});
+
+// Modal triggers for new modals
+document.querySelectorAll('[data-modal-trigger]').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const modalId = this.getAttribute('data-modal-trigger');
+    const modal = document.querySelector('[data-modal="' + modalId + '"]');
+    if (modal) modal.style.display = 'flex';
+  });
+});
+</script>
 </body>
 </html>
