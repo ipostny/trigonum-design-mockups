@@ -346,6 +346,37 @@ svg text { font-family: var(--font); }
   outline: 1px dashed rgba(18,204,255,0.15);
   outline-offset: -1px;
 }
+/* Hide-card close button — only visible in edit mode */
+.card-hide-btn {
+  display: none;
+  position: absolute; top: 6px; right: 6px; z-index: 20;
+  width: 22px; height: 22px; border-radius: 6px;
+  background: rgba(255,77,106,0.15); border: 1px solid rgba(255,77,106,0.3);
+  color: rgba(255,77,106,0.8); font-size: 14px; line-height: 1;
+  cursor: pointer; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.card-hide-btn:hover { background: rgba(255,77,106,0.35); color: #fff; }
+.grid-stack.grid-stack-editing .card-hide-btn { display: flex; }
+/* Hidden widgets panel */
+.hidden-widgets-panel {
+  display: none; margin-bottom: 12px; padding: 12px 16px;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--white-08);
+  border-radius: var(--r-md); font-size: 12px;
+}
+.hidden-widgets-panel.has-items { display: block; }
+.hidden-widgets-panel .hw-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--white-55); margin-bottom: 8px;
+}
+.hidden-widget-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; margin: 3px 4px; border-radius: var(--r-full);
+  background: rgba(18,204,255,0.08); border: 1px solid rgba(18,204,255,0.2);
+  color: var(--cyan); font-size: 11px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s;
+}
+.hidden-widget-chip:hover { background: rgba(18,204,255,0.18); }
 </style>
 <link href="https://cdn.jsdelivr.net/npm/gridstack@12/dist/gridstack.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gridstack@12/dist/gridstack-all.js"></script>
@@ -432,6 +463,12 @@ svg text { font-family: var(--font); }
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
         <button class="customize-toggle" id="customize-btn">&#9881; Customize Layout</button>
         <button class="customize-toggle" id="reset-btn" style="display:none;">&#8634; Reset Layout</button>
+      </div>
+
+      <!-- Hidden widgets restore panel -->
+      <div class="hidden-widgets-panel" id="hidden-panel">
+        <div class="hw-title">Hidden Widgets — click to restore</div>
+        <div id="hidden-chips"></div>
       </div>
 
       <!-- Gridstack Dashboard -->
@@ -1936,6 +1973,66 @@ document.addEventListener('DOMContentLoaded', function() {
     scaleObserver.observe(el);
   });
 
+  // ---- Hide / Show cards ----
+  var hiddenPanel = document.getElementById('hidden-panel');
+  var hiddenChips = document.getElementById('hidden-chips');
+  var hiddenItems = []; // { el, title, savedData }
+
+  // Inject close button into every card
+  document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
+    var content = item.querySelector('.grid-stack-item-content');
+    if (!content) return;
+    content.style.position = 'relative';
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'card-hide-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.title = 'Hide this widget';
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      hideCard(item);
+    });
+    content.appendChild(closeBtn);
+  });
+
+  function getCardTitle(item) {
+    var titleEl = item.querySelector('.chart-title');
+    return titleEl ? titleEl.textContent.trim() : 'Widget';
+  }
+
+  function hideCard(item) {
+    var title = getCardTitle(item);
+    var savedData = {
+      x: parseInt(item.getAttribute('gs-x')) || 0,
+      y: parseInt(item.getAttribute('gs-y')) || 0,
+      w: parseInt(item.getAttribute('gs-w')) || 6,
+      h: parseInt(item.getAttribute('gs-h')) || 8
+    };
+    hiddenItems.push({ el: item, title: title, savedData: savedData });
+    grid.removeWidget(item, false); // false = don't destroy DOM element
+    refreshHiddenPanel();
+  }
+
+  function restoreCard(index) {
+    var entry = hiddenItems[index];
+    if (!entry) return;
+    hiddenItems.splice(index, 1);
+    grid.addWidget(entry.el, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
+    scaleObserver.observe(entry.el);
+    refreshHiddenPanel();
+  }
+
+  function refreshHiddenPanel() {
+    hiddenChips.innerHTML = '';
+    hiddenItems.forEach(function(entry, i) {
+      var chip = document.createElement('span');
+      chip.className = 'hidden-widget-chip';
+      chip.textContent = '+ ' + entry.title;
+      chip.addEventListener('click', function() { restoreCard(i); });
+      hiddenChips.appendChild(chip);
+    });
+    hiddenPanel.classList.toggle('has-items', hiddenItems.length > 0);
+  }
+
   // ---- Customize toggle ----
   var btn = document.getElementById('customize-btn');
   var resetBtn = document.getElementById('reset-btn');
@@ -1955,11 +2052,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ---- Reset layout ----
+  // ---- Reset layout — also restores hidden cards ----
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
+      // Restore all hidden cards first
+      while (hiddenItems.length > 0) {
+        var entry = hiddenItems.pop();
+        grid.addWidget(entry.el, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
+      }
+      refreshHiddenPanel();
+      // Reset positions
       grid.load(defaultLayout);
-      // Re-observe outer items after reset
+      // Re-observe
       document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(el) {
         scaleObserver.observe(el);
       });
