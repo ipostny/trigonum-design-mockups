@@ -367,17 +367,42 @@ svg text { font-family: var(--font); }
 .page-size-btn:hover { background: var(--white-08); color: var(--white-75); }
 .page-size-btn.active { background: rgba(18,204,255,0.15); color: var(--cyan); border-color: rgba(18,204,255,0.3); }
 
-/* ---- Per-card padding density ---- */
-.card-padding-btn {
-  display: none; position: absolute; top: 6px; right: 32px; z-index: 20;
+/* ---- Global gap (outer margin) via CSS class on .grid-stack ---- */
+.grid-stack.gap-0  > .grid-stack-item > .grid-stack-item-content { inset: 0px !important; }
+.grid-stack.gap-4  > .grid-stack-item > .grid-stack-item-content { inset: 4px !important; }
+.grid-stack.gap-8  > .grid-stack-item > .grid-stack-item-content { inset: 8px !important; }
+.grid-stack.gap-16 > .grid-stack-item > .grid-stack-item-content { inset: 16px !important; }
+.grid-stack.gap-24 > .grid-stack-item > .grid-stack-item-content { inset: 24px !important; }
+
+/* ---- Per-card outer margin ---- */
+.grid-stack-item.margin-none    > .grid-stack-item-content { inset: 0px !important; }
+.grid-stack-item.margin-tight   > .grid-stack-item-content { inset: 4px !important; }
+.grid-stack-item.margin-normal  > .grid-stack-item-content { /* inherits global gap */ }
+.grid-stack-item.margin-wide    > .grid-stack-item-content { inset: 16px !important; }
+.grid-stack-item.margin-extra   > .grid-stack-item-content { inset: 24px !important; }
+
+/* ---- Per-card inner padding ---- */
+.card-padding-btn, .card-margin-btn {
+  display: none; position: absolute; z-index: 20;
   width: 22px; height: 22px; border-radius: 6px;
-  background: rgba(18,204,255,0.1); border: 1px solid rgba(18,204,255,0.2);
-  color: rgba(18,204,255,0.7); font-size: 12px; line-height: 1;
+  font-size: 11px; line-height: 1;
   cursor: pointer; align-items: center; justify-content: center;
   font-family: var(--font); transition: all 0.15s;
 }
+.card-padding-btn {
+  top: 6px; right: 32px;
+  background: rgba(18,204,255,0.1); border: 1px solid rgba(18,204,255,0.2);
+  color: rgba(18,204,255,0.7);
+}
 .card-padding-btn:hover { background: rgba(18,204,255,0.25); color: #fff; }
-.grid-stack.grid-stack-editing .card-padding-btn { display: flex; }
+.card-margin-btn {
+  top: 6px; right: 58px;
+  background: rgba(175,51,255,0.1); border: 1px solid rgba(175,51,255,0.2);
+  color: rgba(175,51,255,0.7);
+}
+.card-margin-btn:hover { background: rgba(175,51,255,0.25); color: #fff; }
+.grid-stack.grid-stack-editing .card-padding-btn,
+.grid-stack.grid-stack-editing .card-margin-btn { display: flex; }
 /* Padding tiers */
 .grid-stack-item-content.pad-compact { padding: 8px !important; }
 .grid-stack-item-content.pad-compact .chart-title { margin-bottom: 4px; }
@@ -2073,16 +2098,21 @@ document.addEventListener('DOMContentLoaded', function() {
   var hiddenChips = document.getElementById('hidden-chips');
   var hiddenItems = []; // { el, title, savedData }
 
-  // Padding density levels
+  // Padding density levels (inside card)
   var padLevels = ['pad-normal', 'pad-compact', 'pad-roomy'];
-  var padIcons  = ['\u2630', '\u2013', '\u2750']; // ☰ – ❐
+  var padIcons  = ['P', 'P\u2013', 'P+'];
   var padTitles = ['Normal padding', 'Compact padding', 'Roomy padding'];
+
+  // Margin density levels (outside card — space between)
+  var marginLevels = ['margin-normal', 'margin-none', 'margin-tight', 'margin-wide', 'margin-extra'];
+  var marginIcons  = ['M', 'M0', 'Ms', 'Mw', 'M+'];
+  var marginTitles = ['Default gap', 'No gap', 'Tight gap', 'Wide gap', 'Extra gap'];
 
   function addCardButtons(item) {
     var content = item.querySelector('.grid-stack-item-content');
     if (!content) return;
     content.style.position = 'relative';
-    // Close button
+    // Close button (×)
     var closeBtn = document.createElement('button');
     closeBtn.className = 'card-hide-btn';
     closeBtn.innerHTML = '&times;';
@@ -2093,7 +2123,7 @@ document.addEventListener('DOMContentLoaded', function() {
       hideCard(item);
     });
     content.appendChild(closeBtn);
-    // Padding toggle button
+    // Padding toggle button (cyan, controls inner space)
     var padBtn = document.createElement('button');
     padBtn.className = 'card-padding-btn';
     padBtn.innerHTML = padIcons[0];
@@ -2106,11 +2136,27 @@ document.addEventListener('DOMContentLoaded', function() {
       this.setAttribute('data-pad-idx', String(idx));
       this.innerHTML = padIcons[idx];
       this.title = padTitles[idx];
-      // Remove all pad classes, add the new one
       padLevels.forEach(function(c) { content.classList.remove(c); });
       content.classList.add(padLevels[idx]);
     });
     content.appendChild(padBtn);
+    // Margin toggle button (purple, controls outer gap for this card)
+    var mBtn = document.createElement('button');
+    mBtn.className = 'card-margin-btn';
+    mBtn.innerHTML = marginIcons[0];
+    mBtn.title = marginTitles[0];
+    mBtn.setAttribute('data-margin-idx', '0');
+    mBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      var idx = (parseInt(this.getAttribute('data-margin-idx')) + 1) % marginLevels.length;
+      this.setAttribute('data-margin-idx', String(idx));
+      this.innerHTML = marginIcons[idx];
+      this.title = marginTitles[idx];
+      marginLevels.forEach(function(c) { item.classList.remove(c); });
+      item.classList.add(marginLevels[idx]);
+    });
+    content.appendChild(mBtn);
   }
 
   // Inject buttons into every card
@@ -2211,9 +2257,15 @@ document.addEventListener('DOMContentLoaded', function() {
       gridEl.style.maxWidth = '';
       gridEl.style.margin = '';
       pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
-      // Reset margin to default (8)
-      grid.margin(8);
+      // Reset global gap to default (8)
+      var gs = document.querySelector('.grid-stack');
+      ['gap-0','gap-4','gap-8','gap-16','gap-24'].forEach(function(c) { gs.classList.remove(c); });
+      gs.classList.add('gap-8');
       marginBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-margin') === '8'); });
+      // Reset per-card margins
+      document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
+        marginLevels.forEach(function(c) { item.classList.remove(c); });
+      });
       // Exit customize mode
       if (btn.classList.contains('active')) {
         btn.classList.remove('active');
@@ -2249,18 +2301,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // ---- Margin (gap) selector ----
+  // ---- Global gap selector (CSS class approach) ----
   var marginBar = document.getElementById('margin-bar');
   var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
+  var gapClasses = ['gap-0', 'gap-4', 'gap-8', 'gap-16', 'gap-24'];
+  var gsEl = document.querySelector('.grid-stack');
+  // Set default gap class
+  gsEl.classList.add('gap-8');
 
   marginBtns.forEach(function(mBtn) {
     mBtn.addEventListener('click', function() {
-      var m = parseInt(this.getAttribute('data-margin'));
+      var m = this.getAttribute('data-margin');
       marginBtns.forEach(function(b) { b.classList.remove('active'); });
       this.classList.add('active');
-      grid.margin(m);
-      // Force re-layout so cards fill the new gap space
-      setTimeout(function() { grid.onParentResize(); }, 50);
+      // Swap CSS class on grid container
+      gapClasses.forEach(function(c) { gsEl.classList.remove(c); });
+      gsEl.classList.add('gap-' + m);
     });
   });
 
