@@ -367,42 +367,24 @@ svg text { font-family: var(--font); }
 .page-size-btn:hover { background: var(--white-08); color: var(--white-75); }
 .page-size-btn.active { background: rgba(18,204,255,0.15); color: var(--cyan); border-color: rgba(18,204,255,0.3); }
 
-/* ---- Global gap: controlled via JS setting --gs-item-margin-* CSS vars ----
-   Gridstack v12 uses these CSS custom properties (set as inline styles on
-   .grid-stack) to position .grid-stack-item-content via top/right/bottom/left.
-   The ONLY reliable way to change gaps is to modify these variables directly. */
+/* ---- Gap is controlled via grid.margin() API in JS ----
+   This updates both CSS variables AND Gridstack's internal layout engine.
+   Per-card margin override is NOT possible without layout recalc,
+   so it's a global-only control. */
 
-/* ---- Per-card outer margin (overrides global gap for individual cards) ----
-   Uses !important on the var() consumer properties. Per-card classes have
-   higher specificity than Gridstack's default rule. */
-.grid-stack-item.margin-none  > .grid-stack-item-content { top:0px!important;right:0px!important;bottom:0px!important;left:0px!important; }
-.grid-stack-item.margin-tight > .grid-stack-item-content { top:4px!important;right:4px!important;bottom:4px!important;left:4px!important; }
-.grid-stack-item.margin-normal > .grid-stack-item-content { /* inherits global gap */ }
-.grid-stack-item.margin-wide  > .grid-stack-item-content { top:16px!important;right:16px!important;bottom:16px!important;left:16px!important; }
-.grid-stack-item.margin-extra > .grid-stack-item-content { top:24px!important;right:24px!important;bottom:24px!important;left:24px!important; }
-
-/* ---- Per-card inner padding ---- */
-.card-padding-btn, .card-margin-btn {
+/* ---- Per-card inner padding button ---- */
+.card-padding-btn {
   display: none; position: absolute; z-index: 20;
+  top: 6px; right: 32px;
   width: 22px; height: 22px; border-radius: 6px;
   font-size: 11px; line-height: 1;
   cursor: pointer; align-items: center; justify-content: center;
   font-family: var(--font); transition: all 0.15s;
-}
-.card-padding-btn {
-  top: 6px; right: 32px;
   background: rgba(18,204,255,0.1); border: 1px solid rgba(18,204,255,0.2);
   color: rgba(18,204,255,0.7);
 }
 .card-padding-btn:hover { background: rgba(18,204,255,0.25); color: #fff; }
-.card-margin-btn {
-  top: 6px; right: 58px;
-  background: rgba(175,51,255,0.1); border: 1px solid rgba(175,51,255,0.2);
-  color: rgba(175,51,255,0.7);
-}
-.card-margin-btn:hover { background: rgba(175,51,255,0.25); color: #fff; }
-.grid-stack.grid-stack-editing .card-padding-btn,
-.grid-stack.grid-stack-editing .card-margin-btn { display: flex; }
+.grid-stack.grid-stack-editing .card-padding-btn { display: flex; }
 /* Padding tiers */
 .grid-stack-item-content.pad-compact { padding: 8px !important; }
 .grid-stack-item-content.pad-compact .chart-title { margin-bottom: 4px; }
@@ -2105,11 +2087,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var padIcons  = ['P', 'P\u2013', 'P+'];
   var padTitles = ['Normal padding', 'Compact padding', 'Roomy padding'];
 
-  // Margin density levels (outside card — space between)
-  var marginLevels = ['margin-normal', 'margin-none', 'margin-tight', 'margin-wide', 'margin-extra'];
-  var marginIcons  = ['M', 'M0', 'Ms', 'Mw', 'M+'];
-  var marginTitles = ['Default gap', 'No gap', 'Tight gap', 'Wide gap', 'Extra gap'];
-
   function addCardButtons(item) {
     var content = item.querySelector('.grid-stack-item-content');
     if (!content) return;
@@ -2142,23 +2119,6 @@ document.addEventListener('DOMContentLoaded', function() {
       content.classList.add(padLevels[idx]);
     });
     content.appendChild(padBtn);
-    // Margin toggle button (purple, controls outer gap for this card)
-    var mBtn = document.createElement('button');
-    mBtn.className = 'card-margin-btn';
-    mBtn.innerHTML = marginIcons[0];
-    mBtn.title = marginTitles[0];
-    mBtn.setAttribute('data-margin-idx', '0');
-    mBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      var idx = (parseInt(this.getAttribute('data-margin-idx')) + 1) % marginLevels.length;
-      this.setAttribute('data-margin-idx', String(idx));
-      this.innerHTML = marginIcons[idx];
-      this.title = marginTitles[idx];
-      marginLevels.forEach(function(c) { item.classList.remove(c); });
-      item.classList.add(marginLevels[idx]);
-    });
-    content.appendChild(mBtn);
   }
 
   // Inject buttons into every card
@@ -2298,20 +2258,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // ---- Global gap selector — sets Gridstack's own CSS custom properties ----
-  // Gridstack v12 uses --gs-item-margin-* inline vars on .grid-stack.
-  // .grid-stack-item-content uses: top: var(--gs-item-margin-top), etc.
-  // The ONLY reliable way to change the gap is to modify these vars directly.
+  // ---- Global gap selector — uses grid.margin() API ----
+  // grid.margin() updates BOTH the CSS variables AND the internal layout
+  // engine. Only setting CSS vars causes visual overlaps because Gridstack
+  // still calculates positions with the old margin.
   var marginBar = document.getElementById('margin-bar');
   var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
-  var gsEl = document.querySelector('.grid-stack');
 
   function setGlobalGap(px) {
-    var val = px + 'px';
-    gsEl.style.setProperty('--gs-item-margin-top', val);
-    gsEl.style.setProperty('--gs-item-margin-right', val);
-    gsEl.style.setProperty('--gs-item-margin-bottom', val);
-    gsEl.style.setProperty('--gs-item-margin-left', val);
+    grid.margin(px);
   }
 
   marginBtns.forEach(function(mBtn) {
