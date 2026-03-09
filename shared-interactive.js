@@ -46,7 +46,7 @@
         items: [
           { icon: '\u{1F4CA}', label: 'Analytics',       href: 'team-analytics.html' },
           { icon: '\u{1F4C8}', label: 'Trading',         href: 'trading-terminal.html' },
-          { icon: '\u{1F3C6}', label: 'Performance',     href: 'team-analytics.html' },
+          { icon: '\u{1F4CB}', label: 'Reports',         href: 'reports-team-lead.html' },
           { icon: '\u{1F6E1}\uFE0F', label: 'Risk Management', href: 'risk-management.html' },
           { icon: '\u{1F3D7}\uFE0F', label: 'Org Structure',   href: 'org-structure.html' },
           { icon: '\u{1F4B0}', label: 'Investing',       href: 'invest-program.html' }
@@ -57,7 +57,7 @@
         items: [
           { icon: '\u{1F3E0}', label: 'Overview',    href: 'trader-workspace.html' },
           { icon: '\u{1F4C8}', label: 'Trading',     href: 'trading-terminal.html' },
-          { icon: '\u{1F3C6}', label: 'Performance', href: 'reports.html' },
+          { icon: '\u{1F4CB}', label: 'Reports',     href: 'reports-trader.html' },
           { icon: '\u{1F4D3}', label: 'Journal',     href: 'trader-workspace.html' }
         ]
       },
@@ -66,7 +66,7 @@
         items: [
           { icon: '\u{1F465}', label: 'Team',            href: 'team-analytics.html' },
           { icon: '\u{1F4C8}', label: 'Trading',         href: 'trading-terminal.html' },
-          { icon: '\u{1F3C6}', label: 'Performance',     href: 'reports.html' },
+          { icon: '\u{1F4CB}', label: 'Reports',         href: 'reports-senior-trader.html' },
           { icon: '\u{1F6E1}\uFE0F', label: 'Risk Management', href: 'risk-management.html' }
         ]
       },
@@ -76,7 +76,7 @@
           { icon: '\u{1F6E1}\uFE0F', label: 'Risk Management', href: 'risk-management.html' },
           { icon: '\u{1F4CA}', label: 'Analytics',       href: 'team-analytics.html' },
           { icon: '\u{1F4C8}', label: 'Trading',         href: 'trading-terminal.html' },
-          { icon: '\u{1F3C6}', label: 'Performance',     href: 'reports.html' }
+          { icon: '\u{1F4CB}', label: 'Reports',         href: 'reports-risk-manager.html' }
         ]
       },
       'admin': {
@@ -124,6 +124,11 @@
       'policy.html':           'admin',
       'ddp.html':              'admin',
       'audit-log.html':        'admin',
+      // Role-specific report pages
+      'reports-trader.html':         'trader',
+      'reports-team-lead.html':      'team-lead',
+      'reports-senior-trader.html':  'senior-trader',
+      'reports-risk-manager.html':   'risk-manager',
       // Shared utility pages
       'settings.html': 'team-lead',
       'reports.html':  'trader',
@@ -476,8 +481,9 @@
     const nav = document.createElement('div'); nav.id = 'mockup-nav';
     const currentFile = window.location.pathname.split('/').pop() || 'index.html';
     const pages = [
-      { section: 'Role Workspaces (NEW)', items: [['index.html','Home — All Mockups'],['role-workspaces.html','Role Workspaces'],['team-analytics.html','Team Analytics'],['risk-management.html','Risk Management'],['trader-workspace.html','Trader Workspace'],['org-structure.html','Org Structure']] },
-      { section: 'Core', items: [['dashboard.html','Dashboard'],['trading-terminal.html','Trading Terminal'],['reports.html','Reports'],['monitoring.html','Monitoring']] },
+      { section: 'Role Workspaces (NEW)', items: [['index.html','Home \u2014 All Mockups'],['role-workspaces.html','Role Workspaces'],['team-analytics.html','Team Analytics'],['risk-management.html','Risk Management'],['trader-workspace.html','Trader Workspace'],['org-structure.html','Org Structure'],['trader-analytics.html','Trader Profile']] },
+      { section: 'Reports (NEW)', items: [['reports-trader.html','Reports \u2014 Trader'],['reports-team-lead.html','Reports \u2014 Team Lead'],['reports-senior-trader.html','Reports \u2014 Senior Trader'],['reports-risk-manager.html','Reports \u2014 Risk Manager'],['reports.html','Reports (Legacy)']] },
+      { section: 'Core', items: [['dashboard.html','Dashboard'],['trading-terminal.html','Trading Terminal'],['monitoring.html','Monitoring']] },
       { section: 'Analytics', items: [['coinmarketcap.html','CoinMarketCap'],['long-short.html','Long/Short'],['greed.html','Fear & Greed'],['news.html','News']] },
       { section: 'Management', items: [['members.html','Members'],['policy.html','Policy'],['ddp.html','DDP'],['audit-log.html','Audit Log'],['balance.html','Balance'],['settings.html','Settings']] },
       { section: 'Admin', items: [['fee-config.html','Fee Config'],['admin-reports.html','Admin Reports'],['wallet-management.html','Wallet Mgmt'],['approve-trades.html','Approve Trades']] },
