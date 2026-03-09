@@ -1919,24 +1919,21 @@ document.addEventListener('DOMContentLoaded', function() {
   var defaultLayout = grid.save(false);
 
   // ---- Content scaling: zoom everything proportionally ----
-  var BASE_WIDTH = 380; // reference card width where zoom = 1.0
+  // Observe the OUTER .grid-stack-item (size controlled by Gridstack),
+  // apply zoom to INNER .grid-stack-item-content. This avoids the
+  // feedback loop where zoom changes size → observer fires → zoom changes → ...
+  var BASE_WIDTH = 380;
   var scaleObserver = new ResizeObserver(function(entries) {
     entries.forEach(function(entry) {
+      var content = entry.target.querySelector('.grid-stack-item-content');
+      if (!content) return;
       var w = entry.contentRect.width;
       var zoom = Math.max(0.55, Math.min(1.4, w / BASE_WIDTH));
-      entry.target.style.zoom = zoom;
+      content.style.zoom = zoom;
     });
   });
-  document.querySelectorAll('#perf-grid .grid-stack-item-content').forEach(function(el) {
+  document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(el) {
     scaleObserver.observe(el);
-  });
-
-  // Re-observe after any resize/drag (new elements might appear)
-  grid.on('added', function(event, items) {
-    items.forEach(function(item) {
-      var content = item.el.querySelector('.grid-stack-item-content');
-      if (content) scaleObserver.observe(content);
-    });
   });
 
   // ---- Customize toggle ----
@@ -1962,8 +1959,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
       grid.load(defaultLayout);
-      // Re-observe all content elements after reset
-      document.querySelectorAll('#perf-grid .grid-stack-item-content').forEach(function(el) {
+      // Re-observe outer items after reset
+      document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(el) {
         scaleObserver.observe(el);
       });
       // Exit customize mode
