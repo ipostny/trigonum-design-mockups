@@ -207,25 +207,25 @@ tr.nested td { padding-left: 40px; font-size: 12px; color: var(--white-55); }
 
 /* PnL calendar heatmap */
 .calendar-grid {
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 24px;
+  display: grid; grid-template-columns: repeat(7, 40px); gap: 3px; margin-bottom: 16px;
 }
 .calendar-header-cell {
-  font-size: 10px; font-weight: 600; color: var(--white-35); text-align: center;
-  padding: 4px 0; text-transform: uppercase; letter-spacing: 1px;
+  font-size: 9px; font-weight: 600; color: var(--white-35); text-align: center;
+  padding: 2px 0; text-transform: uppercase; letter-spacing: 0.5px;
 }
 .calendar-cell {
-  aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center;
-  justify-content: center; font-size: 11px; font-weight: 600; position: relative;
+  width: 40px; height: 36px; border-radius: 4px; display: flex; align-items: center;
+  justify-content: center; font-size: 10px; font-weight: 600; position: relative;
 }
 .calendar-cell.empty { background: transparent; }
 .calendar-cell.neutral { background: var(--white-05); color: var(--white-35); }
-.calendar-cell.profit-1 { background: rgba(0,230,138,0.15); color: var(--green); }
-.calendar-cell.profit-2 { background: rgba(0,230,138,0.3); color: var(--green); }
-.calendar-cell.profit-3 { background: rgba(0,230,138,0.5); color: #fff; }
-.calendar-cell.loss-1 { background: rgba(255,77,106,0.15); color: var(--red); }
-.calendar-cell.loss-2 { background: rgba(255,77,106,0.3); color: var(--red); }
-.calendar-cell.loss-3 { background: rgba(255,77,106,0.5); color: #fff; }
-.calendar-cell.today { outline: 2px solid var(--cyan); outline-offset: -1px; }
+.calendar-cell.profit-1 { background: rgba(18,204,255,0.1); color: rgba(18,204,255,0.7); }
+.calendar-cell.profit-2 { background: rgba(18,204,255,0.2); color: rgba(18,204,255,0.85); }
+.calendar-cell.profit-3 { background: rgba(18,204,255,0.35); color: #fff; }
+.calendar-cell.loss-1 { background: rgba(175,51,255,0.1); color: rgba(175,51,255,0.7); }
+.calendar-cell.loss-2 { background: rgba(175,51,255,0.2); color: rgba(175,51,255,0.85); }
+.calendar-cell.loss-3 { background: rgba(175,51,255,0.35); color: #fff; }
+.calendar-cell.today { outline: 1.5px solid var(--cyan); outline-offset: -1px; }
 
 /* Lifecycle timeline dots */
 .lifecycle-timeline {
@@ -302,7 +302,6 @@ svg text { font-family: var(--font); }
       <button class="report-tab" data-tab-target="tab-pnl">PnL List</button>
       <button class="report-tab" data-tab-target="tab-orders">Order History</button>
       <button class="report-tab" data-tab-target="tab-lifecycle">Trade Lifecycle</button>
-      <button class="report-tab" data-tab-target="tab-journal">Journal</button>
     </div>
 
 
@@ -360,27 +359,29 @@ svg text { font-family: var(--font); }
       <!-- Equity Curve -->
       <div class="chart-card">
         <h3 class="chart-title">Equity Curve</h3>
-        <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
+        <svg width="100%" height="180" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet">
           <defs>
             <linearGradient id="eq-grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#00E68A" stop-opacity="0.3"/>
-              <stop offset="100%" stop-color="#00E68A" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#12CCFF" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#12CCFF" stop-opacity="0"/>
             </linearGradient>
           </defs>
+          <!-- Y-axis labels (left side) -->
+          <text x="38" y="18" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$120K</text>
+          <text x="38" y="50" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$115K</text>
+          <text x="38" y="90" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$110K</text>
+          <text x="38" y="130" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$105K</text>
+          <text x="38" y="170" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$100K</text>
           <!-- Grid lines -->
-          <line x1="0" y1="50" x2="800" y2="50" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-          <line x1="0" y1="100" x2="800" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-          <line x1="0" y1="150" x2="800" y2="150" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-          <!-- Area fill -->
-          <path d="M0,180 L27,170 L53,165 L80,155 L107,150 L133,140 L160,145 L187,130 L213,120 L240,125 L267,110 L293,100 L320,95 L347,85 L373,90 L400,80 L427,75 L453,60 L480,55 L507,50 L533,45 L560,40 L587,35 L613,30 L640,25 L667,22 L693,20 L720,18 L747,15 L773,12 L800,10 L800,200 L0,200 Z" fill="url(#eq-grad)"/>
+          <line x1="45" y1="14" x2="795" y2="14" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="45" y1="46" x2="795" y2="46" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="45" y1="86" x2="795" y2="86" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="45" y1="126" x2="795" y2="126" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="45" y1="166" x2="795" y2="166" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <!-- Area fill (chart area: x 50-790, y 10-170) -->
+          <path d="M50,160 L75,152 L100,148 L125,140 L150,136 L175,128 L200,132 L225,120 L250,112 L275,116 L300,104 L325,96 L350,92 L375,84 L400,88 L425,80 L450,76 L475,64 L500,60 L525,56 L550,52 L575,48 L600,44 L625,40 L650,36 L675,34 L700,32 L725,28 L750,24 L775,20 L790,16 L790,170 L50,170 Z" fill="url(#eq-grad)"/>
           <!-- Line -->
-          <path d="M0,180 L27,170 L53,165 L80,155 L107,150 L133,140 L160,145 L187,130 L213,120 L240,125 L267,110 L293,100 L320,95 L347,85 L373,90 L400,80 L427,75 L453,60 L480,55 L507,50 L533,45 L560,40 L587,35 L613,30 L640,25 L667,22 L693,20 L720,18 L747,15 L773,12 L800,10" fill="none" stroke="#00E68A" stroke-width="2"/>
-          <!-- Y-axis labels -->
-          <text x="5" y="18" fill="rgba(255,255,255,0.35)" font-size="10">$120K</text>
-          <text x="5" y="55" fill="rgba(255,255,255,0.35)" font-size="10">$115K</text>
-          <text x="5" y="105" fill="rgba(255,255,255,0.35)" font-size="10">$110K</text>
-          <text x="5" y="155" fill="rgba(255,255,255,0.35)" font-size="10">$105K</text>
-          <text x="5" y="195" fill="rgba(255,255,255,0.35)" font-size="10">$100K</text>
+          <path d="M50,160 L75,152 L100,148 L125,140 L150,136 L175,128 L200,132 L225,120 L250,112 L275,116 L300,104 L325,96 L350,92 L375,84 L400,88 L425,80 L450,76 L475,64 L500,60 L525,56 L550,52 L575,48 L600,44 L625,40 L650,36 L675,34 L700,32 L725,28 L750,24 L775,20 L790,16" fill="none" stroke="#12CCFF" stroke-width="1.5"/>
         </svg>
       </div>
 
@@ -388,62 +389,67 @@ svg text { font-family: var(--font); }
       <div class="charts-row">
         <div class="chart-card">
           <h3 class="chart-title">Monthly Returns</h3>
-          <svg width="100%" height="180" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
-            <!-- Zero line -->
-            <line x1="40" y1="120" x2="390" y2="120" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-            <!-- Bars (positive = green up from 120, negative = red down from 120) -->
-            <rect x="55" y="85" width="22" height="35" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <rect x="90" y="70" width="22" height="50" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <rect x="125" y="120" width="22" height="25" rx="3" fill="rgba(255,77,106,0.7)"/>
-            <rect x="160" y="50" width="22" height="70" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <rect x="195" y="95" width="22" height="25" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <rect x="230" y="120" width="22" height="15" rx="3" fill="rgba(255,77,106,0.7)"/>
-            <rect x="265" y="60" width="22" height="60" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <rect x="300" y="75" width="22" height="45" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <rect x="335" y="80" width="22" height="40" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <!-- Month labels -->
-            <text x="66" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
-            <text x="101" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
-            <text x="136" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Sep</text>
-            <text x="171" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Oct</text>
-            <text x="206" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Nov</text>
-            <text x="241" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Dec</text>
-            <text x="276" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jan</text>
-            <text x="311" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Feb</text>
-            <text x="346" y="170" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Mar</text>
-            <!-- Value labels -->
-            <text x="66" y="80" fill="rgba(0,230,138,0.8)" font-size="9" text-anchor="middle">+3.5%</text>
-            <text x="101" y="65" fill="rgba(0,230,138,0.8)" font-size="9" text-anchor="middle">+5.0%</text>
-            <text x="136" y="152" fill="rgba(255,77,106,0.8)" font-size="9" text-anchor="middle">-2.5%</text>
-            <text x="171" y="45" fill="rgba(0,230,138,0.8)" font-size="9" text-anchor="middle">+7.0%</text>
-            <text x="206" y="90" fill="rgba(0,230,138,0.8)" font-size="9" text-anchor="middle">+2.5%</text>
-            <text x="241" y="142" fill="rgba(255,77,106,0.8)" font-size="9" text-anchor="middle">-1.5%</text>
-            <text x="276" y="55" fill="rgba(0,230,138,0.8)" font-size="9" text-anchor="middle">+6.0%</text>
-            <text x="311" y="70" fill="rgba(0,230,138,0.8)" font-size="9" text-anchor="middle">+4.5%</text>
-            <text x="346" y="75" fill="rgba(0,230,138,0.8)" font-size="9" text-anchor="middle">+4.0%</text>
+          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+            <!-- Zero line at y=110 (gives more room below for negative bars + labels) -->
+            <line x1="30" y1="110" x2="390" y2="110" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <!-- Positive bars (grow up from y=110) -->
+            <rect x="48" y="82" width="24" height="28" rx="3" fill="rgba(18,204,255,0.5)"/>
+            <rect x="86" y="68" width="24" height="42" rx="3" fill="rgba(18,204,255,0.5)"/>
+            <rect x="162" y="48" width="24" height="62" rx="3" fill="rgba(18,204,255,0.6)"/>
+            <rect x="200" y="88" width="24" height="22" rx="3" fill="rgba(18,204,255,0.45)"/>
+            <rect x="276" y="56" width="24" height="54" rx="3" fill="rgba(18,204,255,0.55)"/>
+            <rect x="314" y="72" width="24" height="38" rx="3" fill="rgba(18,204,255,0.5)"/>
+            <rect x="352" y="76" width="24" height="34" rx="3" fill="rgba(18,204,255,0.5)"/>
+            <!-- Negative bars (grow down from y=110) -->
+            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,77,106,0.5)"/>
+            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,77,106,0.4)"/>
+            <!-- Month labels (y=180, well below bars) -->
+            <text x="60" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
+            <text x="98" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
+            <text x="136" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Sep</text>
+            <text x="174" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Oct</text>
+            <text x="212" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Nov</text>
+            <text x="250" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Dec</text>
+            <text x="288" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jan</text>
+            <text x="326" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Feb</text>
+            <text x="364" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Mar</text>
+            <!-- Value labels (above positive bars, below negative bars with spacing) -->
+            <text x="60" y="77" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+3.5%</text>
+            <text x="98" y="63" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+5.0%</text>
+            <text x="136" y="142" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
+            <text x="174" y="43" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+7.0%</text>
+            <text x="212" y="83" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+2.5%</text>
+            <text x="250" y="134" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
+            <text x="288" y="51" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+6.0%</text>
+            <text x="326" y="67" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+4.5%</text>
+            <text x="364" y="71" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+4.0%</text>
           </svg>
         </div>
         <div class="chart-card">
           <h3 class="chart-title">Drawdown</h3>
-          <svg width="100%" height="180" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#FF4D6A" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="#FF4D6A" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#AF33FF" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#AF33FF" stop-opacity="0"/>
               </linearGradient>
             </defs>
-            <!-- Zero line at top -->
-            <line x1="40" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-            <text x="38" y="18" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">0%</text>
-            <text x="38" y="58" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">-2%</text>
-            <text x="38" y="98" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">-4%</text>
-            <text x="38" y="138" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">-6%</text>
+            <!-- Y-axis labels -->
+            <text x="28" y="24" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">0%</text>
+            <text x="28" y="64" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-2%</text>
+            <text x="28" y="104" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-4%</text>
+            <text x="28" y="144" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-6%</text>
+            <!-- Grid lines -->
+            <line x1="32" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="32" y1="60" x2="390" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="32" y1="100" x2="390" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="32" y1="140" x2="390" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
             <!-- Drawdown area -->
-            <path d="M40,20 L70,20 L100,25 L130,45 L160,80 L190,60 L220,30 L250,20 L280,20 L310,35 L340,50 L370,30 L390,20 L390,20 L40,20 Z" fill="url(#dd-grad)"/>
-            <path d="M40,20 L70,20 L100,25 L130,45 L160,80 L190,60 L220,30 L250,20 L280,20 L310,35 L340,50 L370,30 L390,20" fill="none" stroke="#FF4D6A" stroke-width="1.5"/>
+            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20 L390,20 L35,20 Z" fill="url(#dd-grad)"/>
+            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#AF33FF" stroke-width="1.5" opacity="0.7"/>
             <!-- Max DD marker -->
-            <circle cx="160" cy="80" r="4" fill="#FF4D6A"/>
-            <text x="160" y="95" fill="rgba(255,77,106,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
+            <circle cx="160" cy="85" r="3.5" fill="#AF33FF" opacity="0.8"/>
+            <text x="160" y="100" fill="rgba(175,51,255,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
           </svg>
         </div>
       </div>
@@ -503,13 +509,12 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell neutral">30</div>
           <div class="calendar-cell neutral">31</div>
         </div>
-        <div style="display:flex;gap:12px;align-items:center;font-size:11px;color:var(--white-55);">
-          <span>Legend:</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(255,77,106,0.5);"></span> Loss</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(255,77,106,0.15);"></span> Small loss</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--white-05);"></span> No data</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(0,230,138,0.15);"></span> Small profit</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:12px;height:12px;border-radius:3px;background:rgba(0,230,138,0.5);"></span> Profit</span>
+        <div style="display:flex;gap:12px;align-items:center;font-size:10px;color:var(--white-55);">
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(175,51,255,0.35);"></span> Loss</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(175,51,255,0.1);"></span> Small loss</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--white-05);"></span> No data</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(18,204,255,0.1);"></span> Small profit</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(18,204,255,0.35);"></span> Profit</span>
         </div>
       </div>
 
@@ -519,22 +524,22 @@ svg text { font-family: var(--font); }
           <h3 class="chart-title">Win/Loss Distribution</h3>
           <div style="display:flex;gap:20px;align-items:center;">
             <!-- Donut chart -->
-            <svg width="120" height="120" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"/>
-              <circle cx="60" cy="60" r="50" fill="none" stroke="#00E68A" stroke-width="12"
-                stroke-dasharray="201 113" stroke-dashoffset="-78" stroke-linecap="round"/>
-              <circle cx="60" cy="60" r="50" fill="none" stroke="#FF4D6A" stroke-width="12"
-                stroke-dasharray="113 201" stroke-dashoffset="-279" stroke-linecap="round"/>
-              <text x="60" y="55" fill="var(--white-92)" font-size="18" font-weight="700" text-anchor="middle">64%</text>
-              <text x="60" y="72" fill="var(--white-55)" font-size="10" text-anchor="middle">Win Rate</text>
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="10"/>
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(18,204,255,0.6)" stroke-width="10"
+                stroke-dasharray="177 100" stroke-dashoffset="-69" stroke-linecap="round"/>
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(175,51,255,0.5)" stroke-width="10"
+                stroke-dasharray="100 177" stroke-dashoffset="-246" stroke-linecap="round"/>
+              <text x="55" y="50" fill="var(--white-92)" font-size="16" font-weight="700" text-anchor="middle">64%</text>
+              <text x="55" y="65" fill="var(--white-55)" font-size="9" text-anchor="middle">Win Rate</text>
             </svg>
             <div style="font-size:12px;color:var(--white-75);">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--green);"></span>
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--cyan);opacity:0.7;"></span>
                 <span>Wins: 91 trades (+$28,400)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--red);"></span>
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--purple);opacity:0.6;"></span>
                 <span>Losses: 51 trades (-$9,980)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
@@ -546,28 +551,28 @@ svg text { font-family: var(--font); }
         </div>
         <div class="chart-card">
           <h3 class="chart-title">Time of Day Analysis</h3>
-          <svg width="100%" height="120" viewBox="0 0 400 120" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="130" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
             <!-- Bars for each 4-hour block -->
-            <rect x="30" y="80" width="40" height="30" rx="3" fill="rgba(0,230,138,0.3)"/>
-            <rect x="85" y="60" width="40" height="50" rx="3" fill="rgba(0,230,138,0.5)"/>
-            <rect x="140" y="30" width="40" height="80" rx="3" fill="rgba(0,230,138,0.7)"/>
-            <rect x="195" y="45" width="40" height="65" rx="3" fill="rgba(0,230,138,0.6)"/>
-            <rect x="250" y="70" width="40" height="40" rx="3" fill="rgba(0,230,138,0.4)"/>
-            <rect x="305" y="90" width="40" height="20" rx="3" fill="rgba(255,77,106,0.4)"/>
+            <rect x="30" y="82" width="40" height="28" rx="3" fill="rgba(18,204,255,0.2)"/>
+            <rect x="85" y="62" width="40" height="48" rx="3" fill="rgba(18,204,255,0.3)"/>
+            <rect x="140" y="32" width="40" height="78" rx="3" fill="rgba(18,204,255,0.45)"/>
+            <rect x="195" y="47" width="40" height="63" rx="3" fill="rgba(18,204,255,0.35)"/>
+            <rect x="250" y="72" width="40" height="38" rx="3" fill="rgba(18,204,255,0.25)"/>
+            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(175,51,255,0.25)"/>
             <!-- Labels -->
-            <text x="50" y="118" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">0-4h</text>
-            <text x="105" y="118" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">4-8h</text>
-            <text x="160" y="118" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">8-12h</text>
-            <text x="215" y="118" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">12-16h</text>
-            <text x="270" y="118" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">16-20h</text>
-            <text x="325" y="118" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">20-24h</text>
+            <text x="50" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">0-4h</text>
+            <text x="105" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">4-8h</text>
+            <text x="160" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">8-12h</text>
+            <text x="215" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">12-16h</text>
+            <text x="270" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">16-20h</text>
+            <text x="325" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">20-24h</text>
             <!-- Value labels -->
-            <text x="50" y="76" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">12</text>
-            <text x="105" y="56" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">24</text>
-            <text x="160" y="26" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">42</text>
-            <text x="215" y="41" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">35</text>
-            <text x="270" y="66" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">19</text>
-            <text x="325" y="86" fill="rgba(255,77,106,0.7)" font-size="8" text-anchor="middle">10</text>
+            <text x="50" y="78" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">12</text>
+            <text x="105" y="58" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">24</text>
+            <text x="160" y="28" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">42</text>
+            <text x="215" y="43" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">35</text>
+            <text x="270" y="68" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">19</text>
+            <text x="325" y="88" fill="rgba(175,51,255,0.7)" font-size="8" text-anchor="middle">10</text>
           </svg>
         </div>
       </div>
@@ -1228,241 +1233,7 @@ svg text { font-family: var(--font); }
     </div>
 
 
-    <!-- =============================================================
-         TAB 5: JOURNAL
-         Trading journal entries with tags, notes, auto-fill from trades
-         ============================================================= -->
-    <div class="tab-panel" id="tab-journal" data-tab-panel data-tab-group="report-tabs">
-
-      <div class="journal-toolbar">
-        <div class="journal-toolbar-title">Trading Journal</div>
-        <div class="journal-toolbar-actions">
-          <button class="btn-export">Sync from Trades</button>
-          <button class="btn-apply">+ New Entry</button>
-        </div>
-      </div>
-
-      <div class="filters-bar">
-        <div class="filter-group">
-          <label>Period</label>
-          <select class="filter-input">
-            <option>Last 7 days</option>
-            <option selected>Last 30 days</option>
-            <option>Last 90 days</option>
-            <option>All time</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Instrument</label>
-          <select class="filter-input">
-            <option value="">All</option>
-            <option>BTCUSDT</option>
-            <option>ETHUSDT</option>
-            <option>SOLUSDT</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Direction</label>
-          <select class="filter-input">
-            <option value="">All</option>
-            <option>Long</option>
-            <option>Short</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Tag</label>
-          <select class="filter-input">
-            <option value="">All Tags</option>
-            <option>breakout</option>
-            <option>trend-follow</option>
-            <option>scalp</option>
-            <option>fake-out</option>
-            <option>lesson</option>
-          </select>
-        </div>
-        <button class="btn-apply">Apply</button>
-      </div>
-
-      <!-- Journal entries -->
-      <div class="journal-entry" data-row-modal>
-        <div class="journal-header">
-          <div>
-            <span class="journal-symbol">BTCUSDT</span>
-            <span class="side-buy" style="margin-left:8px;font-size:12px;">Long</span>
-            <span style="font-size:12px;color:var(--green);margin-left:8px;">+$325.00</span>
-          </div>
-          <span class="journal-date">Mar 9, 2026 10:15 &mdash; 14:32</span>
-        </div>
-        <div class="journal-body">
-          Entered long on BTC breakout above 85K resistance. Strong volume confirmation on 5m chart.
-          Set TP at 86K and SL at 84.5K. Price hit 85.75K and I manually closed for +$325.
-          Should have waited for TP &mdash; trend continued to 86.2K. Sticking to the plan next time.
-        </div>
-        <div class="journal-tags">
-          <span class="journal-tag">breakout</span>
-          <span class="journal-tag">trend-follow</span>
-          <span class="journal-tag">early-exit</span>
-        </div>
-      </div>
-
-      <div class="journal-entry" data-row-modal>
-        <div class="journal-header">
-          <div>
-            <span class="journal-symbol">ETHUSDT</span>
-            <span class="side-sell" style="margin-left:8px;font-size:12px;">Short</span>
-            <span style="font-size:12px;color:var(--green);margin-left:8px;">+$300.00</span>
-          </div>
-          <span class="journal-date">Mar 8, 2026 14:20 &mdash; 16:40</span>
-        </div>
-        <div class="journal-body">
-          Shorted ETH at 3480 after rejection from 4H resistance. Clean setup with bearish divergence on RSI.
-          Closed at 3450 for quick +$300. Good execution &mdash; followed plan exactly.
-        </div>
-        <div class="journal-tags">
-          <span class="journal-tag">resistance-reject</span>
-          <span class="journal-tag">rsi-divergence</span>
-          <span class="journal-tag">plan-followed</span>
-        </div>
-      </div>
-
-      <div class="journal-entry" data-row-modal>
-        <div class="journal-header">
-          <div>
-            <span class="journal-symbol">SOLUSDT</span>
-            <span class="side-buy" style="margin-left:8px;font-size:12px;">Long</span>
-            <span style="font-size:12px;color:var(--red);margin-left:8px;">-$250.00</span>
-          </div>
-          <span class="journal-date">Mar 8, 2026 07:30 &mdash; 09:22</span>
-        </div>
-        <div class="journal-body">
-          Longed SOL on support bounce at 148.50. Turned out to be a false bounce &mdash;
-          SL hit at 146. Lesson: check higher timeframe trend before entering on support.
-          SOL was in a 4H downtrend, should have skipped this setup entirely.
-        </div>
-        <div class="journal-tags">
-          <span class="journal-tag">false-bounce</span>
-          <span class="journal-tag">against-trend</span>
-          <span class="journal-tag">lesson</span>
-        </div>
-      </div>
-
-      <div class="journal-entry" data-row-modal>
-        <div class="journal-header">
-          <div>
-            <span class="journal-symbol">BTCUSDT</span>
-            <span class="side-buy" style="margin-left:8px;font-size:12px;">Long</span>
-            <span style="font-size:12px;color:var(--green);margin-left:8px;">+$270.00</span>
-          </div>
-          <span class="journal-date">Mar 7, 2026 14:05 &mdash; 22:10</span>
-        </div>
-        <div class="journal-body">
-          Swing long BTC from 84.2K to 85.1K. Held through Asia session dip.
-          Good patience on this one. R:R was 1:3, entered on pullback to 20 EMA.
-        </div>
-        <div class="journal-tags">
-          <span class="journal-tag">swing</span>
-          <span class="journal-tag">ema-pullback</span>
-          <span class="journal-tag">patience</span>
-        </div>
-      </div>
-
-      <div class="journal-entry" data-row-modal>
-        <div class="journal-header">
-          <div>
-            <span class="journal-symbol">ETHUSDT</span>
-            <span class="side-buy" style="margin-left:8px;font-size:12px;">Long</span>
-            <span style="font-size:12px;color:var(--green);margin-left:8px;">+$300.00</span>
-          </div>
-          <span class="journal-date">Mar 7, 2026 14:05 &mdash; 18:30</span>
-        </div>
-        <div class="journal-body">
-          Longed ETH at 3390 on momentum breakout. Volume spike confirmed.
-          Took profit at 3450. Clean trade, nothing to improve.
-        </div>
-        <div class="journal-tags">
-          <span class="journal-tag">breakout</span>
-          <span class="journal-tag">volume-confirm</span>
-          <span class="journal-tag">momentum</span>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
-        <div class="rows-info" style="font-size:12px;color:var(--white-55);">Showing 1-5 of 28 entries</div>
-        <div class="pagination">
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn">...</button>
-          <button class="page-btn">6</button>
-        </div>
-      </div>
-    </div>
-
   </main>
-</div>
-
-<!-- ===== JOURNAL EDIT MODAL ===== -->
-<div class="modal-overlay" id="modal-journal-edit">
-  <div class="modal-content">
-    <button class="modal-close-btn">&times;</button>
-    <div class="modal-title">Edit Journal Entry</div>
-
-    <div style="display:flex;gap:16px;margin-bottom:16px;">
-      <div style="flex:1;">
-        <div style="font-size:14px;font-weight:600;">BTCUSDT <span class="side-buy" style="font-size:12px;">Long</span></div>
-        <div style="font-size:12px;color:var(--white-55);">Mar 9, 2026 10:15 &mdash; 14:32</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:14px;font-weight:600;color:var(--green);">+$325.00</div>
-        <div style="font-size:12px;color:var(--white-55);">+0.76%</div>
-      </div>
-    </div>
-
-    <div style="margin-bottom:12px;">
-      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);display:block;margin-bottom:4px;">Entry Reason</label>
-      <textarea style="width:100%;min-height:60px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:8px 10px;color:var(--white-92);font-size:12px;font-family:var(--font);resize:vertical;">BTC breakout above 85K resistance. Strong volume on 5m chart.</textarea>
-    </div>
-
-    <div style="margin-bottom:12px;">
-      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);display:block;margin-bottom:4px;">Notes / Lessons</label>
-      <textarea style="width:100%;min-height:80px;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:8px 10px;color:var(--white-92);font-size:12px;font-family:var(--font);resize:vertical;">Should have waited for TP. Trend continued to 86.2K after my exit at 85.75K. Next time: stick to the plan.</textarea>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-      <div>
-        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);display:block;margin-bottom:4px;">SL</label>
-        <input type="text" value="$84,500" style="width:100%;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:8px 10px;color:var(--white-92);font-size:12px;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);display:block;margin-bottom:4px;">TP</label>
-        <input type="text" value="$86,000" style="width:100%;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:8px 10px;color:var(--white-92);font-size:12px;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);display:block;margin-bottom:4px;">R:R</label>
-        <input type="text" value="1:1.5" style="width:100%;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:8px 10px;color:var(--white-92);font-size:12px;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);display:block;margin-bottom:4px;">Risk %</label>
-        <input type="text" value="1.0%" style="width:100%;background:var(--white-05);border:1px solid var(--white-15);border-radius:var(--r-sm);padding:8px 10px;color:var(--white-92);font-size:12px;">
-      </div>
-    </div>
-
-    <div style="margin-bottom:12px;">
-      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);display:block;margin-bottom:4px;">Tags</label>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <span class="journal-tag" style="cursor:pointer;">breakout</span>
-        <span class="journal-tag" style="cursor:pointer;">trend-follow</span>
-        <span class="journal-tag" style="cursor:pointer;">early-exit</span>
-        <span class="journal-tag" style="border-style:dashed;cursor:pointer;">+ Add Tag</span>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel">Cancel</button>
-      <button class="btn-confirm">Save Changes</button>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -1486,14 +1257,6 @@ svg text { font-family: var(--font); }
       panels.forEach(function(p) { p.classList.remove('active'); });
       var target = document.getElementById(targetId);
       if (target) target.classList.add('active');
-    });
-  });
-
-  // Journal entry click -> open modal
-  document.querySelectorAll('.journal-entry').forEach(function(entry) {
-    entry.addEventListener('click', function() {
-      var modal = document.getElementById('modal-journal-edit');
-      if (modal) modal.style.display = 'flex';
     });
   });
 })();
