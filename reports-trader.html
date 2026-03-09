@@ -1978,6 +1978,11 @@ document.addEventListener('DOMContentLoaded', function() {
   var hiddenChips = document.getElementById('hidden-chips');
   var hiddenItems = []; // { el, title, savedData }
 
+  // Hidden element storage (off-screen, out of grid)
+  var hiddenStore = document.createElement('div');
+  hiddenStore.style.display = 'none';
+  document.body.appendChild(hiddenStore);
+
   // Inject close button into every card
   document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
     var content = item.querySelector('.grid-stack-item-content');
@@ -1989,6 +1994,7 @@ document.addEventListener('DOMContentLoaded', function() {
     closeBtn.title = 'Hide this widget';
     closeBtn.addEventListener('click', function(e) {
       e.stopPropagation();
+      e.preventDefault();
       hideCard(item);
     });
     content.appendChild(closeBtn);
@@ -2002,13 +2008,13 @@ document.addEventListener('DOMContentLoaded', function() {
   function hideCard(item) {
     var title = getCardTitle(item);
     var savedData = {
-      x: parseInt(item.getAttribute('gs-x')) || 0,
-      y: parseInt(item.getAttribute('gs-y')) || 0,
       w: parseInt(item.getAttribute('gs-w')) || 6,
       h: parseInt(item.getAttribute('gs-h')) || 8
     };
+    // Remove from Gridstack + move element to hidden storage
+    grid.removeWidget(item, true);
+    hiddenStore.appendChild(item);
     hiddenItems.push({ el: item, title: title, savedData: savedData });
-    grid.removeWidget(item, false); // false = don't destroy DOM element
     refreshHiddenPanel();
   }
 
@@ -2016,6 +2022,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var entry = hiddenItems[index];
     if (!entry) return;
     hiddenItems.splice(index, 1);
+    // Clean Gridstack attributes so addWidget treats it fresh
+    entry.el.removeAttribute('gs-x');
+    entry.el.removeAttribute('gs-y');
     grid.addWidget(entry.el, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
     scaleObserver.observe(entry.el);
     refreshHiddenPanel();
@@ -2058,7 +2067,10 @@ document.addEventListener('DOMContentLoaded', function() {
       // Restore all hidden cards first
       while (hiddenItems.length > 0) {
         var entry = hiddenItems.pop();
+        entry.el.removeAttribute('gs-x');
+        entry.el.removeAttribute('gs-y');
         grid.addWidget(entry.el, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
+        scaleObserver.observe(entry.el);
       }
       refreshHiddenPanel();
       // Reset positions
