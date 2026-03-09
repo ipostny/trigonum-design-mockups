@@ -322,9 +322,21 @@ svg text { font-family: var(--font); }
 /* Gridstack drag/resize handles — only visible in edit mode */
 .grid-stack-item > .ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
 .grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-handle { opacity: 0.6; }
+/* Resize handle: double-arrow icon pinned inside the card's bottom-right corner.
+   Positioned on the OUTER .grid-stack-item (not affected by inner zoom). */
 .grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-se {
-  background: linear-gradient(135deg, transparent 40%, rgba(18,204,255,0.4) 40%, rgba(18,204,255,0.4) 43%, transparent 43%, transparent 55%, rgba(18,204,255,0.4) 55%, rgba(18,204,255,0.4) 58%, transparent 58%, transparent 70%, rgba(18,204,255,0.4) 70%, rgba(18,204,255,0.4) 73%, transparent 73%);
-  width: 20px; height: 20px; right: 4px; bottom: 4px;
+  width: 28px; height: 28px; right: 2px; bottom: 2px;
+  background: rgba(18,204,255,0.12);
+  border-radius: 8px 0 var(--r-lg) 0;
+  display: flex; align-items: center; justify-content: center;
+  /* Double-headed diagonal arrow via SVG data URI */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M14 2L2 14M14 2v5M14 2h-5M2 14v-5M2 14h5' stroke='%2312CCFF' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+}
+.grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-se:hover {
+  background-color: rgba(18,204,255,0.25);
 }
 /* Drag handle indicator */
 .grid-stack.grid-stack-editing .chart-title {
