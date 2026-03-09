@@ -39,15 +39,14 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
 /*
  * UNIFIED REPORTS — RISK MANAGER VIEW
  * Assigned traders only. No Journal tab.
- * 6 tabs: Performance | PnL List | Order History | Trade Lifecycle | Group Report | Team Analytics
+ * 5 tabs: Performance | PnL List | Order History | Trade Lifecycle | Team Analytics
  *
  * Routes:
  *   /reports/performance   — equity curve, win rate, monthly returns, drawdown
  *   /reports/pnl           — realized PnL table + daily bar chart
  *   /reports/orders        — order history with filters
  *   /reports/lifecycle      — position lifecycle (entry->exit) with expandable orders
- *   /reports/group          — account comparison, group PnL
- *   /reports/team           — trader performance comparison, team analytics
+ *   /reports/team           — combined team analytics + account comparison
  */
 
 .app-shell { display: flex; min-height: 100vh; }
@@ -203,9 +202,9 @@ tr.nested td { padding-left: 40px; font-size: 12px; color: var(--white-55); }
 .calendar-cell.profit-1 { background: rgba(0,230,138,0.1); color: rgba(0,230,138,0.7); }
 .calendar-cell.profit-2 { background: rgba(0,230,138,0.2); color: rgba(0,230,138,0.85); }
 .calendar-cell.profit-3 { background: rgba(0,230,138,0.35); color: #fff; }
-.calendar-cell.loss-1 { background: rgba(255,176,32,0.1); color: rgba(255,176,32,0.7); }
-.calendar-cell.loss-2 { background: rgba(255,176,32,0.2); color: rgba(255,176,32,0.85); }
-.calendar-cell.loss-3 { background: rgba(255,176,32,0.35); color: #fff; }
+.calendar-cell.loss-1 { background: rgba(255,77,106,0.1); color: rgba(255,77,106,0.7); }
+.calendar-cell.loss-2 { background: rgba(255,77,106,0.2); color: rgba(255,77,106,0.85); }
+.calendar-cell.loss-3 { background: rgba(255,77,106,0.35); color: #fff; }
 .calendar-cell.today { outline: 1.5px solid var(--cyan); outline-offset: -1px; }
 
 /* Lifecycle timeline dots */
@@ -263,7 +262,6 @@ svg text { font-family: var(--font); }
       <button class="report-tab" data-tab-target="tab-pnl">PnL List</button>
       <button class="report-tab" data-tab-target="tab-orders">Order History</button>
       <button class="report-tab" data-tab-target="tab-lifecycle">Trade Lifecycle</button>
-      <button class="report-tab" data-tab-target="tab-group">Group Report</button>
       <button class="report-tab" data-tab-target="tab-team">Team Analytics</button>
     </div>
 
@@ -403,8 +401,8 @@ svg text { font-family: var(--font); }
             <div class="calendar-cell neutral">31</div>
           </div>
           <div style="display:flex;gap:12px;align-items:center;font-size:10px;color:var(--white-55);">
-            <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,176,32,0.35);"></span> Loss</span>
-            <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,176,32,0.1);"></span> Small loss</span>
+            <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,77,106,0.35);"></span> Loss</span>
+            <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,77,106,0.1);"></span> Small loss</span>
             <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--white-05);"></span> No data</span>
             <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.1);"></span> Small profit</span>
             <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.35);"></span> Profit</span>
@@ -428,8 +426,8 @@ svg text { font-family: var(--font); }
             <rect x="314" y="72" width="24" height="38" rx="3" fill="rgba(0,230,138,0.5)"/>
             <rect x="352" y="76" width="24" height="34" rx="3" fill="rgba(0,230,138,0.5)"/>
             <!-- Negative bars (grow down from y=110) -->
-            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,176,32,0.5)"/>
-            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,176,32,0.4)"/>
+            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,77,106,0.5)"/>
+            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,77,106,0.4)"/>
             <!-- Month labels (y=180, well below bars) -->
             <text x="60" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
             <text x="98" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
@@ -443,10 +441,10 @@ svg text { font-family: var(--font); }
             <!-- Value labels (above positive bars, below negative bars with spacing) -->
             <text x="60" y="77" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+3.5%</text>
             <text x="98" y="63" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+5.0%</text>
-            <text x="136" y="142" fill="rgba(255,176,32,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
+            <text x="136" y="142" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
             <text x="174" y="43" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+7.0%</text>
             <text x="212" y="83" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+2.5%</text>
-            <text x="250" y="134" fill="rgba(255,176,32,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
+            <text x="250" y="134" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
             <text x="288" y="51" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+6.0%</text>
             <text x="326" y="67" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.5%</text>
             <text x="364" y="71" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.0%</text>
@@ -457,8 +455,8 @@ svg text { font-family: var(--font); }
           <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#FFB020" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#FFB020" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#FF4D6A" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#FF4D6A" stop-opacity="0"/>
               </linearGradient>
             </defs>
             <!-- Y-axis labels -->
@@ -473,10 +471,10 @@ svg text { font-family: var(--font); }
             <line x1="32" y1="140" x2="390" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
             <!-- Drawdown area -->
             <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20 L390,20 L35,20 Z" fill="url(#dd-grad)"/>
-            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#FFB020" stroke-width="1.5" opacity="0.7"/>
+            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#FF4D6A" stroke-width="1.5" opacity="0.7"/>
             <!-- Max DD marker -->
-            <circle cx="160" cy="85" r="3.5" fill="#FFB020" opacity="0.8"/>
-            <text x="160" y="100" fill="rgba(255,176,32,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
+            <circle cx="160" cy="85" r="3.5" fill="#FF4D6A" opacity="0.8"/>
+            <text x="160" y="100" fill="rgba(255,77,106,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
           </svg>
         </div>
       </div>
@@ -491,7 +489,7 @@ svg text { font-family: var(--font); }
               <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="10"/>
               <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(0,230,138,0.6)" stroke-width="10"
                 stroke-dasharray="177 100" stroke-dashoffset="-69" stroke-linecap="round"/>
-              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,176,32,0.5)" stroke-width="10"
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,77,106,0.5)" stroke-width="10"
                 stroke-dasharray="100 177" stroke-dashoffset="-246" stroke-linecap="round"/>
               <text x="55" y="50" fill="var(--white-92)" font-size="16" font-weight="700" text-anchor="middle">64%</text>
               <text x="55" y="65" fill="var(--white-55)" font-size="9" text-anchor="middle">Win Rate</text>
@@ -502,7 +500,7 @@ svg text { font-family: var(--font); }
                 <span>Wins: 91 trades (+$28,400)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--amber);opacity:0.6;"></span>
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--red);opacity:0.6;"></span>
                 <span>Losses: 51 trades (-$9,980)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
@@ -521,7 +519,7 @@ svg text { font-family: var(--font); }
             <rect x="140" y="32" width="40" height="78" rx="3" fill="rgba(0,230,138,0.45)"/>
             <rect x="195" y="47" width="40" height="63" rx="3" fill="rgba(0,230,138,0.35)"/>
             <rect x="250" y="72" width="40" height="38" rx="3" fill="rgba(0,230,138,0.25)"/>
-            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(255,176,32,0.25)"/>
+            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(255,77,106,0.25)"/>
             <!-- Labels -->
             <text x="50" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">0-4h</text>
             <text x="105" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">4-8h</text>
@@ -535,7 +533,7 @@ svg text { font-family: var(--font); }
             <text x="160" y="28" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">42</text>
             <text x="215" y="43" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">35</text>
             <text x="270" y="68" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">19</text>
-            <text x="325" y="88" fill="rgba(255,176,32,0.7)" font-size="8" text-anchor="middle">10</text>
+            <text x="325" y="88" fill="rgba(255,77,106,0.7)" font-size="8" text-anchor="middle">10</text>
           </svg>
         </div>
       </div>
@@ -604,31 +602,31 @@ svg text { font-family: var(--font); }
           <!-- Bars (30 days) -->
           <rect x="50" y="65" width="18" height="35" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="74" y="80" width="18" height="20" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="98" y="100" width="18" height="30" rx="2" fill="rgba(255,176,32,0.7)"/>
+          <rect x="98" y="100" width="18" height="30" rx="2" fill="rgba(255,77,106,0.7)"/>
           <rect x="122" y="45" width="18" height="55" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="146" y="70" width="18" height="30" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="170" y="100" width="18" height="15" rx="2" fill="rgba(255,176,32,0.7)"/>
-          <rect x="194" y="100" width="18" height="5" rx="2" fill="rgba(255,176,32,0.5)"/>
+          <rect x="170" y="100" width="18" height="15" rx="2" fill="rgba(255,77,106,0.7)"/>
+          <rect x="194" y="100" width="18" height="5" rx="2" fill="rgba(255,77,106,0.5)"/>
           <rect x="218" y="55" width="18" height="45" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="242" y="75" width="18" height="25" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="266" y="100" width="18" height="40" rx="2" fill="rgba(255,176,32,0.7)"/>
+          <rect x="266" y="100" width="18" height="40" rx="2" fill="rgba(255,77,106,0.7)"/>
           <rect x="290" y="60" width="18" height="40" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="314" y="50" width="18" height="50" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="338" y="85" width="18" height="15" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="362" y="100" width="18" height="20" rx="2" fill="rgba(255,176,32,0.7)"/>
+          <rect x="362" y="100" width="18" height="20" rx="2" fill="rgba(255,77,106,0.7)"/>
           <rect x="386" y="70" width="18" height="30" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="410" y="40" width="18" height="60" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="434" y="100" width="18" height="25" rx="2" fill="rgba(255,176,32,0.7)"/>
+          <rect x="434" y="100" width="18" height="25" rx="2" fill="rgba(255,77,106,0.7)"/>
           <rect x="458" y="65" width="18" height="35" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="482" y="80" width="18" height="20" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="506" y="55" width="18" height="45" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="530" y="100" width="18" height="35" rx="2" fill="rgba(255,176,32,0.7)"/>
+          <rect x="530" y="100" width="18" height="35" rx="2" fill="rgba(255,77,106,0.7)"/>
           <rect x="554" y="75" width="18" height="25" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="578" y="60" width="18" height="40" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="602" y="100" width="18" height="10" rx="2" fill="rgba(255,176,32,0.5)"/>
+          <rect x="602" y="100" width="18" height="10" rx="2" fill="rgba(255,77,106,0.5)"/>
           <rect x="626" y="45" width="18" height="55" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="650" y="70" width="18" height="30" rx="2" fill="rgba(0,230,138,0.7)"/>
-          <rect x="674" y="100" width="18" height="45" rx="2" fill="rgba(255,176,32,0.7)"/>
+          <rect x="674" y="100" width="18" height="45" rx="2" fill="rgba(255,77,106,0.7)"/>
           <rect x="698" y="50" width="18" height="50" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="722" y="65" width="18" height="35" rx="2" fill="rgba(0,230,138,0.7)"/>
           <rect x="746" y="75" width="18" height="25" rx="2" fill="rgba(0,230,138,0.7)"/>
@@ -654,8 +652,8 @@ svg text { font-family: var(--font); }
             <text x="166" y="96" fill="var(--green)" font-size="10">+$3,200</text>
 
             <text x="80" y="126" fill="var(--white-75)" font-size="11" text-anchor="end">DOGEUSDT</text>
-            <rect x="90" y="114" width="40" height="20" rx="4" fill="rgba(255,176,32,0.6)"/>
-            <text x="136" y="128" fill="var(--amber)" font-size="10">-$380</text>
+            <rect x="90" y="114" width="40" height="20" rx="4" fill="rgba(255,77,106,0.6)"/>
+            <text x="136" y="128" fill="var(--red)" font-size="10">-$380</text>
           </svg>
         </div>
         <div class="chart-card">
@@ -1232,181 +1230,185 @@ svg text { font-family: var(--font); }
 
 
     <!-- =============================================================
-         TAB 5: GROUP REPORT
-         Account comparison across assigned traders' accounts
+         TAB 5: TEAM ANALYTICS
+         Combined team analytics + account comparison
          ============================================================= -->
-    <div class="tab-panel" id="tab-group" data-tab-panel data-tab-group="report-tabs">
+    <div class="tab-panel" id="tab-team" data-tab-panel data-tab-group="report-tabs">
 
-      <!-- Period selector -->
-      <div class="period-pills">
-        <button class="period-pill">7D</button>
-        <button class="period-pill">14D</button>
-        <button class="period-pill active">1M</button>
-        <button class="period-pill">3M</button>
-        <button class="period-pill">6M</button>
-        <button class="period-pill">1Y</button>
-        <button class="period-pill">All</button>
+      <!-- Toolbar -->
+      <div class="filters-bar">
+        <div class="filter-group">
+          <label>Team</label>
+          <select class="filter-input">
+            <option value="">Assigned Traders</option>
+            <option>Alex Sato</option>
+            <option>Maria Chen</option>
+            <option>Tom Lee</option>
+            <option>Sara White</option>
+          </select>
+        </div>
+        <div class="period-pills" style="margin-bottom:0;">
+          <button class="period-pill">Week</button>
+          <button class="period-pill active">Month</button>
+          <button class="period-pill">Quarter</button>
+          <button class="period-pill">Year</button>
+        </div>
+        <div class="filter-group">
+          <label>Year</label>
+          <select class="filter-input" style="min-width:90px;">
+            <option>2026</option>
+            <option>2025</option>
+          </select>
+        </div>
+        <div class="period-pills" style="margin-bottom:0;">
+          <button class="period-pill active">P&amp;L</button>
+          <button class="period-pill">ROI</button>
+          <button class="period-pill">P&amp;L+ROI</button>
+        </div>
+        <button class="btn-export" style="margin-left:auto;">&#8615; Export</button>
       </div>
 
-      <!-- Group stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Group PnL</div>
-          <div class="stat-value" style="color:var(--green);">+$38,680</div>
-          <div class="stat-sub">All accounts combined</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Active Accounts</div>
-          <div class="stat-value">4</div>
-          <div class="stat-sub">Across assigned traders</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Capital</div>
-          <div class="stat-value">$650K</div>
-          <div class="stat-sub">Combined balance</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Avg Win Rate</div>
-          <div class="stat-value" style="color:var(--green);">56.8%</div>
-          <div class="stat-sub">Across all accounts</div>
-        </div>
-      </div>
-
-      <!-- Account PnL comparison chart -->
-      <div class="chart-card">
-        <h3 class="chart-title">Account PnL Comparison</h3>
-        <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="grp-grad1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#00E68A" stop-opacity="0.15"/>
-              <stop offset="100%" stop-color="#00E68A" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <!-- Grid lines -->
-          <line x1="0" y1="50" x2="800" y2="50" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-          <line x1="0" y1="100" x2="800" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-          <line x1="0" y1="150" x2="800" y2="150" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-          <!-- Y-axis labels -->
-          <text x="5" y="18" fill="rgba(255,255,255,0.35)" font-size="10">+$20K</text>
-          <text x="5" y="55" fill="rgba(255,255,255,0.35)" font-size="10">+$15K</text>
-          <text x="5" y="105" fill="rgba(255,255,255,0.35)" font-size="10">+$10K</text>
-          <text x="5" y="155" fill="rgba(255,255,255,0.35)" font-size="10">+$5K</text>
-          <text x="5" y="195" fill="rgba(255,255,255,0.35)" font-size="10">$0</text>
-          <!-- Line 1: Bybit Main (green) -->
-          <path d="M0,190 L80,175 L160,160 L240,145 L320,120 L400,100 L480,85 L560,70 L640,55 L720,40 L800,30" fill="none" stroke="#00E68A" stroke-width="2"/>
-          <!-- Line 2: Bybit Sub-1 (cyan) -->
-          <path d="M0,190 L80,180 L160,170 L240,160 L320,140 L400,130 L480,120 L560,105 L640,95 L720,80 L800,70" fill="none" stroke="#12CCFF" stroke-width="2"/>
-          <!-- Line 3: Bybit Sub-2 (purple) -->
-          <path d="M0,190 L80,185 L160,178 L240,172 L320,165 L400,155 L480,148 L560,140 L640,130 L720,120 L800,110" fill="none" stroke="#AF33FF" stroke-width="2"/>
-          <!-- Legend -->
-          <circle cx="600" cy="15" r="4" fill="#00E68A"/>
-          <text x="610" y="19" fill="var(--white-75)" font-size="10">Bybit Main</text>
-          <circle cx="690" cy="15" r="4" fill="#12CCFF"/>
-          <text x="700" y="19" fill="var(--white-75)" font-size="10">Bybit Sub-1</text>
-          <circle cx="780" cy="15" r="4" fill="#AF33FF"/>
-          <text x="790" y="19" fill="var(--white-75)" font-size="10">Sub-2</text>
-        </svg>
-      </div>
-
-      <!-- Account comparison table -->
-      <div class="table-card">
+      <!-- Monthly PnL Table -->
+      <div class="table-card" style="margin-bottom:24px;">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Account</th>
-              <th>Capital</th>
-              <th>PnL ($)</th>
-              <th>PnL (%)</th>
-              <th>Win Rate</th>
-              <th>Trades</th>
-              <th>Max DD</th>
-              <th>Sharpe</th>
+              <th>Trader</th>
+              <th>Jan</th>
+              <th>Feb</th>
+              <th>Mar</th>
+              <th>Apr</th>
+              <th>May</th>
+              <th>Jun</th>
+              <th>Jul</th>
+              <th>Aug</th>
+              <th>Sep</th>
+              <th>Oct</th>
+              <th>Nov</th>
+              <th>Dec</th>
+              <th>Q1</th>
+              <th>Q2</th>
+              <th>Q3</th>
+              <th>Q4</th>
+              <th>Year Total</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="font-weight:600;color:var(--white-92);">Bybit Main</td>
-              <td>$300,000</td>
-              <td style="color:var(--green);font-weight:600;">+$18,420</td>
-              <td style="color:var(--green);">+6.14%</td>
-              <td>64.1%</td>
-              <td>142</td>
-              <td style="color:var(--red);">-4.2%</td>
-              <td>1.87</td>
+              <td style="font-weight:600;color:var(--white-92);">Alex Sato</td>
+              <td style="color:var(--green);">980.50</td>
+              <td style="color:var(--green);">3,210.80</td>
+              <td style="color:var(--red);">-185.40</td>
+              <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:600;">4,005.90</td>
+              <td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:600;">4,005.90</td>
             </tr>
             <tr>
-              <td style="font-weight:600;color:var(--white-92);">Bybit Sub-1</td>
-              <td>$200,000</td>
-              <td style="color:var(--green);font-weight:600;">+$12,840</td>
-              <td style="color:var(--green);">+6.42%</td>
-              <td>58.3%</td>
-              <td>96</td>
-              <td style="color:var(--red);">-3.8%</td>
-              <td>1.62</td>
+              <td style="font-weight:600;color:var(--white-92);">Maria Chen</td>
+              <td style="color:var(--green);">1,120.40</td>
+              <td style="color:var(--green);">2,870.60</td>
+              <td style="color:var(--green);">310.25</td>
+              <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:600;">4,301.25</td>
+              <td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:600;">4,301.25</td>
             </tr>
             <tr>
-              <td style="font-weight:600;color:var(--white-92);">Bybit Sub-2</td>
-              <td>$150,000</td>
-              <td style="color:var(--green);font-weight:600;">+$7,420</td>
-              <td style="color:var(--green);">+4.95%</td>
-              <td>51.2%</td>
-              <td>82</td>
-              <td style="color:var(--red);">-5.1%</td>
-              <td>1.34</td>
+              <td style="font-weight:600;color:var(--white-92);">Tom Lee</td>
+              <td style="color:var(--green);">340.20</td>
+              <td style="color:var(--green);">1,050.80</td>
+              <td style="color:var(--red);">-89.50</td>
+              <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:600;">1,301.50</td>
+              <td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:600;">1,301.50</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--white-92);">Sara White</td>
+              <td style="color:var(--red);">-420.60</td>
+              <td style="color:var(--red);">-680.30</td>
+              <td style="color:var(--red);">-99.10</td>
+              <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--red);font-weight:600;">-1,200.00</td>
+              <td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--red);font-weight:600;">-1,200.00</td>
+            </tr>
+            <tr style="border-top:2px solid var(--white-15);">
+              <td style="font-weight:700;color:var(--white-92);">Team Total</td>
+              <td style="color:var(--green);font-weight:600;">2,020.50</td>
+              <td style="color:var(--green);font-weight:600;">6,451.90</td>
+              <td style="color:var(--red);font-weight:600;">-63.75</td>
+              <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:700;">8,408.65</td>
+              <td>0</td><td>0</td><td>0</td>
+              <td style="color:var(--green);font-weight:700;">8,408.65</td>
             </tr>
           </tbody>
         </table>
-        <div class="table-footer">
-          <div class="rows-info">3 accounts</div>
-          <div class="pagination"></div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- =============================================================
-         TAB 6: TEAM ANALYTICS
-         Trader performance comparison across assigned traders
-         ============================================================= -->
-    <div class="tab-panel" id="tab-team" data-tab-panel data-tab-group="report-tabs">
-
-      <!-- Period selector -->
-      <div class="period-pills">
-        <button class="period-pill">7D</button>
-        <button class="period-pill">14D</button>
-        <button class="period-pill active">1M</button>
-        <button class="period-pill">3M</button>
-        <button class="period-pill">6M</button>
-        <button class="period-pill">1Y</button>
-        <button class="period-pill">All</button>
       </div>
 
-      <!-- Team stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Team Total PnL</div>
-          <div class="stat-value" style="color:var(--green);">+$38,680</div>
-          <div class="stat-sub">All assigned traders</div>
+      <!-- 3 Account charts in a row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;">
+        <!-- Profit by Account -->
+        <div class="chart-card" style="margin-bottom:0;">
+          <h3 class="chart-title">Profit by Account</h3>
+          <svg width="100%" height="180" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <!-- Zero line at x=120 -->
+            <line x1="120" y1="10" x2="120" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <!-- Bybit Main: +$8,960 (positive, green) -->
+            <text x="114" y="32" fill="var(--white-75)" font-size="9" text-anchor="end">Bybit Main</text>
+            <rect x="120" y="20" width="80" height="18" rx="4" fill="rgba(0,230,138,0.6)"/>
+            <text x="204" y="33" fill="var(--green)" font-size="9">+$8,960</text>
+            <!-- Sub-1: +$5,500 -->
+            <text x="114" y="62" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-1</text>
+            <rect x="120" y="50" width="50" height="18" rx="4" fill="rgba(0,230,138,0.6)"/>
+            <text x="174" y="63" fill="var(--green)" font-size="9">+$5,500</text>
+            <!-- Sub-2: +$1,200 -->
+            <text x="114" y="92" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-2</text>
+            <rect x="120" y="80" width="12" height="18" rx="4" fill="rgba(0,230,138,0.6)"/>
+            <text x="136" y="93" fill="var(--green)" font-size="9">+$1,200</text>
+            <!-- Sub-3: -$1,200 (negative, red) -->
+            <text x="114" y="122" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-3</text>
+            <rect x="90" y="110" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
+            <text x="126" y="123" fill="var(--red)" font-size="9">-$1,200</text>
+          </svg>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Assigned Traders</div>
-          <div class="stat-value">4</div>
-          <div class="stat-sub">Active this period</div>
+        <!-- Trades by Account -->
+        <div class="chart-card" style="margin-bottom:0;">
+          <h3 class="chart-title">Trades by Account</h3>
+          <svg width="100%" height="180" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <text x="70" y="32" fill="var(--white-75)" font-size="9" text-anchor="end">Bybit Main</text>
+            <rect x="80" y="20" width="130" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
+            <text x="216" y="33" fill="var(--cyan)" font-size="9">210</text>
+            <text x="70" y="62" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-1</text>
+            <rect x="80" y="50" width="35" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
+            <text x="120" y="63" fill="var(--cyan)" font-size="9">56</text>
+            <text x="70" y="92" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-2</text>
+            <rect x="80" y="80" width="22" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
+            <text x="106" y="93" fill="var(--cyan)" font-size="9">34</text>
+            <text x="70" y="122" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-3</text>
+            <rect x="80" y="110" width="18" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
+            <text x="102" y="123" fill="var(--cyan)" font-size="9">28</text>
+          </svg>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Avg Win Rate</div>
-          <div class="stat-value" style="color:var(--green);">56.8%</div>
-          <div class="stat-sub">Team average</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Best Performer</div>
-          <div class="stat-value" style="color:var(--green);">Jack T.</div>
-          <div class="stat-sub">+$14,200 this period</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Worst Performer</div>
-          <div class="stat-value" style="color:var(--red);">Sara W.</div>
-          <div class="stat-sub">-$1,240 this period</div>
+        <!-- Balance by Account -->
+        <div class="chart-card" style="margin-bottom:0;">
+          <h3 class="chart-title">Balance by Account</h3>
+          <svg width="100%" height="180" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <text x="70" y="32" fill="var(--white-75)" font-size="9" text-anchor="end">Bybit Main</text>
+            <rect x="80" y="20" width="120" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
+            <text x="206" y="33" fill="var(--purple)" font-size="9">$180K</text>
+            <text x="70" y="62" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-1</text>
+            <rect x="80" y="50" width="80" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
+            <text x="166" y="63" fill="var(--purple)" font-size="9">$120K</text>
+            <text x="70" y="92" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-2</text>
+            <rect x="80" y="80" width="34" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
+            <text x="118" y="93" fill="var(--purple)" font-size="9">$50K</text>
+            <text x="70" y="122" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-3</text>
+            <rect x="80" y="110" width="17" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
+            <text x="101" y="123" fill="var(--purple)" font-size="9">$25K</text>
+          </svg>
         </div>
       </div>
 
@@ -1414,24 +1416,24 @@ svg text { font-family: var(--font); }
       <div class="chart-card">
         <h3 class="chart-title">Trader PnL Comparison</h3>
         <svg width="100%" height="180" viewBox="0 0 600 180" preserveAspectRatio="xMidYMid meet">
-          <!-- Zero line -->
-          <line x1="200" y1="10" x2="200" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-          <!-- Trader 1: Jack Thompson -->
-          <text x="190" y="38" fill="var(--white-75)" font-size="12" text-anchor="end">Jack Thompson</text>
-          <rect x="200" y="22" width="280" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
-          <text x="486" y="39" fill="var(--green)" font-size="11">+$14,200</text>
-          <!-- Trader 2: David Kim -->
-          <text x="190" y="78" fill="var(--white-75)" font-size="12" text-anchor="end">David Kim</text>
-          <rect x="200" y="62" width="220" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
-          <text x="426" y="79" fill="var(--green)" font-size="11">+$11,120</text>
-          <!-- Trader 3: Maria Chen -->
-          <text x="190" y="118" fill="var(--white-75)" font-size="12" text-anchor="end">Maria Chen</text>
-          <rect x="200" y="102" width="180" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
-          <text x="386" y="119" fill="var(--green)" font-size="11">+$14,600</text>
-          <!-- Trader 4: Sara White -->
-          <text x="190" y="158" fill="var(--white-75)" font-size="12" text-anchor="end">Sara White</text>
-          <rect x="175" y="142" width="25" height="24" rx="4" fill="rgba(255,176,32,0.6)"/>
-          <text x="84" y="159" fill="var(--amber)" font-size="11" text-anchor="end">-$1,240</text>
+          <!-- Zero line at x=120 -->
+          <line x1="120" y1="10" x2="120" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+          <!-- Trader 1: Alex Sato -->
+          <text x="110" y="38" fill="var(--white-75)" font-size="12" text-anchor="end">Alex Sato</text>
+          <rect x="120" y="22" width="200" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
+          <text x="326" y="39" fill="var(--green)" font-size="11">+$4,005.90</text>
+          <!-- Trader 2: Maria Chen -->
+          <text x="110" y="78" fill="var(--white-75)" font-size="12" text-anchor="end">Maria Chen</text>
+          <rect x="120" y="62" width="215" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
+          <text x="341" y="79" fill="var(--green)" font-size="11">+$4,301.25</text>
+          <!-- Trader 3: Tom Lee -->
+          <text x="110" y="118" fill="var(--white-75)" font-size="12" text-anchor="end">Tom Lee</text>
+          <rect x="120" y="102" width="65" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
+          <text x="191" y="119" fill="var(--green)" font-size="11">+$1,301.50</text>
+          <!-- Trader 4: Sara White (negative) -->
+          <text x="110" y="158" fill="var(--white-75)" font-size="12" text-anchor="end">Sara White</text>
+          <rect x="90" y="142" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
+          <text x="126" y="155" fill="var(--red)" font-size="11">-$1,200.00</text>
         </svg>
       </div>
 
@@ -1453,48 +1455,68 @@ svg text { font-family: var(--font); }
           </thead>
           <tbody>
             <tr>
-              <td style="font-weight:600;color:var(--white-92);">Jack Thompson</td>
-              <td style="color:var(--green);font-weight:600;">+$14,200</td>
-              <td style="color:var(--green);">+7.10%</td>
-              <td>64.1%</td>
-              <td>142</td>
-              <td style="color:var(--green);">+$100.00</td>
-              <td style="color:var(--red);">-4.2%</td>
-              <td>1.87</td>
-              <td><a href="trader-analytics.html" class="view-link">View</a></td>
-            </tr>
-            <tr>
-              <td style="font-weight:600;color:var(--white-92);">David Kim</td>
-              <td style="color:var(--green);font-weight:600;">+$11,120</td>
-              <td style="color:var(--green);">+5.56%</td>
-              <td>58.3%</td>
-              <td>96</td>
-              <td style="color:var(--green);">+$115.83</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#12CCFF,#AF33FF);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">AS</div>
+                  <span style="font-weight:600;color:var(--white-92);">Alex Sato</span>
+                </div>
+              </td>
+              <td style="color:var(--green);font-weight:600;">+$4,005.90</td>
+              <td style="color:var(--green);">+5.34%</td>
+              <td>62.0%</td>
+              <td>128</td>
+              <td style="color:var(--green);">+$31.30</td>
               <td style="color:var(--red);">-3.8%</td>
-              <td>1.62</td>
-              <td><a href="trader-analytics.html" class="view-link">View</a></td>
+              <td>1.72</td>
+              <td><a href="trader-analytics.html" class="view-link">View &rarr;</a></td>
             </tr>
             <tr>
-              <td style="font-weight:600;color:var(--white-92);">Maria Chen</td>
-              <td style="color:var(--green);font-weight:600;">+$14,600</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00E68A,#12CCFF);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">MC</div>
+                  <span style="font-weight:600;color:var(--white-92);">Maria Chen</span>
+                </div>
+              </td>
+              <td style="color:var(--green);font-weight:600;">+$4,301.25</td>
               <td style="color:var(--green);">+5.85%</td>
               <td>55.6%</td>
               <td>108</td>
-              <td style="color:var(--green);">+$135.19</td>
+              <td style="color:var(--green);">+$39.83</td>
               <td style="color:var(--red);">-5.1%</td>
               <td>1.45</td>
-              <td><a href="trader-analytics.html" class="view-link">View</a></td>
+              <td><a href="trader-analytics.html" class="view-link">View &rarr;</a></td>
             </tr>
             <tr>
-              <td style="font-weight:600;color:var(--white-92);">Sara White</td>
-              <td style="color:var(--red);font-weight:600;">-$1,240</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#AF33FF,#FF4D6A);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">TL</div>
+                  <span style="font-weight:600;color:var(--white-92);">Tom Lee</span>
+                </div>
+              </td>
+              <td style="color:var(--green);font-weight:600;">+$1,301.50</td>
+              <td style="color:var(--green);">+2.60%</td>
+              <td>51.2%</td>
+              <td>82</td>
+              <td style="color:var(--green);">+$15.87</td>
+              <td style="color:var(--red);">-4.5%</td>
+              <td>1.18</td>
+              <td><a href="trader-analytics.html" class="view-link">View &rarr;</a></td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FF4D6A,#FFB020);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">SW</div>
+                  <span style="font-weight:600;color:var(--white-92);">Sara White</span>
+                </div>
+              </td>
+              <td style="color:var(--red);font-weight:600;">-$1,200.00</td>
               <td style="color:var(--red);">-0.83%</td>
               <td>42.5%</td>
               <td>80</td>
-              <td style="color:var(--red);">-$15.50</td>
+              <td style="color:var(--red);">-$15.00</td>
               <td style="color:var(--red);">-7.3%</td>
               <td>0.42</td>
-              <td><a href="trader-analytics.html" class="view-link">View</a></td>
+              <td><a href="trader-analytics.html" class="view-link">View &rarr;</a></td>
             </tr>
           </tbody>
         </table>

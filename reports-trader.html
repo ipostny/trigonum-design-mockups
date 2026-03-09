@@ -222,9 +222,9 @@ tr.nested td { padding-left: 40px; font-size: 12px; color: var(--white-55); }
 .calendar-cell.profit-1 { background: rgba(0,230,138,0.1); color: rgba(0,230,138,0.7); }
 .calendar-cell.profit-2 { background: rgba(0,230,138,0.2); color: rgba(0,230,138,0.85); }
 .calendar-cell.profit-3 { background: rgba(0,230,138,0.35); color: #fff; }
-.calendar-cell.loss-1 { background: rgba(255,176,32,0.1); color: rgba(255,176,32,0.7); }
-.calendar-cell.loss-2 { background: rgba(255,176,32,0.2); color: rgba(255,176,32,0.85); }
-.calendar-cell.loss-3 { background: rgba(255,176,32,0.35); color: #fff; }
+.calendar-cell.loss-1 { background: rgba(255,77,106,0.1); color: rgba(255,77,106,0.7); }
+.calendar-cell.loss-2 { background: rgba(255,77,106,0.2); color: rgba(255,77,106,0.85); }
+.calendar-cell.loss-3 { background: rgba(255,77,106,0.35); color: #fff; }
 .calendar-cell.today { outline: 1.5px solid var(--cyan); outline-offset: -1px; }
 
 /* Lifecycle timeline dots */
@@ -442,8 +442,8 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell neutral">31</div>
         </div>
         <div style="display:flex;gap:12px;align-items:center;font-size:10px;color:var(--white-55);">
-          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,176,32,0.35);"></span> Loss</span>
-          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,176,32,0.1);"></span> Small loss</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,77,106,0.35);"></span> Loss</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,77,106,0.1);"></span> Small loss</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--white-05);"></span> No data</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.1);"></span> Small profit</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.35);"></span> Profit</span>
@@ -467,8 +467,8 @@ svg text { font-family: var(--font); }
             <rect x="314" y="72" width="24" height="38" rx="3" fill="rgba(0,230,138,0.5)"/>
             <rect x="352" y="76" width="24" height="34" rx="3" fill="rgba(0,230,138,0.5)"/>
             <!-- Negative bars (grow down from y=110) -->
-            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,176,32,0.5)"/>
-            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,176,32,0.4)"/>
+            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,77,106,0.5)"/>
+            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,77,106,0.4)"/>
             <!-- Month labels (y=180, well below bars) -->
             <text x="60" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
             <text x="98" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
@@ -482,10 +482,10 @@ svg text { font-family: var(--font); }
             <!-- Value labels (above positive bars, below negative bars with spacing) -->
             <text x="60" y="77" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+3.5%</text>
             <text x="98" y="63" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+5.0%</text>
-            <text x="136" y="142" fill="rgba(255,176,32,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
+            <text x="136" y="142" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
             <text x="174" y="43" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+7.0%</text>
             <text x="212" y="83" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+2.5%</text>
-            <text x="250" y="134" fill="rgba(255,176,32,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
+            <text x="250" y="134" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
             <text x="288" y="51" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+6.0%</text>
             <text x="326" y="67" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.5%</text>
             <text x="364" y="71" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.0%</text>
@@ -496,8 +496,8 @@ svg text { font-family: var(--font); }
           <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#FFB020" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#FFB020" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#FF4D6A" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#FF4D6A" stop-opacity="0"/>
               </linearGradient>
             </defs>
             <!-- Y-axis labels -->
@@ -512,10 +512,10 @@ svg text { font-family: var(--font); }
             <line x1="32" y1="140" x2="390" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
             <!-- Drawdown area -->
             <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20 L390,20 L35,20 Z" fill="url(#dd-grad)"/>
-            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#FFB020" stroke-width="1.5" opacity="0.7"/>
+            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#FF4D6A" stroke-width="1.5" opacity="0.7"/>
             <!-- Max DD marker -->
-            <circle cx="160" cy="85" r="3.5" fill="#FFB020" opacity="0.8"/>
-            <text x="160" y="100" fill="rgba(255,176,32,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
+            <circle cx="160" cy="85" r="3.5" fill="#FF4D6A" opacity="0.8"/>
+            <text x="160" y="100" fill="rgba(255,77,106,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
           </svg>
         </div>
       </div>
@@ -530,7 +530,7 @@ svg text { font-family: var(--font); }
               <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="10"/>
               <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(0,230,138,0.6)" stroke-width="10"
                 stroke-dasharray="177 100" stroke-dashoffset="-69" stroke-linecap="round"/>
-              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,176,32,0.5)" stroke-width="10"
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,77,106,0.5)" stroke-width="10"
                 stroke-dasharray="100 177" stroke-dashoffset="-246" stroke-linecap="round"/>
               <text x="55" y="50" fill="var(--white-92)" font-size="16" font-weight="700" text-anchor="middle">64%</text>
               <text x="55" y="65" fill="var(--white-55)" font-size="9" text-anchor="middle">Win Rate</text>
@@ -541,7 +541,7 @@ svg text { font-family: var(--font); }
                 <span>Wins: 91 trades (+$28,400)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--amber);opacity:0.6;"></span>
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--red);opacity:0.6;"></span>
                 <span>Losses: 51 trades (-$9,980)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
@@ -560,7 +560,7 @@ svg text { font-family: var(--font); }
             <rect x="140" y="32" width="40" height="78" rx="3" fill="rgba(0,230,138,0.45)"/>
             <rect x="195" y="47" width="40" height="63" rx="3" fill="rgba(0,230,138,0.35)"/>
             <rect x="250" y="72" width="40" height="38" rx="3" fill="rgba(0,230,138,0.25)"/>
-            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(255,176,32,0.25)"/>
+            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(255,77,106,0.25)"/>
             <!-- Labels -->
             <text x="50" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">0-4h</text>
             <text x="105" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">4-8h</text>
@@ -574,7 +574,7 @@ svg text { font-family: var(--font); }
             <text x="160" y="28" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">42</text>
             <text x="215" y="43" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">35</text>
             <text x="270" y="68" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">19</text>
-            <text x="325" y="88" fill="rgba(255,176,32,0.7)" font-size="8" text-anchor="middle">10</text>
+            <text x="325" y="88" fill="rgba(255,77,106,0.7)" font-size="8" text-anchor="middle">10</text>
           </svg>
         </div>
       </div>
