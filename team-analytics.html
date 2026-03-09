@@ -674,7 +674,8 @@ body {
 .bidir-chart { flex: 1; display: flex; height: 24px; position: relative; }
 .bidir-left { flex: 1; display: flex; justify-content: flex-end; }
 .bidir-right { flex: 1; display: flex; justify-content: flex-start; }
-.bidir-zero { width: 2px; background: var(--white-15); flex-shrink: 0; }
+.bidir-zero { width: 2px; background: var(--white-55); flex-shrink: 0; position: relative; }
+.bidir-zero::before { content: '0'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; color: var(--white-35); font-weight: 600; }
 .bidir-bar { height: 24px; border-radius: 4px; transition: width 0.3s; }
 .bidir-bar.red { background: var(--red); }
 .bidir-bar.green { background: var(--green); }

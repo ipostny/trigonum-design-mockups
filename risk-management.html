@@ -843,37 +843,37 @@ body {
         <div style="height:160px;display:flex;align-items:flex-end;gap:2px;padding:0 16px;">
           <div class="chart-point" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="chart-tooltip">Mon: $1,064,200</div>
-            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;height:85%;border-radius:4px 4px 0 0;"></div>
+            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;min-height:102px;border-radius:4px 4px 0 0;"></div>
             <span style="font-size:10px;color:var(--white-35);">Mon</span>
           </div>
           <div class="chart-point" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="chart-tooltip">Tue: $1,058,100</div>
-            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;height:78%;border-radius:4px 4px 0 0;"></div>
+            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;min-height:94px;border-radius:4px 4px 0 0;"></div>
             <span style="font-size:10px;color:var(--white-35);">Tue</span>
           </div>
           <div class="chart-point" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="chart-tooltip">Wed: $1,071,500</div>
-            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;height:90%;border-radius:4px 4px 0 0;"></div>
+            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;min-height:108px;border-radius:4px 4px 0 0;"></div>
             <span style="font-size:10px;color:var(--white-35);">Wed</span>
           </div>
           <div class="chart-point" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="chart-tooltip">Thu: $1,067,800</div>
-            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;height:83%;border-radius:4px 4px 0 0;"></div>
+            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;min-height:100px;border-radius:4px 4px 0 0;"></div>
             <span style="font-size:10px;color:var(--white-35);">Thu</span>
           </div>
           <div class="chart-point" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="chart-tooltip">Fri: $1,075,300</div>
-            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;height:92%;border-radius:4px 4px 0 0;"></div>
+            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;min-height:110px;border-radius:4px 4px 0 0;"></div>
             <span style="font-size:10px;color:var(--white-35);">Fri</span>
           </div>
           <div class="chart-point" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="chart-tooltip">Sat: $1,079,600</div>
-            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;height:96%;border-radius:4px 4px 0 0;"></div>
+            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;min-height:115px;border-radius:4px 4px 0 0;"></div>
             <span style="font-size:10px;color:var(--white-35);">Sat</span>
           </div>
           <div class="chart-point" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="chart-tooltip">Sun: $1,082,789</div>
-            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;height:100%;border-radius:4px 4px 0 0;"></div>
+            <div style="background:linear-gradient(to top,var(--cyan),rgba(18,204,255,0.3));width:100%;min-height:120px;border-radius:4px 4px 0 0;"></div>
             <span style="font-size:10px;color:var(--white-35);">Sun</span>
           </div>
         </div>
@@ -985,6 +985,51 @@ body {
           </div>
         </div>
 
+        <!-- Capital line chart -->
+        <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;margin-bottom:24px;">
+          <div style="font-size:13px;color:var(--white-55);margin-bottom:12px;">Изменение капитала за последнюю неделю</div>
+          <svg viewBox="0 0 600 140" width="100%" height="140" style="display:block;">
+            <!-- Grid lines -->
+            <line x1="40" y1="20" x2="580" y2="20" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="40" y1="50" x2="580" y2="50" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="40" y1="80" x2="580" y2="80" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="40" y1="110" x2="580" y2="110" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <!-- Y-axis labels -->
+            <text x="35" y="24" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">$88K</text>
+            <text x="35" y="54" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">$87.5K</text>
+            <text x="35" y="84" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">$87K</text>
+            <text x="35" y="114" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="end">$86.5K</text>
+            <!-- Line chart -->
+            <polyline points="80,100 157,85 234,70 311,90 388,55 465,40 542,25"
+              fill="none" stroke="#12CCFF" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- Area fill -->
+            <polygon points="80,100 157,85 234,70 311,90 388,55 465,40 542,25 542,110 80,110"
+              fill="url(#rmChartGrad)" opacity="0.3"/>
+            <defs>
+              <linearGradient id="rmChartGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#12CCFF" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#12CCFF" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Data points -->
+            <circle cx="80" cy="100" r="4" fill="#12CCFF"/>
+            <circle cx="157" cy="85" r="4" fill="#12CCFF"/>
+            <circle cx="234" cy="70" r="4" fill="#12CCFF"/>
+            <circle cx="311" cy="90" r="4" fill="#12CCFF"/>
+            <circle cx="388" cy="55" r="4" fill="#12CCFF"/>
+            <circle cx="465" cy="40" r="4" fill="#12CCFF"/>
+            <circle cx="542" cy="25" r="4" fill="#12CCFF" stroke="white" stroke-width="1.5"/>
+            <!-- X-axis labels -->
+            <text x="80" y="130" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">Пн</text>
+            <text x="157" y="130" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">Вт</text>
+            <text x="234" y="130" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">Ср</text>
+            <text x="311" y="130" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">Чт</text>
+            <text x="388" y="130" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">Пт</text>
+            <text x="465" y="130" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">Сб</text>
+            <text x="542" y="130" fill="rgba(255,255,255,0.35)" font-size="10" text-anchor="middle">Вс</text>
+          </svg>
+        </div>
+
         <!-- Trader table -->
         <table style="width:100%;border-collapse:collapse;font-size:13px;">
           <thead>
@@ -1000,7 +1045,7 @@ body {
           </thead>
           <tbody>
             <tr style="border-bottom:1px solid var(--white-05);">
-              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Pavel Sidorov</a></td>
+              <td style="padding:10px 12px;"><a href="trader-analytics.html" style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Pavel Sidorov</a></td>
               <td style="text-align:right;padding:10px 12px;">$22,400</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$340</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$180</td>
@@ -1009,7 +1054,7 @@ body {
               <td style="text-align:right;padding:10px 12px;" class="pnl-down">-2.1%</td>
             </tr>
             <tr style="border-bottom:1px solid var(--white-05);">
-              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Maria Ivanova</a></td>
+              <td style="padding:10px 12px;"><a href="trader-analytics.html" style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Maria Ivanova</a></td>
               <td style="text-align:right;padding:10px 12px;">$18,600</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-down">-$120</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$95</td>
@@ -1018,7 +1063,7 @@ body {
               <td style="text-align:right;padding:10px 12px;" class="pnl-down">-1.8%</td>
             </tr>
             <tr style="border-bottom:1px solid var(--white-05);">
-              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Oleg Kuznetsov</a></td>
+              <td style="padding:10px 12px;"><a href="trader-analytics.html" style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Oleg Kuznetsov</a></td>
               <td style="text-align:right;padding:10px 12px;">$15,200</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$85</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-down">-$45</td>
@@ -1027,7 +1072,7 @@ body {
               <td style="text-align:right;padding:10px 12px;" class="pnl-down">-3.4%</td>
             </tr>
             <tr>
-              <td style="padding:10px 12px;"><a style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Sergey Lebedev</a></td>
+              <td style="padding:10px 12px;"><a href="trader-analytics.html" style="color:var(--cyan);text-decoration:none;cursor:pointer;" target="_blank">Sergey Lebedev</a></td>
               <td style="text-align:right;padding:10px 12px;">$31,220</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$210</td>
               <td style="text-align:right;padding:10px 12px;" class="pnl-up">+$340</td>

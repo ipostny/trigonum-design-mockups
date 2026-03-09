@@ -1090,11 +1090,39 @@ body {
         </div><!-- /tree-root -->
       </div><!-- /tree-container -->
 
+      <!-- List View (hidden by default, shown when List toggle clicked) -->
+      <div class="list-view-container" style="display:none;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--white-08);">
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Name</th>
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Role</th>
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Reports To</th>
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Email</th>
+              <th style="text-align:left;padding:10px 12px;font-weight:600;color:var(--white-55);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;font-weight:600;">Ivan Petrov</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(175,51,255,0.15);color:#AF33FF;">Team Lead</span></td><td style="color:var(--white-55);">—</td><td style="color:var(--white-55);font-size:12px;">ivan@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;font-weight:600;">Alexei K.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(18,204,255,0.15);color:#12CCFF;">Senior Trader</span></td><td style="color:var(--white-55);">Ivan Petrov</td><td style="color:var(--white-55);font-size:12px;">alexei@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;font-weight:600;">Dmitry N.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(255,176,32,0.15);color:#FFB020;">Risk Manager</span></td><td style="color:var(--white-55);">Ivan Petrov</td><td style="color:var(--white-55);font-size:12px;">dmitry@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;">Елизавета</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:#00E68A;">Trader</span></td><td style="color:var(--white-55);">Alexei K.</td><td style="color:var(--white-55);font-size:12px;">elizaveta@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;">Nikita P.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:#00E68A;">Trader</span></td><td style="color:var(--white-55);">Alexei K.</td><td style="color:var(--white-55);font-size:12px;">nikita@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;">Marina S.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:#00E68A;">Trader</span></td><td style="color:var(--white-55);">Alexei K.</td><td style="color:var(--white-55);font-size:12px;">marina@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;">Olga V.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:#00E68A;">Trader</span></td><td style="color:var(--white-55);">Natalia B.</td><td style="color:var(--white-55);font-size:12px;">olga@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;">Andrei M.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:#00E68A;">Trader</span></td><td style="color:var(--white-55);">Natalia B.</td><td style="color:var(--white-55);font-size:12px;">andrei@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;font-weight:600;">Natalia B.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(18,204,255,0.15);color:#12CCFF;">Senior Trader</span></td><td style="color:var(--white-55);">Ivan Petrov</td><td style="color:var(--white-55);font-size:12px;">natalia@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr style="border-bottom:1px solid var(--white-05);"><td style="padding:10px 12px;">Julia S.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(255,176,32,0.15);color:#FFB020;">Risk Manager</span></td><td style="color:var(--white-55);">Ivan Petrov</td><td style="color:var(--white-55);font-size:12px;">julia@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+            <tr><td style="padding:10px 12px;">Pavel S.</td><td><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:#00E68A;">Trader</span></td><td style="color:var(--white-55);">Natalia B.</td><td style="color:var(--white-55);font-size:12px;">pavel@trigonum.ae</td><td style="color:var(--green);font-size:11px;">Active</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <div class="annotation">
         IMPLEMENTATION: CSS flex layout with border lines. Expand/collapse toggles show/hide .traders-list.
         Search filters nodes client-side, auto-expands matching branches.
         Click any trader node → opens analytics popup (see Section 4).
-        "List" toggle switches to existing flat member list view.
+        "List" toggle switches to flat member list table view.
       </div>
     </div>
 
@@ -1515,5 +1543,22 @@ body {
 </div><!-- /app-shell -->
 
 <script src="shared-interactive.js"></script>
+<script>
+// View toggle: List vs Org Structure
+document.querySelectorAll('.view-toggle .toggle-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.view-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const isListView = this.textContent.trim() === 'List';
+    const section = this.closest('.demo-section') || document;
+    const tree = section.querySelector('.tree-container');
+    const list = section.querySelector('.list-view-container');
+    const toolbar = section.querySelector('.toolbar');
+    if (tree) tree.style.display = isListView ? 'none' : '';
+    if (list) list.style.display = isListView ? 'block' : 'none';
+    if (toolbar) toolbar.style.display = isListView ? 'none' : '';
+  });
+});
+</script>
 </body>
 </html>
