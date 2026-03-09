@@ -790,6 +790,9 @@
   // DASHBOARD RESIZE — Drag-and-drop reorder + corner resize
   // ============================================================
   function initDashboardResize() {
+    // Skip if Gridstack.js is handling the dashboard (avoid conflicts)
+    if (document.querySelector('.grid-stack')) return;
+
     var grids = document.querySelectorAll('.dashboard-grid');
     if (!grids.length) return;
 
