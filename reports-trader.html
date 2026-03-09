@@ -367,19 +367,21 @@ svg text { font-family: var(--font); }
 .page-size-btn:hover { background: var(--white-08); color: var(--white-75); }
 .page-size-btn.active { background: rgba(18,204,255,0.15); color: var(--cyan); border-color: rgba(18,204,255,0.3); }
 
-/* ---- Global gap (outer margin) via CSS class on .grid-stack ---- */
-.grid-stack.gap-0  > .grid-stack-item > .grid-stack-item-content { inset: 0px !important; }
-.grid-stack.gap-4  > .grid-stack-item > .grid-stack-item-content { inset: 4px !important; }
-.grid-stack.gap-8  > .grid-stack-item > .grid-stack-item-content { inset: 8px !important; }
-.grid-stack.gap-16 > .grid-stack-item > .grid-stack-item-content { inset: 16px !important; }
-.grid-stack.gap-24 > .grid-stack-item > .grid-stack-item-content { inset: 24px !important; }
+/* ---- Global gap (outer margin) via CSS class on .grid-stack ----
+   Gridstack sets individual top/right/bottom/left inline styles,
+   so we must override each one — `inset` shorthand doesn't win. */
+.grid-stack.gap-0  > .grid-stack-item > .grid-stack-item-content { top:0px!important;right:0px!important;bottom:0px!important;left:0px!important; }
+.grid-stack.gap-4  > .grid-stack-item > .grid-stack-item-content { top:4px!important;right:4px!important;bottom:4px!important;left:4px!important; }
+.grid-stack.gap-8  > .grid-stack-item > .grid-stack-item-content { top:8px!important;right:8px!important;bottom:8px!important;left:8px!important; }
+.grid-stack.gap-16 > .grid-stack-item > .grid-stack-item-content { top:16px!important;right:16px!important;bottom:16px!important;left:16px!important; }
+.grid-stack.gap-24 > .grid-stack-item > .grid-stack-item-content { top:24px!important;right:24px!important;bottom:24px!important;left:24px!important; }
 
-/* ---- Per-card outer margin ---- */
-.grid-stack-item.margin-none    > .grid-stack-item-content { inset: 0px !important; }
-.grid-stack-item.margin-tight   > .grid-stack-item-content { inset: 4px !important; }
-.grid-stack-item.margin-normal  > .grid-stack-item-content { /* inherits global gap */ }
-.grid-stack-item.margin-wide    > .grid-stack-item-content { inset: 16px !important; }
-.grid-stack-item.margin-extra   > .grid-stack-item-content { inset: 24px !important; }
+/* ---- Per-card outer margin (overrides global gap for individual cards) ---- */
+.grid-stack-item.margin-none  > .grid-stack-item-content { top:0px!important;right:0px!important;bottom:0px!important;left:0px!important; }
+.grid-stack-item.margin-tight > .grid-stack-item-content { top:4px!important;right:4px!important;bottom:4px!important;left:4px!important; }
+.grid-stack-item.margin-normal > .grid-stack-item-content { /* inherits global gap */ }
+.grid-stack-item.margin-wide  > .grid-stack-item-content { top:16px!important;right:16px!important;bottom:16px!important;left:16px!important; }
+.grid-stack-item.margin-extra > .grid-stack-item-content { top:24px!important;right:24px!important;bottom:24px!important;left:24px!important; }
 
 /* ---- Per-card inner padding ---- */
 .card-padding-btn, .card-margin-btn {
