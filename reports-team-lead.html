@@ -113,25 +113,26 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
 }
 
 /* Stats row */
-.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
 .stat-card {
   background: var(--card-gradient); border: 1px solid var(--white-08);
-  border-radius: var(--r-lg); padding: 14px 18px; box-shadow: var(--shadow-card);
+  border-radius: var(--r-lg); padding: 10px 14px; box-shadow: var(--shadow-card);
 }
 .stat-label {
   font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--white-55); margin-bottom: 4px;
 }
-.stat-value { font-size: 24px; font-weight: 800; }
+.stat-value { font-size: 22px; font-weight: 800; }
 .stat-sub { font-size: 12px; color: var(--white-55); margin-top: 4px; }
 
 /* Chart card */
 .chart-card {
   background: var(--card-gradient); border: 1px solid var(--white-08);
-  border-radius: var(--r-lg); padding: 16px 16px 12px; box-shadow: var(--shadow-card); margin-bottom: 24px;
+  border-radius: var(--r-lg); padding: 10px 12px 6px; box-shadow: var(--shadow-card); margin-bottom: 24px;
 }
-.chart-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-.charts-row { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin-bottom: 24px; }
+.chart-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.chart-card svg { display: block; }
+.charts-row { display: grid; grid-template-columns: 3fr 2fr; gap: 12px; margin-bottom: 24px; }
 
 /* Table */
 .table-card {
@@ -361,7 +362,7 @@ svg text { font-family: var(--font); }
       <div class="charts-row">
       <div class="chart-card">
         <h3 class="chart-title">Equity Curve</h3>
-        <svg width="100%" height="220" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet">
+        <svg width="100%" height="160" viewBox="0 0 800 160" preserveAspectRatio="xMidYMid meet">
           <defs>
             <linearGradient id="eq-grad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#12CCFF" stop-opacity="0.15"/>
@@ -454,7 +455,7 @@ svg text { font-family: var(--font); }
       <div class="charts-row">
         <div class="chart-card">
           <h3 class="chart-title">Monthly Returns</h3>
-          <svg width="100%" height="220" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="190" viewBox="0 0 400 190" preserveAspectRatio="xMidYMid meet">
             <!-- Zero line at y=110 (gives more room below for negative bars + labels) -->
             <line x1="30" y1="110" x2="390" y2="110" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
             <!-- Positive bars (grow up from y=110) -->
@@ -492,7 +493,7 @@ svg text { font-family: var(--font); }
         </div>
         <div class="chart-card">
           <h3 class="chart-title">Drawdown</h3>
-          <svg width="100%" height="220" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="155" viewBox="0 0 400 155" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#FF4D6A" stop-opacity="0.25"/>
@@ -552,7 +553,7 @@ svg text { font-family: var(--font); }
         </div>
         <div class="chart-card">
           <h3 class="chart-title">Time of Day Analysis</h3>
-          <svg width="100%" height="160" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="130" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
             <!-- Bars for each 4-hour block -->
             <rect x="30" y="82" width="40" height="28" rx="3" fill="rgba(0,230,138,0.2)"/>
             <rect x="85" y="62" width="40" height="48" rx="3" fill="rgba(0,230,138,0.3)"/>
@@ -633,7 +634,7 @@ svg text { font-family: var(--font); }
       <!-- Daily PnL bar chart -->
       <div class="chart-card">
         <h3 class="chart-title">Daily PnL</h3>
-        <svg width="100%" height="240" viewBox="0 0 800 200" preserveAspectRatio="xMidYMid meet">
+        <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="xMidYMid meet">
           <!-- Zero line -->
           <line x1="40" y1="100" x2="790" y2="100" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
           <!-- Y axis labels -->
@@ -678,7 +679,7 @@ svg text { font-family: var(--font); }
       <div class="charts-row">
         <div class="chart-card">
           <h3 class="chart-title">PnL by Symbol</h3>
-          <svg width="100%" height="180" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="145" viewBox="0 0 400 145" preserveAspectRatio="xMidYMid meet">
             <!-- Horizontal bars -->
             <text x="80" y="30" fill="var(--white-75)" font-size="11" text-anchor="end">BTCUSDT</text>
             <rect x="90" y="18" width="200" height="20" rx="4" fill="rgba(0,230,138,0.6)"/>
@@ -1056,9 +1057,12 @@ svg text { font-family: var(--font); }
               <th>Exit Price</th>
               <th>Volume</th>
               <th>PnL</th>
+              <th>ROI%</th>
               <th>Fees</th>
               <th># Orders</th>
+              <th>Status</th>
               <th>Timeline</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -1074,8 +1078,10 @@ svg text { font-family: var(--font); }
               <td>$85,750.00</td>
               <td>0.5 BTC</td>
               <td style="color:var(--green);font-weight:600;">+$325.00</td>
+              <td style="color:var(--green);">+0.76%</td>
               <td>$42.55</td>
               <td>3</td>
+              <td><span class="badge badge-closed">Closed</span></td>
               <td>
                 <div class="lifecycle-timeline">
                   <div class="lifecycle-dot entry" title="Entry"></div>
@@ -1085,30 +1091,74 @@ svg text { font-family: var(--font); }
                   <div class="lifecycle-dot exit" title="Exit (Profit)"></div>
                 </div>
               </td>
+              <td><button class="btn-export" style="padding:4px 10px;font-size:11px;">View</button></td>
             </tr>
             <tr class="nested" style="display:none;">
               <td></td>
-              <td colspan="12">
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Orders in this lifecycle</div>
-                <table style="width:100%;font-size:12px;">
+              <td colspan="15">
+                <!-- Summary metrics grid -->
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">10x</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">0.5 BTC</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$325.00</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$42.55</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$3.20</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$279.25</div>
+                  </div>
+                </div>
+                <!-- Linked Orders table -->
+                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <table style="width:100%;font-size:12px;border-collapse:collapse;">
+                  <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
+                    <td style="padding:4px 8px;">Role</td>
+                    <td>Side</td>
+                    <td>Qty</td>
+                    <td>Fill Price</td>
+                    <td>Fee</td>
+                    <td>Time</td>
+                    <td>Status</td>
+                  </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">1. Entry</td>
-                    <td>Market Buy</td>
-                    <td>0.5 BTC @ $85,100</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
+                    <td class="side-buy">Buy</td>
+                    <td>0.5 BTC</td>
+                    <td>$85,100.00</td>
+                    <td>$21.28</td>
                     <td>Mar 9, 10:15</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">2. TP/SL</td>
-                    <td>TP: $86,000 / SL: $84,500</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--amber);font-weight:600;">ADD</span></td>
+                    <td class="side-buy">Buy</td>
+                    <td>0.0 BTC</td>
+                    <td>&mdash;</td>
                     <td>&mdash;</td>
                     <td>Mar 9, 10:16</td>
-                    <td><span class="badge badge-open" style="font-size:9px;">Active</span></td>
+                    <td><span class="badge badge-open" style="font-size:9px;">TP/SL</span></td>
                   </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">3. Exit</td>
-                    <td>Limit Sell</td>
-                    <td>0.5 BTC @ $85,750</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                    <td class="side-sell">Sell</td>
+                    <td>0.5 BTC</td>
+                    <td>$85,750.00</td>
+                    <td>$21.27</td>
                     <td>Mar 9, 14:32</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
@@ -1128,8 +1178,10 @@ svg text { font-family: var(--font); }
               <td>$3,450.00</td>
               <td>10 ETH</td>
               <td style="color:var(--green);font-weight:600;">+$300.00</td>
+              <td style="color:var(--green);">+0.86%</td>
               <td>$34.49</td>
               <td>2</td>
+              <td><span class="badge badge-closed">Closed</span></td>
               <td>
                 <div class="lifecycle-timeline">
                   <div class="lifecycle-dot entry" title="Entry"></div>
@@ -1137,23 +1189,65 @@ svg text { font-family: var(--font); }
                   <div class="lifecycle-dot exit" title="Exit (Profit)"></div>
                 </div>
               </td>
+              <td><button class="btn-export" style="padding:4px 10px;font-size:11px;">View</button></td>
             </tr>
             <tr class="nested" style="display:none;">
               <td></td>
-              <td colspan="12">
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Orders in this lifecycle</div>
-                <table style="width:100%;font-size:12px;">
+              <td colspan="15">
+                <!-- Summary metrics grid -->
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">5x</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">10 ETH</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$300.00</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$34.49</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-55);">$0.00</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$265.51</div>
+                  </div>
+                </div>
+                <!-- Linked Orders table -->
+                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <table style="width:100%;font-size:12px;border-collapse:collapse;">
+                  <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
+                    <td style="padding:4px 8px;">Role</td>
+                    <td>Side</td>
+                    <td>Qty</td>
+                    <td>Fill Price</td>
+                    <td>Fee</td>
+                    <td>Time</td>
+                    <td>Status</td>
+                  </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">1. Entry</td>
-                    <td>Limit Sell</td>
-                    <td>10 ETH @ $3,480</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
+                    <td class="side-sell">Sell</td>
+                    <td>10 ETH</td>
+                    <td>$3,480.00</td>
+                    <td>$17.40</td>
                     <td>Mar 8, 14:20</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">2. Exit</td>
-                    <td>Market Buy</td>
-                    <td>10 ETH @ $3,450</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                    <td class="side-buy">Buy</td>
+                    <td>10 ETH</td>
+                    <td>$3,450.00</td>
+                    <td>$17.09</td>
                     <td>Mar 8, 16:40</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
@@ -1173,8 +1267,10 @@ svg text { font-family: var(--font); }
               <td>$146.00</td>
               <td>100 SOL</td>
               <td style="color:var(--red);font-weight:600;">-$250.00</td>
+              <td style="color:var(--red);">-1.68%</td>
               <td>$14.80</td>
               <td>3</td>
+              <td><span class="badge badge-closed">Closed</span></td>
               <td>
                 <div class="lifecycle-timeline">
                   <div class="lifecycle-dot entry" title="Entry"></div>
@@ -1184,30 +1280,74 @@ svg text { font-family: var(--font); }
                   <div class="lifecycle-dot exit-loss" title="Exit (Loss)"></div>
                 </div>
               </td>
+              <td><button class="btn-export" style="padding:4px 10px;font-size:11px;">View</button></td>
             </tr>
             <tr class="nested" style="display:none;">
               <td></td>
-              <td colspan="12">
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Orders in this lifecycle</div>
-                <table style="width:100%;font-size:12px;">
+              <td colspan="15">
+                <!-- Summary metrics grid -->
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">10x</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">100 SOL</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$250.00</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$14.80</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$1.10</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$265.90</div>
+                  </div>
+                </div>
+                <!-- Linked Orders table -->
+                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <table style="width:100%;font-size:12px;border-collapse:collapse;">
+                  <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
+                    <td style="padding:4px 8px;">Role</td>
+                    <td>Side</td>
+                    <td>Qty</td>
+                    <td>Fill Price</td>
+                    <td>Fee</td>
+                    <td>Time</td>
+                    <td>Status</td>
+                  </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">1. Entry</td>
-                    <td>Market Buy</td>
-                    <td>100 SOL @ $148.50</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
+                    <td class="side-buy">Buy</td>
+                    <td>100 SOL</td>
+                    <td>$148.50</td>
+                    <td>$7.43</td>
                     <td>Mar 8, 07:30</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">2. TP/SL</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--amber);font-weight:600;">ADD</span></td>
+                    <td>&mdash;</td>
+                    <td>&mdash;</td>
                     <td>TP: $152 / SL: $146</td>
                     <td>&mdash;</td>
                     <td>Mar 8, 07:31</td>
                     <td><span class="badge badge-cancelled" style="font-size:9px;">SL Hit</span></td>
                   </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">3. Exit</td>
-                    <td>Stop Loss (Market)</td>
-                    <td>100 SOL @ $146.00</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                    <td class="side-sell">Sell</td>
+                    <td>100 SOL</td>
+                    <td>$146.00</td>
+                    <td>$7.37</td>
                     <td>Mar 8, 09:22</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
@@ -1227,8 +1367,10 @@ svg text { font-family: var(--font); }
               <td>$85,100.00</td>
               <td>0.3 BTC</td>
               <td style="color:var(--green);font-weight:600;">+$270.00</td>
+              <td style="color:var(--green);">+1.07%</td>
               <td>$25.26</td>
               <td>2</td>
+              <td><span class="badge badge-closed">Closed</span></td>
               <td>
                 <div class="lifecycle-timeline">
                   <div class="lifecycle-dot entry" title="Entry"></div>
@@ -1236,23 +1378,65 @@ svg text { font-family: var(--font); }
                   <div class="lifecycle-dot exit" title="Exit (Profit)"></div>
                 </div>
               </td>
+              <td><button class="btn-export" style="padding:4px 10px;font-size:11px;">View</button></td>
             </tr>
             <tr class="nested" style="display:none;">
               <td></td>
-              <td colspan="12">
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Orders in this lifecycle</div>
-                <table style="width:100%;font-size:12px;">
+              <td colspan="15">
+                <!-- Summary metrics grid -->
+                <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">10x</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--white-92);">0.3 BTC</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$270.00</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$25.26</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$5.80</div>
+                  </div>
+                  <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$238.94</div>
+                  </div>
+                </div>
+                <!-- Linked Orders table -->
+                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <table style="width:100%;font-size:12px;border-collapse:collapse;">
+                  <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
+                    <td style="padding:4px 8px;">Role</td>
+                    <td>Side</td>
+                    <td>Qty</td>
+                    <td>Fill Price</td>
+                    <td>Fee</td>
+                    <td>Time</td>
+                    <td>Status</td>
+                  </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">1. Entry</td>
-                    <td>Limit Buy</td>
-                    <td>0.3 BTC @ $84,200</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
+                    <td class="side-buy">Buy</td>
+                    <td>0.3 BTC</td>
+                    <td>$84,200.00</td>
+                    <td>$12.63</td>
                     <td>Mar 7, 14:05</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
                   <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;">2. Exit</td>
-                    <td>Limit Sell</td>
-                    <td>0.3 BTC @ $85,100</td>
+                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                    <td class="side-sell">Sell</td>
+                    <td>0.3 BTC</td>
+                    <td>$85,100.00</td>
+                    <td>$12.63</td>
                     <td>Mar 7, 22:10</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
@@ -1576,7 +1760,7 @@ svg text { font-family: var(--font); }
 
           <text x="110" y="158" fill="var(--white-75)" font-size="11" text-anchor="end">Sara White</text>
           <rect x="90" y="146" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
-          <text x="56" y="160" fill="var(--red)" font-size="10" text-anchor="end">-$1,200</text>
+          <text x="145" y="160" fill="var(--red)" font-size="10">-$1,200</text>
         </svg>
       </div>
 
