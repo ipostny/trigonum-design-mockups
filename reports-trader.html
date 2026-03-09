@@ -320,6 +320,7 @@ svg text { font-family: var(--font); }
   flex: 1 1 auto;
 }
 /* Gridstack drag/resize handles — only visible in edit mode */
+.grid-stack-item { overflow: hidden; }
 .grid-stack-item > .ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
 .grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-handle { opacity: 0.6; }
 /* Resize handle: double-arrow icon pinned inside the card's bottom-right corner.
