@@ -113,14 +113,14 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
 }
 
 /* Stats row */
-.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
 .stat-card {
   background: var(--card-gradient); border: 1px solid var(--white-08);
-  border-radius: var(--r-lg); padding: 20px 24px; box-shadow: var(--shadow-card);
+  border-radius: var(--r-lg); padding: 14px 18px; box-shadow: var(--shadow-card);
 }
 .stat-label {
-  font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--white-55); margin-bottom: 6px;
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white-55); margin-bottom: 4px;
 }
 .stat-value { font-size: 24px; font-weight: 800; }
 .stat-sub { font-size: 12px; color: var(--white-55); margin-top: 4px; }
@@ -128,10 +128,10 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
 /* Chart card */
 .chart-card {
   background: var(--card-gradient); border: 1px solid var(--white-08);
-  border-radius: var(--r-lg); padding: 24px; box-shadow: var(--shadow-card); margin-bottom: 24px;
+  border-radius: var(--r-lg); padding: 16px 16px 12px; box-shadow: var(--shadow-card); margin-bottom: 24px;
 }
-.chart-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.chart-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.charts-row { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; margin-bottom: 24px; }
 
 /* Table */
 .table-card {
@@ -321,7 +321,7 @@ svg text { font-family: var(--font); }
       <div class="charts-row">
         <div class="chart-card">
           <h3 class="chart-title">Equity Curve</h3>
-          <svg width="100%" height="180" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="220" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="eq-grad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#12CCFF" stop-opacity="0.15"/>
@@ -414,7 +414,7 @@ svg text { font-family: var(--font); }
       <div class="charts-row">
         <div class="chart-card">
           <h3 class="chart-title">Monthly Returns</h3>
-          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="220" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
             <!-- Zero line at y=110 (gives more room below for negative bars + labels) -->
             <line x1="30" y1="110" x2="390" y2="110" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
             <!-- Positive bars (grow up from y=110) -->
@@ -452,7 +452,7 @@ svg text { font-family: var(--font); }
         </div>
         <div class="chart-card">
           <h3 class="chart-title">Drawdown</h3>
-          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="220" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#FF4D6A" stop-opacity="0.25"/>
@@ -512,7 +512,7 @@ svg text { font-family: var(--font); }
         </div>
         <div class="chart-card">
           <h3 class="chart-title">Time of Day Analysis</h3>
-          <svg width="100%" height="130" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="160" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
             <!-- Bars for each 4-hour block -->
             <rect x="30" y="82" width="40" height="28" rx="3" fill="rgba(0,230,138,0.2)"/>
             <rect x="85" y="62" width="40" height="48" rx="3" fill="rgba(0,230,138,0.3)"/>
@@ -592,7 +592,7 @@ svg text { font-family: var(--font); }
       <!-- Daily PnL bar chart -->
       <div class="chart-card">
         <h3 class="chart-title">Daily PnL</h3>
-        <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="xMidYMid meet">
+        <svg width="100%" height="240" viewBox="0 0 800 200" preserveAspectRatio="xMidYMid meet">
           <!-- Zero line -->
           <line x1="40" y1="100" x2="790" y2="100" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
           <!-- Y axis labels -->
@@ -637,7 +637,7 @@ svg text { font-family: var(--font); }
       <div class="charts-row">
         <div class="chart-card">
           <h3 class="chart-title">PnL by Symbol</h3>
-          <svg width="100%" height="160" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="180" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid meet">
             <!-- Horizontal bars -->
             <text x="80" y="30" fill="var(--white-75)" font-size="11" text-anchor="end">BTCUSDT</text>
             <rect x="90" y="18" width="200" height="20" rx="4" fill="rgba(0,230,138,0.6)"/>
@@ -1353,61 +1353,61 @@ svg text { font-family: var(--font); }
         <!-- Profit by Account -->
         <div class="chart-card" style="margin-bottom:0;">
           <h3 class="chart-title">Profit by Account</h3>
-          <svg width="100%" height="180" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+          <svg width="100%" height="200" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
             <!-- Zero line at x=120 -->
             <line x1="120" y1="10" x2="120" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
             <!-- Bybit Main: +$8,960 (positive, green) -->
-            <text x="114" y="32" fill="var(--white-75)" font-size="9" text-anchor="end">Bybit Main</text>
+            <text x="114" y="32" fill="var(--white-75)" font-size="11" text-anchor="end">Bybit Main</text>
             <rect x="120" y="20" width="80" height="18" rx="4" fill="rgba(0,230,138,0.6)"/>
-            <text x="204" y="33" fill="var(--green)" font-size="9">+$8,960</text>
+            <text x="204" y="33" fill="var(--green)" font-size="11">+$8,960</text>
             <!-- Sub-1: +$5,500 -->
-            <text x="114" y="62" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-1</text>
+            <text x="114" y="62" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-1</text>
             <rect x="120" y="50" width="50" height="18" rx="4" fill="rgba(0,230,138,0.6)"/>
-            <text x="174" y="63" fill="var(--green)" font-size="9">+$5,500</text>
+            <text x="174" y="63" fill="var(--green)" font-size="11">+$5,500</text>
             <!-- Sub-2: +$1,200 -->
-            <text x="114" y="92" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-2</text>
+            <text x="114" y="92" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-2</text>
             <rect x="120" y="80" width="12" height="18" rx="4" fill="rgba(0,230,138,0.6)"/>
-            <text x="136" y="93" fill="var(--green)" font-size="9">+$1,200</text>
+            <text x="136" y="93" fill="var(--green)" font-size="11">+$1,200</text>
             <!-- Sub-3: -$1,200 (negative, red) -->
-            <text x="114" y="122" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-3</text>
+            <text x="114" y="122" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-3</text>
             <rect x="90" y="110" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
-            <text x="126" y="123" fill="var(--red)" font-size="9">-$1,200</text>
+            <text x="126" y="123" fill="var(--red)" font-size="11">-$1,200</text>
           </svg>
         </div>
         <!-- Trades by Account -->
         <div class="chart-card" style="margin-bottom:0;">
           <h3 class="chart-title">Trades by Account</h3>
-          <svg width="100%" height="180" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
-            <text x="70" y="32" fill="var(--white-75)" font-size="9" text-anchor="end">Bybit Main</text>
+          <svg width="100%" height="200" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <text x="70" y="32" fill="var(--white-75)" font-size="11" text-anchor="end">Bybit Main</text>
             <rect x="80" y="20" width="130" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
-            <text x="216" y="33" fill="var(--cyan)" font-size="9">210</text>
-            <text x="70" y="62" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-1</text>
+            <text x="216" y="33" fill="var(--cyan)" font-size="11">210</text>
+            <text x="70" y="62" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-1</text>
             <rect x="80" y="50" width="35" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
-            <text x="120" y="63" fill="var(--cyan)" font-size="9">56</text>
-            <text x="70" y="92" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-2</text>
+            <text x="120" y="63" fill="var(--cyan)" font-size="11">56</text>
+            <text x="70" y="92" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-2</text>
             <rect x="80" y="80" width="22" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
-            <text x="106" y="93" fill="var(--cyan)" font-size="9">34</text>
-            <text x="70" y="122" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-3</text>
+            <text x="106" y="93" fill="var(--cyan)" font-size="11">34</text>
+            <text x="70" y="122" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-3</text>
             <rect x="80" y="110" width="18" height="18" rx="4" fill="rgba(18,204,255,0.5)"/>
-            <text x="102" y="123" fill="var(--cyan)" font-size="9">28</text>
+            <text x="102" y="123" fill="var(--cyan)" font-size="11">28</text>
           </svg>
         </div>
         <!-- Balance by Account -->
         <div class="chart-card" style="margin-bottom:0;">
           <h3 class="chart-title">Balance by Account</h3>
-          <svg width="100%" height="180" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
-            <text x="70" y="32" fill="var(--white-75)" font-size="9" text-anchor="end">Bybit Main</text>
+          <svg width="100%" height="200" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid meet">
+            <text x="70" y="32" fill="var(--white-75)" font-size="11" text-anchor="end">Bybit Main</text>
             <rect x="80" y="20" width="120" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
-            <text x="206" y="33" fill="var(--purple)" font-size="9">$180K</text>
-            <text x="70" y="62" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-1</text>
+            <text x="206" y="33" fill="var(--purple)" font-size="11">$180K</text>
+            <text x="70" y="62" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-1</text>
             <rect x="80" y="50" width="80" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
-            <text x="166" y="63" fill="var(--purple)" font-size="9">$120K</text>
-            <text x="70" y="92" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-2</text>
+            <text x="166" y="63" fill="var(--purple)" font-size="11">$120K</text>
+            <text x="70" y="92" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-2</text>
             <rect x="80" y="80" width="34" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
-            <text x="118" y="93" fill="var(--purple)" font-size="9">$50K</text>
-            <text x="70" y="122" fill="var(--white-75)" font-size="9" text-anchor="end">Sub-3</text>
+            <text x="118" y="93" fill="var(--purple)" font-size="11">$50K</text>
+            <text x="70" y="122" fill="var(--white-75)" font-size="11" text-anchor="end">Sub-3</text>
             <rect x="80" y="110" width="17" height="18" rx="4" fill="rgba(175,51,255,0.5)"/>
-            <text x="101" y="123" fill="var(--purple)" font-size="9">$25K</text>
+            <text x="101" y="123" fill="var(--purple)" font-size="11">$25K</text>
           </svg>
         </div>
       </div>
@@ -1415,25 +1415,25 @@ svg text { font-family: var(--font); }
       <!-- Trader PnL horizontal bar chart -->
       <div class="chart-card">
         <h3 class="chart-title">Trader PnL Comparison</h3>
-        <svg width="100%" height="180" viewBox="0 0 600 180" preserveAspectRatio="xMidYMid meet">
+        <svg width="100%" height="200" viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet">
           <!-- Zero line at x=120 -->
           <line x1="120" y1="10" x2="120" y2="170" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
           <!-- Trader 1: Alex Sato -->
-          <text x="110" y="38" fill="var(--white-75)" font-size="12" text-anchor="end">Alex Sato</text>
+          <text x="110" y="38" fill="var(--white-75)" font-size="13" text-anchor="end">Alex Sato</text>
           <rect x="120" y="22" width="200" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
-          <text x="326" y="39" fill="var(--green)" font-size="11">+$4,005.90</text>
+          <text x="326" y="39" fill="var(--green)" font-size="12">+$4,005.90</text>
           <!-- Trader 2: Maria Chen -->
-          <text x="110" y="78" fill="var(--white-75)" font-size="12" text-anchor="end">Maria Chen</text>
+          <text x="110" y="78" fill="var(--white-75)" font-size="13" text-anchor="end">Maria Chen</text>
           <rect x="120" y="62" width="215" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
-          <text x="341" y="79" fill="var(--green)" font-size="11">+$4,301.25</text>
+          <text x="341" y="79" fill="var(--green)" font-size="12">+$4,301.25</text>
           <!-- Trader 3: Tom Lee -->
-          <text x="110" y="118" fill="var(--white-75)" font-size="12" text-anchor="end">Tom Lee</text>
+          <text x="110" y="118" fill="var(--white-75)" font-size="13" text-anchor="end">Tom Lee</text>
           <rect x="120" y="102" width="65" height="24" rx="4" fill="rgba(0,230,138,0.6)"/>
-          <text x="191" y="119" fill="var(--green)" font-size="11">+$1,301.50</text>
+          <text x="191" y="119" fill="var(--green)" font-size="12">+$1,301.50</text>
           <!-- Trader 4: Sara White (negative) -->
-          <text x="110" y="158" fill="var(--white-75)" font-size="12" text-anchor="end">Sara White</text>
+          <text x="110" y="158" fill="var(--white-75)" font-size="13" text-anchor="end">Sara White</text>
           <rect x="90" y="142" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
-          <text x="126" y="155" fill="var(--red)" font-size="11">-$1,200.00</text>
+          <text x="56" y="155" fill="var(--red)" font-size="12" text-anchor="end">-$1,200.00</text>
         </svg>
       </div>
 
