@@ -787,14 +787,36 @@
   }
 
   // ============================================================
-  // DASHBOARD RESIZE — Customizable card sizes
+  // DASHBOARD RESIZE — Drag-and-drop reorder + corner resize
   // ============================================================
   function initDashboardResize() {
     var grids = document.querySelectorAll('.dashboard-grid');
     if (!grids.length) return;
 
-    var SIZES = ['small', 'medium', 'large', 'full'];
-    var SIZE_LABELS = { small: 'S', medium: 'M', large: 'L', full: 'XL' };
+    // Inject styles for drag/resize visuals
+    var styleEl = document.createElement('style');
+    styleEl.textContent = [
+      '.dashboard-card { position: relative; }',
+      '.resize-handle {',
+      '  position: absolute; bottom: 0; right: 0; width: 18px; height: 18px;',
+      '  cursor: nwse-resize; z-index: 5; opacity: 0.3; transition: opacity 0.15s;',
+      '  background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.25) 50%);',
+      '  border-radius: 0 0 8px 0;',
+      '}',
+      '.resize-handle:hover, .customizing .resize-handle { opacity: 0.8; }',
+      '.card-drag-handle { cursor: grab; user-select: none; }',
+      '.card-drag-handle:active { cursor: grabbing; }',
+      '.customizing .card-drag-handle { cursor: grab; background: rgba(255,255,255,0.03); border-radius: 4px; }',
+      '.drag-over { outline: 2px dashed rgba(18,204,255,0.6); outline-offset: -2px; }',
+      '.dashboard-card.dragging { opacity: 0.3; }',
+      '.drag-ghost {',
+      '  position: fixed; pointer-events: none; z-index: 10000; opacity: 0.7;',
+      '  border: 2px solid rgba(18,204,255,0.5); border-radius: 8px;',
+      '  background: rgba(22,22,56,0.85); box-shadow: 0 8px 32px rgba(0,0,0,0.4);',
+      '  transition: none;',
+      '}',
+    ].join('\n');
+    document.head.appendChild(styleEl);
 
     grids.forEach(function(grid) {
       // Find the customize toggle button for this grid
@@ -802,48 +824,176 @@
       while (toggleBtn && !toggleBtn.classList.contains('customize-toggle')) {
         toggleBtn = toggleBtn.previousElementSibling;
       }
-      // Also check parent for the toggle
       if (!toggleBtn && grid.parentElement) {
         toggleBtn = grid.parentElement.querySelector('.customize-toggle');
       }
 
-      // Create resize controls on each card
-      var cards = grid.querySelectorAll('[data-card-size]');
+      // Prepare each card: add class, resize handle, drag handle class
+      var cards = grid.querySelectorAll('[data-card-size], [data-card-cols]');
       cards.forEach(function(card) {
-        var resizeBar = document.createElement('div');
-        resizeBar.className = 'card-resize';
-
-        SIZES.forEach(function(size) {
-          var btn = document.createElement('button');
-          btn.textContent = SIZE_LABELS[size];
-          btn.setAttribute('data-resize', size);
-          btn.title = size.charAt(0).toUpperCase() + size.slice(1);
-          if (card.getAttribute('data-card-size') === size) {
-            btn.classList.add('active');
-          }
-          btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            card.setAttribute('data-card-size', size);
-            // Update active state
-            resizeBar.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
-            btn.classList.add('active');
-            toast('Card resized to ' + size);
-          });
-          resizeBar.appendChild(btn);
-        });
-
-        card.appendChild(resizeBar);
+        if (!card.classList.contains('dashboard-card')) {
+          card.classList.add('dashboard-card');
+        }
+        // Inject resize handle
+        if (!card.querySelector('.resize-handle')) {
+          var handle = document.createElement('div');
+          handle.className = 'resize-handle';
+          card.appendChild(handle);
+        }
+        // Add drag handle class to chart-title
+        var titleEl = card.querySelector('.chart-title');
+        if (titleEl && !titleEl.classList.contains('card-drag-handle')) {
+          titleEl.classList.add('card-drag-handle');
+        }
       });
 
-      // Toggle customize mode
+      // ---- Drag and Drop (reorder) ----
+      var dragState = null;
+
+      function onDragMouseDown(e) {
+        var handle = e.target.closest('.card-drag-handle');
+        if (!handle) return;
+        var card = handle.closest('.dashboard-card');
+        if (!card || !grid.contains(card)) return;
+        e.preventDefault();
+
+        var rect = card.getBoundingClientRect();
+        // Create ghost
+        var ghost = card.cloneNode(true);
+        ghost.className = 'drag-ghost';
+        ghost.style.width = rect.width + 'px';
+        ghost.style.height = rect.height + 'px';
+        ghost.style.left = e.clientX - rect.width / 2 + 'px';
+        ghost.style.top = e.clientY - rect.height / 2 + 'px';
+        document.body.appendChild(ghost);
+
+        card.classList.add('dragging');
+        dragState = {
+          card: card,
+          ghost: ghost,
+          halfW: rect.width / 2,
+          halfH: rect.height / 2
+        };
+        document.addEventListener('mousemove', onDragMouseMove);
+        document.addEventListener('mouseup', onDragMouseUp);
+      }
+
+      function onDragMouseMove(e) {
+        if (!dragState) return;
+        e.preventDefault();
+        dragState.ghost.style.left = e.clientX - dragState.halfW + 'px';
+        dragState.ghost.style.top = e.clientY - dragState.halfH + 'px';
+
+        // Detect which card the cursor is over
+        var allCards = grid.querySelectorAll('.dashboard-card');
+        allCards.forEach(function(c) { c.classList.remove('drag-over'); });
+        var target = getCardUnderPoint(e.clientX, e.clientY, dragState.card);
+        if (target) target.classList.add('drag-over');
+      }
+
+      function onDragMouseUp(e) {
+        if (!dragState) return;
+        document.removeEventListener('mousemove', onDragMouseMove);
+        document.removeEventListener('mouseup', onDragMouseUp);
+
+        var target = getCardUnderPoint(e.clientX, e.clientY, dragState.card);
+        // Clean up
+        dragState.card.classList.remove('dragging');
+        grid.querySelectorAll('.dashboard-card').forEach(function(c) { c.classList.remove('drag-over'); });
+        if (dragState.ghost.parentNode) dragState.ghost.parentNode.removeChild(dragState.ghost);
+
+        // Swap DOM positions if we have a valid target
+        if (target && target !== dragState.card) {
+          swapElements(dragState.card, target);
+          toast('Card moved');
+        }
+        dragState = null;
+      }
+
+      function getCardUnderPoint(x, y, excludeCard) {
+        var allCards = grid.querySelectorAll('.dashboard-card');
+        for (var i = 0; i < allCards.length; i++) {
+          var c = allCards[i];
+          if (c === excludeCard) continue;
+          var r = c.getBoundingClientRect();
+          if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return c;
+        }
+        return null;
+      }
+
+      function swapElements(a, b) {
+        var parentA = a.parentNode;
+        var nextA = a.nextSibling;
+        // Move a to b's position
+        b.parentNode.insertBefore(a, b);
+        // Move b to a's original position
+        if (nextA === b) {
+          // They were adjacent: a was just moved before b, so b is now after a.
+          // Actually a is now where b was, so put b where a was (before a's next sibling).
+          parentA.insertBefore(b, a);
+        } else {
+          parentA.insertBefore(b, nextA);
+        }
+      }
+
+      grid.addEventListener('mousedown', onDragMouseDown);
+
+      // ---- Corner Resize (snap to grid columns) ----
+      var resizeState = null;
+
+      function onResizeMouseDown(e) {
+        var handle = e.target.closest('.resize-handle');
+        if (!handle) return;
+        var card = handle.closest('.dashboard-card');
+        if (!card || !grid.contains(card)) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        var cardRect = card.getBoundingClientRect();
+        resizeState = {
+          card: card,
+          startX: e.clientX,
+          startWidth: cardRect.width,
+          gridWidth: grid.getBoundingClientRect().width
+        };
+        document.addEventListener('mousemove', onResizeMouseMove);
+        document.addEventListener('mouseup', onResizeMouseUp);
+      }
+
+      function onResizeMouseMove(e) {
+        if (!resizeState) return;
+        e.preventDefault();
+        var deltaX = e.clientX - resizeState.startX;
+        var colWidth = resizeState.gridWidth / 12;
+        var newCols = Math.round((resizeState.startWidth + deltaX) / colWidth);
+        newCols = Math.max(1, Math.min(12, newCols));
+        resizeState.card.removeAttribute('data-card-size');
+        resizeState.card.setAttribute('data-card-cols', newCols);
+        resizeState.card.style.gridColumn = 'span ' + newCols;
+        resizeState.currentCols = newCols;
+      }
+
+      function onResizeMouseUp(e) {
+        if (!resizeState) return;
+        document.removeEventListener('mousemove', onResizeMouseMove);
+        document.removeEventListener('mouseup', onResizeMouseUp);
+        var cols = resizeState.currentCols || parseInt(resizeState.card.getAttribute('data-card-cols')) || 6;
+        toast('Resized to ' + cols + ' columns');
+        resizeState = null;
+      }
+
+      grid.addEventListener('mousedown', function(e) {
+        if (e.target.closest('.resize-handle')) {
+          onResizeMouseDown(e);
+        }
+      });
+
+      // ---- Customize Toggle ----
       if (toggleBtn) {
         toggleBtn.addEventListener('click', function() {
           var isActive = toggleBtn.classList.toggle('active');
           grid.classList.toggle('customizing', isActive);
-          grid.querySelectorAll('.card-resize').forEach(function(r) {
-            r.classList.toggle('visible', isActive);
-          });
-          toast(isActive ? 'Customize mode: resize cards' : 'Layout saved');
+          toast(isActive ? 'Customize mode: drag to reorder, corners to resize' : 'Layout saved');
         });
       }
     });

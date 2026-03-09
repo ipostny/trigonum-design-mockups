@@ -233,8 +233,9 @@
 
 
 /* ============================================================
-   DASHBOARD GRID — Resizable Card System
-   12-column grid. Each card declares its size via data-card-size.
+   DASHBOARD GRID — Drag & Drop + Corner Resize Card System
+   12-column grid. Cards sized via data-card-size, data-card-cols,
+   or inline style="grid-column: span N" set by JS.
    ============================================================ */
 .dashboard-grid {
   display: grid;
@@ -249,6 +250,20 @@
 .dashboard-grid > [data-card-size="medium"] { grid-column: span 6; }
 .dashboard-grid > [data-card-size="large"]  { grid-column: span 8; }
 .dashboard-grid > [data-card-size="full"]   { grid-column: span 12; }
+
+/* Explicit column spans via data-card-cols (1–12) */
+.dashboard-grid > [data-card-cols="1"]  { grid-column: span 1; }
+.dashboard-grid > [data-card-cols="2"]  { grid-column: span 2; }
+.dashboard-grid > [data-card-cols="3"]  { grid-column: span 3; }
+.dashboard-grid > [data-card-cols="4"]  { grid-column: span 4; }
+.dashboard-grid > [data-card-cols="5"]  { grid-column: span 5; }
+.dashboard-grid > [data-card-cols="6"]  { grid-column: span 6; }
+.dashboard-grid > [data-card-cols="7"]  { grid-column: span 7; }
+.dashboard-grid > [data-card-cols="8"]  { grid-column: span 8; }
+.dashboard-grid > [data-card-cols="9"]  { grid-column: span 9; }
+.dashboard-grid > [data-card-cols="10"] { grid-column: span 10; }
+.dashboard-grid > [data-card-cols="11"] { grid-column: span 11; }
+.dashboard-grid > [data-card-cols="12"] { grid-column: span 12; }
 
 /* Default: medium if no size specified */
 .dashboard-grid > .chart-card,
@@ -267,55 +282,140 @@
 
 
 /* ============================================================
-   RESIZE CONTROLS — shown only in customize mode
+   DASHBOARD CARD — Drag & Drop wrapper
    ============================================================ */
-
-/* Card wrapper gets position:relative for the resize handle */
-.dashboard-grid > [data-card-size] {
+.dashboard-card {
   position: relative;
+  transition: transform 0.2s;
 }
 
-/* Resize handle — hidden by default */
-.card-resize {
-  display: none;
+/* Dragging state — the card being dragged */
+.dashboard-card.dragging {
+  opacity: 0.5;
+  z-index: 1000;
+}
+
+/* Drop target highlight */
+.dashboard-card.drag-over {
+  outline: 2px solid #12CCFF;
+  outline-offset: -2px;
+}
+
+/* Ghost element shown while dragging */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.7;
+  border-radius: var(--r-lg, 16px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  transform: rotate(2deg);
+}
+
+
+/* ============================================================
+   CARD TITLE BAR — Drag Handle
+   ============================================================ */
+.card-drag-handle {
+  cursor: grab;
+  user-select: none;
+}
+
+.card-drag-handle:active {
+  cursor: grabbing;
+}
+
+
+/* ============================================================
+   CORNER RESIZE HANDLE
+   Always visible as a subtle grip icon in the bottom-right corner.
+   Drag to resize; JS snaps to grid columns (1–12).
+   ============================================================ */
+.resize-handle {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nwse-resize;
   z-index: 10;
-  background: rgba(13, 13, 36, 0.92);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 2px;
+  opacity: 0.35;
+  transition: opacity 0.15s;
 }
 
-.card-resize.visible {
-  display: flex;
+.resize-handle:hover {
+  opacity: 0.8;
 }
 
-.card-resize button {
-  width: 28px;
-  height: 24px;
-  border: none;
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  color: rgba(255,255,255,0.5);
-  background: transparent;
-  transition: all 0.15s;
-  line-height: 1;
+/* Diagonal grip lines (three parallel lines, bottom-right corner) */
+.resize-handle::before,
+.resize-handle::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  border-style: solid;
+  border-color: transparent rgba(255, 255, 255, 0.6) rgba(255, 255, 255, 0.6) transparent;
 }
 
-.card-resize button:hover {
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.8);
+.resize-handle::before {
+  width: 0;
+  height: 0;
+  border-width: 5px;
 }
 
-.card-resize button.active {
-  background: rgba(18, 204, 255, 0.2);
-  color: #12CCFF;
+.resize-handle::after {
+  width: 0;
+  height: 0;
+  border-width: 3px;
+  bottom: 4px;
+  right: 4px;
+  margin-bottom: 3px;
+  margin-right: 3px;
+}
+
+/* Alternative: SVG-style diagonal lines via background */
+.resize-handle {
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.25) 30%,
+    rgba(255, 255, 255, 0.25) 33%,
+    transparent 33%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.25) 53%,
+    transparent 53%,
+    transparent 70%,
+    rgba(255, 255, 255, 0.25) 70%,
+    rgba(255, 255, 255, 0.25) 73%,
+    transparent 73%
+  );
+  border-bottom-right-radius: var(--r-lg, 16px);
+}
+
+.resize-handle:hover {
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(18, 204, 255, 0.5) 30%,
+    rgba(18, 204, 255, 0.5) 33%,
+    transparent 33%,
+    transparent 50%,
+    rgba(18, 204, 255, 0.5) 50%,
+    rgba(18, 204, 255, 0.5) 53%,
+    transparent 53%,
+    transparent 70%,
+    rgba(18, 204, 255, 0.5) 70%,
+    rgba(18, 204, 255, 0.5) 73%,
+    transparent 73%
+  );
+}
+
+/* Remove the pseudo-element approach in favor of the gradient above */
+.resize-handle::before,
+.resize-handle::after {
+  display: none;
 }
 
 
@@ -351,7 +451,7 @@
 }
 
 /* When customize mode is active, add a subtle outline to cards */
-.dashboard-grid.customizing > [data-card-size] {
+.dashboard-grid.customizing > .dashboard-card {
   outline: 1px dashed rgba(18, 204, 255, 0.2);
   outline-offset: -1px;
 }
@@ -393,6 +493,14 @@
   .dashboard-grid > [data-card-size="large"]  { grid-column: span 6; }
   .dashboard-grid > [data-card-size="full"]   { grid-column: span 6; }
   .dashboard-grid > .stat-card { grid-column: span 3; }
+
+  /* Clamp data-card-cols to max 6 on tablet */
+  .dashboard-grid > [data-card-cols="7"],
+  .dashboard-grid > [data-card-cols="8"],
+  .dashboard-grid > [data-card-cols="9"],
+  .dashboard-grid > [data-card-cols="10"],
+  .dashboard-grid > [data-card-cols="11"],
+  .dashboard-grid > [data-card-cols="12"] { grid-column: span 6; }
 }
 
 @media (max-width: 768px) {
@@ -413,6 +521,12 @@
     grid-template-columns: 1fr;
   }
   .dashboard-grid > [data-card-size] {
+    grid-column: span 1 !important;
+  }
+  .dashboard-grid > [data-card-cols] {
+    grid-column: span 1 !important;
+  }
+  .dashboard-grid > .dashboard-card {
     grid-column: span 1 !important;
   }
   .dashboard-grid > .stat-card {
