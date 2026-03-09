@@ -287,17 +287,15 @@ svg text { font-family: var(--font); }
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-card);
   padding: 20px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  overflow: hidden;
   text-align: center;
 }
-.grid-stack-item-content.card--left {
+.grid-stack-item-content.card--left,
+.grid-stack-item-content.card--left .card-scaler {
   align-items: stretch;
   text-align: left;
 }
-.grid-stack-item-content .chart-title {
+.card-scaler .chart-title {
   width: 100%;
   text-align: center;
   margin-bottom: 8px;
@@ -305,39 +303,45 @@ svg text { font-family: var(--font); }
 .grid-stack-item-content.card--left .chart-title {
   text-align: left;
 }
-.grid-stack-item-content svg {
+.card-scaler svg {
   display: block;
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
 }
-.grid-stack-item-content > div {
+.card-scaler > div {
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
 }
-.grid-stack-item-content table {
+.card-scaler table {
   flex: 1 1 auto;
 }
+/* Scaler wrapper inside card content — transform scales content
+   without affecting the card box, keeping handle positions correct */
+.card-scaler {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  text-align: inherit;
+  overflow: hidden;
+}
 /* Gridstack drag/resize handles — only visible in edit mode */
-.grid-stack-item { overflow: hidden; }
 .grid-stack-item > .ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
 .grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-handle { opacity: 0.6; }
-/* Resize handle: double-arrow icon pinned inside the card's bottom-right corner.
-   Positioned on the OUTER .grid-stack-item (not affected by inner zoom). */
+/* Resize handle: double-arrow icon at Gridstack's default margin-aware position */
 .grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-se {
-  width: 28px; height: 28px; right: 10px; bottom: 10px;
-  background: rgba(18,204,255,0.12);
+  width: 26px; height: 26px;
+  background: rgba(18,204,255,0.15);
   border-radius: 8px 0 var(--r-lg) 0;
-  display: flex; align-items: center; justify-content: center;
-  /* Double-headed diagonal arrow via SVG data URI */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M14 2L2 14M14 2v5M14 2h-5M2 14v-5M2 14h5' stroke='%2312CCFF' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 14px 14px;
+  transform: rotate(0deg) !important; /* override Gridstack's -45deg rotation */
 }
 .grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-se:hover {
-  background-color: rgba(18,204,255,0.25);
+  background-color: rgba(18,204,255,0.3);
 }
 /* Drag handle indicator */
 .grid-stack.grid-stack-editing .chart-title {
@@ -1968,18 +1972,33 @@ document.addEventListener('DOMContentLoaded', function() {
   // ---- Save initial layout for reset ----
   var defaultLayout = grid.save(false);
 
-  // ---- Content scaling: zoom everything proportionally ----
-  // Observe the OUTER .grid-stack-item (size controlled by Gridstack),
-  // apply zoom to INNER .grid-stack-item-content. This avoids the
-  // feedback loop where zoom changes size → observer fires → zoom changes → ...
+  // ---- Content scaling via transform (not zoom) ----
+  // transform: scale() scales visually WITHOUT affecting layout.
+  // The card box always fills the grid cell, background/border stay full,
+  // resize handle stays at the correct corner. Only inner content scales.
+  // We wrap all card children in a .card-scaler div that gets transformed.
   var BASE_WIDTH = 380;
+
+  document.querySelectorAll('#perf-grid .grid-stack-item-content').forEach(function(content) {
+    var scaler = document.createElement('div');
+    scaler.className = 'card-scaler';
+    while (content.firstChild) {
+      scaler.appendChild(content.firstChild);
+    }
+    content.appendChild(scaler);
+  });
+
   var scaleObserver = new ResizeObserver(function(entries) {
     entries.forEach(function(entry) {
-      var content = entry.target.querySelector('.grid-stack-item-content');
-      if (!content) return;
+      var scaler = entry.target.querySelector('.card-scaler');
+      if (!scaler) return;
       var w = entry.contentRect.width;
-      var zoom = Math.max(0.55, Math.min(1.4, w / BASE_WIDTH));
-      content.style.zoom = zoom;
+      var scale = Math.max(0.6, Math.min(1.35, w / BASE_WIDTH));
+      scaler.style.transform = 'scale(' + scale + ')';
+      scaler.style.transformOrigin = 'top left';
+      // Adjust wrapper size so scaled content fills the card
+      scaler.style.width = (100 / scale) + '%';
+      scaler.style.height = (100 / scale) + '%';
     });
   });
   document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(el) {
