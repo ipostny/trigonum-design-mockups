@@ -1,9 +1,8 @@
 /**
- * TrigonumTrade Design Mockups — Unified Card System
+ * TrigonumTrade Design Mockups — Unified Card System v2
  *
- * ONE source of truth for card appearance, spacing, grids, and chart sizing.
- * Linked from every mockup page AFTER the inline <style> block so these
- * rules win on equal specificity (last-in wins).
+ * ONE source of truth for card appearance, spacing, grids, chart sizing,
+ * content centering, and resizable dashboard layout.
  *
  * Card hierarchy:
  *   .card              — base container  (20px padding)
@@ -11,16 +10,15 @@
  *   .card--flush       — table wrapper   (0 padding, overflow hidden)
  *   .card--spacious    — forms / legal   (28px padding)
  *
- * Grid containers:
- *   .card-grid         — base grid (align-items: start, 16px gap)
- *   .card-grid--2      — 2 equal columns
- *   .card-grid--3      — 3 equal columns
- *   .card-grid--4      — 4 equal columns
- *   .card-grid--auto   — auto-fit, min 200px
- *   .card-grid--chart  — 3fr + 2fr (equity + calendar pattern)
+ * Dashboard grid (.dashboard-grid):
+ *   12-column CSS Grid. Cards use data-card-size="small|medium|large|full".
+ *   "Customize" mode shows resize controls on each card.
  *
  * Charts:
  *   .card svg          — width 100%, height auto, display block
+ *
+ * Content centering:
+ *   All card content is centered by default. Opt out with .card--left.
  */
 
 /* ============================================================
@@ -84,6 +82,61 @@
 
 
 /* ============================================================
+   CONTENT CENTERING
+   All card content is centered horizontally by default.
+   SVGs, legends, and inner content sit in the middle.
+   Use .card--left to opt out for tables or left-aligned content.
+   ============================================================ */
+.chart-card,
+.stat-card,
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Chart titles should stretch full width but center text */
+.chart-card .chart-title,
+.chart-card .card-title {
+  width: 100%;
+  text-align: center;
+}
+
+/* SVG charts: fill the full card width */
+.chart-card svg,
+.card svg.chart-svg,
+.summary-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  flex-shrink: 0;
+}
+
+/* Inner content blocks: stretch to full width but center their own content */
+.chart-card > div {
+  width: 100%;
+  text-align: center;
+}
+
+/* Calendar grids, legends: center within the card */
+.chart-card .calendar-grid {
+  justify-self: center;
+}
+
+/* Opt out: left-aligned cards (tables, forms, etc.) */
+.card--left,
+.table-card,
+.form-card,
+.filters-card,
+.news-card,
+.legal-content {
+  align-items: stretch;
+  text-align: left;
+}
+
+
+/* ============================================================
    CARD INTERNAL SPACING
    ============================================================ */
 
@@ -112,9 +165,9 @@
 
 
 /* ============================================================
-   GRID CONTAINERS
-   The key rule: align-items: start — cards NEVER stretch to
-   match the tallest sibling. Each card is its natural height.
+   LEGACY GRID CONTAINERS
+   Still supported for pages not yet migrated to .dashboard-grid.
+   Key rule: align-items: start — cards NEVER stretch.
    ============================================================ */
 .card-grid,
 .stats-row,
@@ -130,19 +183,16 @@
 .allocation-layout {
   display: grid;
   gap: 16px;
-  align-items: start;     /* THE key rule — no stretching */
+  align-items: start;
   margin-bottom: 20px;
 }
 
-/* Remove bottom margin from cards inside grids (grid gap handles it) */
-.card-grid > .card,
-.card-grid > .chart-card,
-.card-grid > .stat-card,
-.card-grid > .summary-card,
-.stats-row > .stat-card,
-.summary-grid > .summary-card,
-.charts-row > .chart-card,
-.charts-row > .card {
+/* Remove bottom margin from cards inside grids */
+.card-grid > *,
+.stats-row > *,
+.summary-grid > *,
+.charts-row > *,
+.dashboard-grid > * {
   margin-bottom: 0;
 }
 
@@ -167,33 +217,143 @@
   grid-template-columns: repeat(4, 1fr);
 }
 
-/* Auto-fit for stat rows — responsive, min 200px per card */
 .card-grid--auto,
 .stats-row {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
-/* Chart layout: equity curve (wider) + calendar/secondary (narrower) */
 .card-grid--chart,
 .charts-row {
   grid-template-columns: 3fr 2fr;
 }
 
-/* Summary grids often want 4 columns */
 .summary-grid {
   grid-template-columns: repeat(4, 1fr);
 }
 
 
 /* ============================================================
-   SVG CHARTS — fill width, aspect ratio controls height
+   DASHBOARD GRID — Resizable Card System
+   12-column grid. Each card declares its size via data-card-size.
    ============================================================ */
-.chart-card svg,
-.card svg.chart-svg,
-.summary-card svg {
-  display: block;
-  width: 100%;
-  height: auto;
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+/* Card sizes: small=4col, medium=6col, large=8col, full=12col */
+.dashboard-grid > [data-card-size="small"]  { grid-column: span 4; }
+.dashboard-grid > [data-card-size="medium"] { grid-column: span 6; }
+.dashboard-grid > [data-card-size="large"]  { grid-column: span 8; }
+.dashboard-grid > [data-card-size="full"]   { grid-column: span 12; }
+
+/* Default: medium if no size specified */
+.dashboard-grid > .chart-card,
+.dashboard-grid > .card {
+  grid-column: span 6;
+}
+
+.dashboard-grid > .stat-card {
+  grid-column: span 3;
+}
+
+/* Stat row inside dashboard: span full width, with its own sub-grid */
+.dashboard-grid > .stats-row {
+  grid-column: span 12;
+}
+
+
+/* ============================================================
+   RESIZE CONTROLS — shown only in customize mode
+   ============================================================ */
+
+/* Card wrapper gets position:relative for the resize handle */
+.dashboard-grid > [data-card-size] {
+  position: relative;
+}
+
+/* Resize handle — hidden by default */
+.card-resize {
+  display: none;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  background: rgba(13, 13, 36, 0.92);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.card-resize.visible {
+  display: flex;
+}
+
+.card-resize button {
+  width: 28px;
+  height: 24px;
+  border: none;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  background: transparent;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.card-resize button:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+}
+
+.card-resize button.active {
+  background: rgba(18, 204, 255, 0.2);
+  color: #12CCFF;
+}
+
+
+/* ============================================================
+   CUSTOMIZE MODE TOGGLE
+   ============================================================ */
+.customize-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+
+.customize-toggle:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+}
+
+.customize-toggle.active {
+  background: rgba(18, 204, 255, 0.12);
+  border-color: rgba(18, 204, 255, 0.3);
+  color: #12CCFF;
+}
+
+/* When customize mode is active, add a subtle outline to cards */
+.dashboard-grid.customizing > [data-card-size] {
+  outline: 1px dashed rgba(18, 204, 255, 0.2);
+  outline-offset: -1px;
 }
 
 
@@ -211,7 +371,7 @@
 
 
 /* ============================================================
-   RESPONSIVE (< 1200px)
+   RESPONSIVE
    ============================================================ */
 @media (max-width: 1200px) {
   .card-grid--chart,
@@ -223,6 +383,16 @@
   .card-grid--4 {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* Dashboard grid: collapse to 6 columns */
+  .dashboard-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .dashboard-grid > [data-card-size="small"]  { grid-column: span 3; }
+  .dashboard-grid > [data-card-size="medium"] { grid-column: span 6; }
+  .dashboard-grid > [data-card-size="large"]  { grid-column: span 6; }
+  .dashboard-grid > [data-card-size="full"]   { grid-column: span 6; }
+  .dashboard-grid > .stat-card { grid-column: span 3; }
 }
 
 @media (max-width: 768px) {
@@ -236,5 +406,16 @@
   .top-row,
   .stats-layout {
     grid-template-columns: 1fr;
+  }
+
+  /* Dashboard: single column on mobile */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-grid > [data-card-size] {
+    grid-column: span 1 !important;
+  }
+  .dashboard-grid > .stat-card {
+    grid-column: span 1 !important;
   }
 }

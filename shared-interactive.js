@@ -787,6 +787,69 @@
   }
 
   // ============================================================
+  // DASHBOARD RESIZE — Customizable card sizes
+  // ============================================================
+  function initDashboardResize() {
+    var grids = document.querySelectorAll('.dashboard-grid');
+    if (!grids.length) return;
+
+    var SIZES = ['small', 'medium', 'large', 'full'];
+    var SIZE_LABELS = { small: 'S', medium: 'M', large: 'L', full: 'XL' };
+
+    grids.forEach(function(grid) {
+      // Find the customize toggle button for this grid
+      var toggleBtn = grid.previousElementSibling;
+      while (toggleBtn && !toggleBtn.classList.contains('customize-toggle')) {
+        toggleBtn = toggleBtn.previousElementSibling;
+      }
+      // Also check parent for the toggle
+      if (!toggleBtn && grid.parentElement) {
+        toggleBtn = grid.parentElement.querySelector('.customize-toggle');
+      }
+
+      // Create resize controls on each card
+      var cards = grid.querySelectorAll('[data-card-size]');
+      cards.forEach(function(card) {
+        var resizeBar = document.createElement('div');
+        resizeBar.className = 'card-resize';
+
+        SIZES.forEach(function(size) {
+          var btn = document.createElement('button');
+          btn.textContent = SIZE_LABELS[size];
+          btn.setAttribute('data-resize', size);
+          btn.title = size.charAt(0).toUpperCase() + size.slice(1);
+          if (card.getAttribute('data-card-size') === size) {
+            btn.classList.add('active');
+          }
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            card.setAttribute('data-card-size', size);
+            // Update active state
+            resizeBar.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            toast('Card resized to ' + size);
+          });
+          resizeBar.appendChild(btn);
+        });
+
+        card.appendChild(resizeBar);
+      });
+
+      // Toggle customize mode
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+          var isActive = toggleBtn.classList.toggle('active');
+          grid.classList.toggle('customizing', isActive);
+          grid.querySelectorAll('.card-resize').forEach(function(r) {
+            r.classList.toggle('visible', isActive);
+          });
+          toast(isActive ? 'Customize mode: resize cards' : 'Layout saved');
+        });
+      }
+    });
+  }
+
+  // ============================================================
   // INIT
   // ============================================================
   function init() {
@@ -814,6 +877,7 @@
     initViewToggles();
     initColumnSorting();
     initAnalyticsPopupClose();
+    initDashboardResize();
     document.addEventListener('click', function(e) {
       const el = e.target.closest('button, .btn, .preview-tab, .toggle-btn, .period-pill, .tree-node, .expand-toggle, tr.expandable, .member-chip .remove, .add-trader-btn, .remove-btn, select, a.mockup-nav-link, a.section-jump-link, .group-card .btn, .assigned-trader .remove-btn');
       if (el) { el.style.transform = 'scale(0.96)'; setTimeout(() => { el.style.transform = ''; }, 150); }
