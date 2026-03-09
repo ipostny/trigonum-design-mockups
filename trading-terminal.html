@@ -238,39 +238,55 @@ body {
   color: var(--white-92);
 }
 
-/* Buy/Sell toggle */
+/* Buy/Sell toggle — equal visual weight */
 .side-toggle {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4px;
+  gap: 6px;
   margin-bottom: 16px;
 }
 .side-btn {
-  padding: 10px;
+  padding: 11px;
   border: none;
   border-radius: var(--r-md);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   text-align: center;
+  transition: all 0.15s ease;
+  position: relative;
 }
 .side-btn.buy {
-  background: rgba(0,230,138,0.15);
+  background: rgba(0,230,138,0.18);
   color: var(--green);
-  border: 1px solid rgba(0,230,138,0.3);
+  border: 1px solid rgba(0,230,138,0.35);
+  box-shadow: 0 2px 8px rgba(0,230,138,0.10);
+}
+.side-btn.buy:hover {
+  background: rgba(0,230,138,0.28);
+  box-shadow: 0 4px 12px rgba(0,230,138,0.18);
 }
 .side-btn.buy.active {
-  background: var(--green);
+  background: linear-gradient(180deg, #00E68A 0%, #00CC7A 100%);
   color: var(--navy-900);
+  box-shadow: 0 4px 16px rgba(0,230,138,0.35), inset 0 1px 0 rgba(255,255,255,0.20);
+  border: 1px solid rgba(0,230,138,0.5);
 }
 .side-btn.sell {
-  background: rgba(255,77,106,0.1);
+  background: rgba(255,77,106,0.18);
   color: var(--red);
-  border: 1px solid rgba(255,77,106,0.2);
+  border: 1px solid rgba(255,77,106,0.35);
+  box-shadow: 0 2px 8px rgba(255,77,106,0.10);
+}
+.side-btn.sell:hover {
+  background: rgba(255,77,106,0.28);
+  box-shadow: 0 4px 12px rgba(255,77,106,0.18);
 }
 .side-btn.sell.active {
-  background: var(--red);
+  background: linear-gradient(180deg, #FF4D6A 0%, #E6445E 100%);
   color: white;
+  box-shadow: 0 4px 16px rgba(255,77,106,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,77,106,0.5);
 }
 
 /* Form fields */
@@ -314,24 +330,37 @@ body {
   font-weight: 600;
 }
 
-/* Quick fill buttons */
+/* Quick fill buttons — segmented pill style */
 .quick-fill {
   display: flex;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 0;
+  margin-top: 8px;
+  background: var(--white-05);
+  border-radius: var(--r-sm);
+  padding: 2px;
+  border: 1px solid var(--white-08);
 }
 .quick-btn {
   flex: 1;
-  padding: 4px;
-  border: 1px solid var(--white-08);
-  border-radius: var(--r-sm);
+  padding: 6px 2px;
+  border: none;
+  border-radius: 6px;
   background: transparent;
-  color: var(--white-55);
-  font-size: 10px;
+  color: var(--white-45);
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.12s ease;
 }
-.quick-btn:hover { background: var(--white-05); color: var(--white-75); }
+.quick-btn:hover {
+  background: var(--white-10);
+  color: var(--white-85);
+}
+.quick-btn.active {
+  background: var(--white-15);
+  color: var(--white-92);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
 
 /* Leverage slider */
 .leverage-row {
@@ -378,14 +407,54 @@ body {
   color: var(--white-55);
   cursor: pointer;
   margin-bottom: 12px;
+  padding: 8px 10px;
+  background: var(--white-03);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-sm);
+  transition: all 0.12s ease;
 }
-.tpsl-toggle:hover { color: var(--white-75); }
+.tpsl-toggle:hover { color: var(--white-75); background: var(--white-05); border-color: var(--white-15); }
 
 .tpsl-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* TP/SL estimated PnL preview */
+.tpsl-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
   margin-bottom: 12px;
+}
+.tpsl-est {
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+}
+.tpsl-est.profit {
+  background: rgba(0,230,138,0.08);
+  border: 1px solid rgba(0,230,138,0.20);
+  color: var(--green);
+}
+.tpsl-est.loss {
+  background: rgba(255,77,106,0.08);
+  border: 1px solid rgba(255,77,106,0.20);
+  color: var(--red);
+}
+.tpsl-est-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--white-45);
+  margin-bottom: 2px;
+}
+.tpsl-est-value {
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* Order summary */
@@ -405,24 +474,36 @@ body {
 .summary-label { color: var(--white-55); }
 .summary-value { font-weight: 600; }
 
-/* Submit button */
+/* Submit button — with depth */
 .btn-place-order {
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   border: none;
   border-radius: var(--r-md);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   margin-bottom: 12px;
+  transition: all 0.15s ease;
+  letter-spacing: 0.3px;
 }
 .btn-place-order.buy {
-  background: var(--green);
+  background: linear-gradient(180deg, #00E68A 0%, #00CC7A 100%);
   color: var(--navy-900);
+  box-shadow: 0 4px 16px rgba(0,230,138,0.30), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.btn-place-order.buy:hover {
+  box-shadow: 0 6px 24px rgba(0,230,138,0.40), inset 0 1px 0 rgba(255,255,255,0.22);
+  transform: translateY(-1px);
 }
 .btn-place-order.sell {
-  background: var(--red);
+  background: linear-gradient(180deg, #FF4D6A 0%, #E6445E 100%);
   color: white;
+  box-shadow: 0 4px 16px rgba(255,77,106,0.30), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.btn-place-order.sell:hover {
+  box-shadow: 0 6px 24px rgba(255,77,106,0.40), inset 0 1px 0 rgba(255,255,255,0.16);
+  transform: translateY(-1px);
 }
 
 /* Current position mini-panel */
@@ -744,17 +825,39 @@ body {
           <div class="order-field" style="margin-bottom:0;">
             <div class="order-field-label"><span>TP Price</span></div>
             <div class="order-input-wrapper">
-              <input class="order-input" type="number" placeholder="—">
+              <input class="order-input" type="number" value="88000" style="border-color:rgba(0,230,138,0.3);">
               <span class="order-input-unit">USDT</span>
             </div>
           </div>
           <div class="order-field" style="margin-bottom:0;">
             <div class="order-field-label"><span>SL Price</span></div>
             <div class="order-input-wrapper">
-              <input class="order-input" type="number" placeholder="—">
+              <input class="order-input" type="number" value="82000" style="border-color:rgba(255,77,106,0.3);">
               <span class="order-input-unit">USDT</span>
             </div>
           </div>
+        </div>
+        <!-- TP/SL estimated PnL preview -->
+        <div class="tpsl-preview">
+          <div class="tpsl-est profit">
+            <div class="tpsl-est-label">Est. Profit</div>
+            <div class="tpsl-est-value">+$335.30</div>
+            <div style="font-size:9px;margin-top:1px;">+39.4% ROE</div>
+          </div>
+          <div class="tpsl-est loss">
+            <div class="tpsl-est-label">Est. Loss</div>
+            <div class="tpsl-est-value">−$368.83</div>
+            <div style="font-size:9px;margin-top:1px;">−43.3% ROE</div>
+          </div>
+        </div>
+        <!-- R:R ratio indicator -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:6px 10px;background:var(--white-03);border:1px solid var(--white-08);border-radius:6px;">
+          <span style="font-size:10px;color:var(--white-45);font-weight:600;">Risk : Reward</span>
+          <div style="flex:1;height:4px;background:var(--white-08);border-radius:2px;overflow:hidden;display:flex;">
+            <div style="width:52%;height:100%;background:var(--red);"></div>
+            <div style="width:48%;height:100%;background:var(--green);"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:var(--white-85);">1 : 0.91</span>
         </div>
 
         <!-- Order Summary -->
@@ -774,15 +877,28 @@ body {
         </div>
 
         <!-- Submit -->
-        <button class="btn-place-order buy">Buy / Long BTCUSDT</button>
+        <button class="btn-place-order buy" data-modal-trigger="modal-confirm-order">Buy / Long BTCUSDT</button>
       </div>
 
-      <!-- Current Position -->
+      <!-- Current Position — expanded with TP/SL, Breakeven, Drawdown -->
       <div class="position-panel">
         <div class="position-header">
           <span class="position-title">Open Position</span>
           <span class="position-side long">Long</span>
         </div>
+
+        <!-- PnL highlight bar -->
+        <div style="background:rgba(0,230,138,0.08);border:1px solid rgba(0,230,138,0.20);border-radius:8px;padding:8px 10px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:9px;color:var(--white-45);font-weight:500;">Unrealized PnL</div>
+            <div style="font-size:16px;font-weight:700;color:var(--green);">+$471.25</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:9px;color:var(--white-45);font-weight:500;">ROE</div>
+            <div style="font-size:16px;font-weight:700;color:var(--green);">+5.60%</div>
+          </div>
+        </div>
+
         <div class="position-grid">
           <div>
             <div class="position-stat-label">Size</div>
@@ -797,10 +913,6 @@ body {
             <div class="position-stat-value">$85,142.50</div>
           </div>
           <div>
-            <div class="position-stat-label">Unrealized PnL</div>
-            <div class="position-stat-value" style="color:var(--green);">+$471.25</div>
-          </div>
-          <div>
             <div class="position-stat-label">Leverage</div>
             <div class="position-stat-value">10x</div>
           </div>
@@ -808,8 +920,50 @@ body {
             <div class="position-stat-label">Liq. Price</div>
             <div class="position-stat-value" style="color:var(--red);">$75,960.00</div>
           </div>
+          <div>
+            <div class="position-stat-label">Breakeven</div>
+            <div class="position-stat-value">$84,252.50</div>
+          </div>
         </div>
-        <button class="btn-close-position">Close Position</button>
+
+        <!-- TP/SL status section -->
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--white-08);">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--white-45);margin-bottom:6px;">TP / SL</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:rgba(0,230,138,0.06);border:1px solid rgba(0,230,138,0.15);border-radius:6px;padding:6px 8px;">
+              <div style="font-size:9px;color:var(--white-45);">Take Profit</div>
+              <div style="font-size:12px;font-weight:600;color:var(--green);">$88,000.00</div>
+              <div style="font-size:9px;color:var(--green);margin-top:2px;">+$1,900.00 (+22.6%)</div>
+            </div>
+            <div style="background:rgba(255,77,106,0.06);border:1px solid rgba(255,77,106,0.15);border-radius:6px;padding:6px 8px;">
+              <div style="font-size:9px;color:var(--white-45);">Stop Loss</div>
+              <div style="font-size:12px;font-weight:600;color:var(--red);">$82,000.00</div>
+              <div style="font-size:9px;color:var(--red);margin-top:2px;">−$1,100.00 (−13.1%)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drawdown indicator -->
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--white-08);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:10px;color:var(--white-45);font-weight:600;">Risk Budget Used</span>
+            <span style="font-size:11px;font-weight:700;color:var(--green);">12.4%</span>
+          </div>
+          <div style="height:4px;background:var(--white-08);border-radius:2px;overflow:hidden;">
+            <div style="width:12.4%;height:100%;background:var(--green);border-radius:2px;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;">
+            <div>
+              <span style="font-size:9px;color:var(--white-35);">Max Drawdown</span>
+              <span style="font-size:10px;font-weight:600;color:var(--white-75);margin-left:4px;">−$312.50 (−3.7%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;">
+          <button class="btn-close-position" style="margin-top:0;">Close Position</button>
+          <button style="padding:6px;border:1px solid rgba(18,204,255,0.3);border-radius:var(--r-sm);background:rgba(18,204,255,0.08);color:var(--cyan);font-size:11px;font-weight:600;cursor:pointer;">Edit TP/SL</button>
+        </div>
       </div>
     </div>
 
@@ -829,6 +983,7 @@ body {
             <th>Type</th>
             <th>Qty</th>
             <th>Price</th>
+            <th>TP / SL</th>
             <th>Filled</th>
             <th>Status</th>
             <th>Created</th>
@@ -842,6 +997,7 @@ body {
             <td>Limit</td>
             <td>0.2</td>
             <td>$84,000.00</td>
+            <td><span style="color:var(--green);font-size:10px;">88,000</span> / <span style="color:var(--red);font-size:10px;">82,000</span></td>
             <td>0%</td>
             <td>New</td>
             <td>14:35:22</td>
@@ -853,6 +1009,7 @@ body {
             <td>Limit</td>
             <td>5.0</td>
             <td>$3,500.00</td>
+            <td><span style="color:var(--green);font-size:10px;">3,200</span> / <span style="color:var(--red);font-size:10px;">3,750</span></td>
             <td>0%</td>
             <td>New</td>
             <td>13:22:10</td>
@@ -864,6 +1021,7 @@ body {
             <td>Stop</td>
             <td>50.0</td>
             <td>$152.00</td>
+            <td style="color:var(--white-35);font-size:10px;">— / —</td>
             <td>0%</td>
             <td>New</td>
             <td>12:15:44</td>
@@ -950,23 +1108,21 @@ body {
 </div><!-- /app-shell -->
 
 <!-- ===== ORDER CONFIRMATION DIALOG ===== -->
-<!--
-<div class="confirm-overlay">
+<div class="confirm-overlay" data-modal="modal-confirm-order">
   <div class="confirm-card">
-    <h2 class="confirm-title">Confirm Order</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 class="confirm-title" style="margin-bottom:0;">Confirm Order</h2>
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="background:none;border:none;color:var(--white-55);font-size:18px;cursor:pointer;padding:4px;">✕</button>
+    </div>
+
+    <!-- Order side badge -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:10px 12px;background:rgba(0,230,138,0.08);border:1px solid rgba(0,230,138,0.20);border-radius:var(--r-sm);">
+      <span style="font-size:14px;font-weight:700;color:var(--green);">Buy / Long</span>
+      <span style="font-size:14px;font-weight:700;color:var(--white-92);">BTCUSDT</span>
+      <span style="margin-left:auto;font-size:11px;padding:3px 8px;background:var(--white-08);border-radius:var(--r-full);color:var(--white-75);font-weight:600;">Market</span>
+    </div>
+
     <div class="confirm-details">
-      <div class="confirm-row">
-        <span class="confirm-label">Symbol</span>
-        <span class="confirm-value">BTCUSDT</span>
-      </div>
-      <div class="confirm-row">
-        <span class="confirm-label">Side</span>
-        <span class="confirm-value" style="color:var(--green);">Buy / Long</span>
-      </div>
-      <div class="confirm-row">
-        <span class="confirm-label">Type</span>
-        <span class="confirm-value">Market</span>
-      </div>
       <div class="confirm-row">
         <span class="confirm-label">Quantity</span>
         <span class="confirm-value">0.100 BTC</span>
@@ -976,21 +1132,63 @@ body {
         <span class="confirm-value">10x</span>
       </div>
       <div class="confirm-row">
-        <span class="confirm-label">Est. Value</span>
+        <span class="confirm-label">Est. Entry Price</span>
+        <span class="confirm-value">$85,142.50</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Order Value</span>
         <span class="confirm-value">$8,514.25</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-label">Margin Required</span>
+        <span class="confirm-value">$851.43</span>
       </div>
       <div class="confirm-row">
         <span class="confirm-label">Est. Fee</span>
         <span class="confirm-value">$5.11</span>
       </div>
     </div>
+
+    <!-- TP/SL in confirmation -->
+    <div style="border-top:1px solid var(--white-08);padding-top:12px;margin-top:4px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--white-45);margin-bottom:8px;">Take Profit / Stop Loss</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:8px;background:rgba(0,230,138,0.06);border:1px solid rgba(0,230,138,0.15);border-radius:6px;">
+          <div style="font-size:10px;color:var(--white-45);">Take Profit</div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);">$88,000.00</div>
+          <div style="font-size:10px;color:var(--green);margin-top:2px;">+$335.30 (+39.4%)</div>
+        </div>
+        <div style="padding:8px;background:rgba(255,77,106,0.06);border:1px solid rgba(255,77,106,0.15);border-radius:6px;">
+          <div style="font-size:10px;color:var(--white-45);">Stop Loss</div>
+          <div style="font-size:13px;font-weight:700;color:var(--red);">$82,000.00</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">−$368.83 (−43.3%)</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;padding:4px 8px;background:var(--white-03);border-radius:4px;">
+        <span style="font-size:10px;color:var(--white-45);">Risk : Reward</span>
+        <span style="font-size:10px;font-weight:700;color:var(--white-85);">1 : 0.91</span>
+      </div>
+    </div>
+
+    <!-- Liquidation warning -->
+    <div style="padding:8px 10px;background:rgba(255,77,106,0.06);border:1px solid rgba(255,77,106,0.15);border-radius:6px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:14px;">⚠️</span>
+      <div>
+        <div style="font-size:10px;color:var(--white-45);">Liquidation Price</div>
+        <div style="font-size:12px;font-weight:600;color:var(--red);">$75,960.00</div>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <div style="font-size:10px;color:var(--white-45);">Distance</div>
+        <div style="font-size:12px;font-weight:600;color:var(--white-75);">−10.8%</div>
+      </div>
+    </div>
+
     <div class="confirm-actions">
-      <button class="btn-confirm-cancel">Cancel</button>
-      <button class="btn-confirm-place buy">Place Order</button>
+      <button class="btn-confirm-cancel" onclick="this.closest('.confirm-overlay').style.display='none'">Cancel</button>
+      <button class="btn-confirm-place buy" style="box-shadow:0 4px 16px rgba(0,230,138,0.30);background:linear-gradient(180deg,#00E68A,#00CC7A);">Confirm Buy / Long</button>
     </div>
   </div>
 </div>
--->
 
 <script src="shared-interactive.js"></script>
 </body>
