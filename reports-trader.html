@@ -2071,8 +2071,10 @@ document.addEventListener('DOMContentLoaded', function() {
     animate: true
   }, '#perf-grid');
 
-  // ---- Save initial layout for reset ----
+  // ---- Save initial state for full reset ----
   var defaultLayout = grid.save(false);
+  // Save the full grid innerHTML so we can do a clean reset
+  var defaultGridHTML = document.getElementById('perf-grid').innerHTML;
 
   // ---- Move resize handles inside .grid-stack-item-content ----
   // Gridstack places .ui-resizable-se on .grid-stack-item (the grid cell).
@@ -2233,42 +2235,39 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ---- Reset layout — also restores hidden cards ----
+  // ---- Reset layout — full clean reset ----
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
-      // Restore all hidden cards first
-      while (hiddenItems.length > 0) {
-        var entry = hiddenItems.pop();
-        var wrapper = document.createElement('div');
-        wrapper.className = 'grid-stack-item';
-        wrapper.innerHTML = entry.html;
-        var newEl = grid.addWidget(wrapper, { w: entry.savedData.w, h: entry.savedData.h, autoPosition: true });
-        addCardButtons(newEl);
-      }
-      refreshHiddenPanel();
-      // Reset positions
-      grid.load(defaultLayout);
-      // Reset all padding to normal
-      document.querySelectorAll('#perf-grid .grid-stack-item-content').forEach(function(c) {
-        padLevels.forEach(function(p) { c.classList.remove(p); });
-      });
-      // Reset page size to full
+      // 1. Destroy the current grid completely
+      grid.removeAll(true);
+      // 2. Restore original HTML
       var gridEl = document.getElementById('perf-grid');
+      gridEl.innerHTML = defaultGridHTML;
+      // 3. Clear hidden items
+      hiddenItems.length = 0;
+      refreshHiddenPanel();
+      // 4. Re-initialize all grid items from the restored HTML
+      var items = gridEl.querySelectorAll('.grid-stack-item');
+      items.forEach(function(item) {
+        grid.makeWidget(item);
+      });
+      // 5. Restore default positions
+      grid.load(defaultLayout);
+      // 6. Re-inject buttons and move handles
+      items.forEach(function(item) { addCardButtons(item); });
+      moveHandlesInside();
+      // 7. Reset page size to full
       gridEl.style.maxWidth = '';
       gridEl.style.margin = '';
       pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
-      // Reset global gap to default (8px) via Gridstack CSS variables
+      // 8. Reset global gap to default (8px)
       setGlobalGap(8);
       marginBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-margin') === '8'); });
-      // Reset per-card margins
-      document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
-        marginLevels.forEach(function(c) { item.classList.remove(c); });
-      });
-      // Exit customize mode
+      // 9. Exit customize mode
       if (btn.classList.contains('active')) {
         btn.classList.remove('active');
         grid.setStatic(true);
-        document.querySelector('.grid-stack').classList.remove('grid-stack-editing');
+        gridEl.classList.remove('grid-stack-editing');
         hiddenPanel.classList.remove('editing');
         resetBtn.style.display = 'none';
         pageSizeBar.classList.remove('visible');
