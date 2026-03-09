@@ -364,7 +364,7 @@ svg text { font-family: var(--font); }
   background: rgba(255,255,255,0.03); border: 1px solid var(--white-08);
   border-radius: var(--r-md); font-size: 12px;
 }
-.hidden-widgets-panel.has-items { display: block; }
+.hidden-widgets-panel.has-items.editing { display: block; }
 .hidden-widgets-panel .hw-title {
   font-size: 11px; font-weight: 600; text-transform: uppercase;
   letter-spacing: 1px; color: var(--white-55); margin-bottom: 8px;
@@ -2061,10 +2061,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if (isActive) {
         grid.setStatic(false);
         document.querySelector('.grid-stack').classList.add('grid-stack-editing');
+        hiddenPanel.classList.add('editing');
         resetBtn.style.display = '';
       } else {
         grid.setStatic(true);
         document.querySelector('.grid-stack').classList.remove('grid-stack-editing');
+        hiddenPanel.classList.remove('editing');
         resetBtn.style.display = 'none';
       }
     });
@@ -2096,6 +2098,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.classList.remove('active');
         grid.setStatic(true);
         document.querySelector('.grid-stack').classList.remove('grid-stack-editing');
+        hiddenPanel.classList.remove('editing');
         resetBtn.style.display = 'none';
       }
     });
