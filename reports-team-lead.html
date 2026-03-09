@@ -220,12 +220,12 @@ tr.nested td { padding-left: 40px; font-size: 12px; color: var(--white-55); }
 }
 .calendar-cell.empty { background: transparent; }
 .calendar-cell.neutral { background: var(--white-05); color: var(--white-35); }
-.calendar-cell.profit-1 { background: rgba(18,204,255,0.1); color: rgba(18,204,255,0.7); }
-.calendar-cell.profit-2 { background: rgba(18,204,255,0.2); color: rgba(18,204,255,0.85); }
-.calendar-cell.profit-3 { background: rgba(18,204,255,0.35); color: #fff; }
-.calendar-cell.loss-1 { background: rgba(175,51,255,0.1); color: rgba(175,51,255,0.7); }
-.calendar-cell.loss-2 { background: rgba(175,51,255,0.2); color: rgba(175,51,255,0.85); }
-.calendar-cell.loss-3 { background: rgba(175,51,255,0.35); color: #fff; }
+.calendar-cell.profit-1 { background: rgba(0,230,138,0.1); color: rgba(0,230,138,0.7); }
+.calendar-cell.profit-2 { background: rgba(0,230,138,0.2); color: rgba(0,230,138,0.85); }
+.calendar-cell.profit-3 { background: rgba(0,230,138,0.35); color: #fff; }
+.calendar-cell.loss-1 { background: rgba(255,176,32,0.1); color: rgba(255,176,32,0.7); }
+.calendar-cell.loss-2 { background: rgba(255,176,32,0.2); color: rgba(255,176,32,0.85); }
+.calendar-cell.loss-3 { background: rgba(255,176,32,0.35); color: #fff; }
 .calendar-cell.today { outline: 1.5px solid var(--cyan); outline-offset: -1px; }
 
 /* Lifecycle timeline dots */
@@ -359,7 +359,8 @@ svg text { font-family: var(--font); }
         </div>
       </div>
 
-      <!-- Equity Curve -->
+      <!-- Equity Curve + PnL Calendar side by side -->
+      <div class="charts-row">
       <div class="chart-card">
         <h3 class="chart-title">Equity Curve</h3>
         <svg width="100%" height="180" viewBox="0 0 800 180" preserveAspectRatio="xMidYMid meet">
@@ -387,77 +388,6 @@ svg text { font-family: var(--font); }
           <path d="M50,160 L75,152 L100,148 L125,140 L150,136 L175,128 L200,132 L225,120 L250,112 L275,116 L300,104 L325,96 L350,92 L375,84 L400,88 L425,80 L450,76 L475,64 L500,60 L525,56 L550,52 L575,48 L600,44 L625,40 L650,36 L675,34 L700,32 L725,28 L750,24 L775,20 L790,16" fill="none" stroke="#12CCFF" stroke-width="1.5"/>
         </svg>
       </div>
-
-      <!-- Monthly Returns + Drawdown side by side -->
-      <div class="charts-row">
-        <div class="chart-card">
-          <h3 class="chart-title">Monthly Returns</h3>
-          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
-            <!-- Zero line at y=110 (gives more room below for negative bars + labels) -->
-            <line x1="30" y1="110" x2="390" y2="110" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-            <!-- Positive bars (grow up from y=110) -->
-            <rect x="48" y="82" width="24" height="28" rx="3" fill="rgba(18,204,255,0.5)"/>
-            <rect x="86" y="68" width="24" height="42" rx="3" fill="rgba(18,204,255,0.5)"/>
-            <rect x="162" y="48" width="24" height="62" rx="3" fill="rgba(18,204,255,0.6)"/>
-            <rect x="200" y="88" width="24" height="22" rx="3" fill="rgba(18,204,255,0.45)"/>
-            <rect x="276" y="56" width="24" height="54" rx="3" fill="rgba(18,204,255,0.55)"/>
-            <rect x="314" y="72" width="24" height="38" rx="3" fill="rgba(18,204,255,0.5)"/>
-            <rect x="352" y="76" width="24" height="34" rx="3" fill="rgba(18,204,255,0.5)"/>
-            <!-- Negative bars (grow down from y=110) -->
-            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,77,106,0.5)"/>
-            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,77,106,0.4)"/>
-            <!-- Month labels (y=180, well below bars) -->
-            <text x="60" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
-            <text x="98" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
-            <text x="136" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Sep</text>
-            <text x="174" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Oct</text>
-            <text x="212" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Nov</text>
-            <text x="250" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Dec</text>
-            <text x="288" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jan</text>
-            <text x="326" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Feb</text>
-            <text x="364" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Mar</text>
-            <!-- Value labels (above positive bars, below negative bars with spacing) -->
-            <text x="60" y="77" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+3.5%</text>
-            <text x="98" y="63" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+5.0%</text>
-            <text x="136" y="142" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
-            <text x="174" y="43" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+7.0%</text>
-            <text x="212" y="83" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+2.5%</text>
-            <text x="250" y="134" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
-            <text x="288" y="51" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+6.0%</text>
-            <text x="326" y="67" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+4.5%</text>
-            <text x="364" y="71" fill="rgba(18,204,255,0.8)" font-size="8" text-anchor="middle">+4.0%</text>
-          </svg>
-        </div>
-        <div class="chart-card">
-          <h3 class="chart-title">Drawdown</h3>
-          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#AF33FF" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#AF33FF" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <!-- Y-axis labels -->
-            <text x="28" y="24" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">0%</text>
-            <text x="28" y="64" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-2%</text>
-            <text x="28" y="104" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-4%</text>
-            <text x="28" y="144" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-6%</text>
-            <!-- Grid lines -->
-            <line x1="32" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-            <line x1="32" y1="60" x2="390" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-            <line x1="32" y1="100" x2="390" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-            <line x1="32" y1="140" x2="390" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-            <!-- Drawdown area -->
-            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20 L390,20 L35,20 Z" fill="url(#dd-grad)"/>
-            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#AF33FF" stroke-width="1.5" opacity="0.7"/>
-            <!-- Max DD marker -->
-            <circle cx="160" cy="85" r="3.5" fill="#AF33FF" opacity="0.8"/>
-            <text x="160" y="100" fill="rgba(175,51,255,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
-          </svg>
-        </div>
-      </div>
-
-      <!-- PnL Calendar Heatmap -->
       <div class="chart-card">
         <h3 class="chart-title">PnL Calendar &mdash; March 2026</h3>
         <div class="calendar-grid">
@@ -513,11 +443,81 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell neutral">31</div>
         </div>
         <div style="display:flex;gap:12px;align-items:center;font-size:10px;color:var(--white-55);">
-          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(175,51,255,0.35);"></span> Loss</span>
-          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(175,51,255,0.1);"></span> Small loss</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,176,32,0.35);"></span> Loss</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,176,32,0.1);"></span> Small loss</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--white-05);"></span> No data</span>
-          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(18,204,255,0.1);"></span> Small profit</span>
-          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(18,204,255,0.35);"></span> Profit</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.1);"></span> Small profit</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.35);"></span> Profit</span>
+        </div>
+      </div>
+      </div>
+
+      <!-- Monthly Returns + Drawdown side by side -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3 class="chart-title">Monthly Returns</h3>
+          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+            <!-- Zero line at y=110 (gives more room below for negative bars + labels) -->
+            <line x1="30" y1="110" x2="390" y2="110" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <!-- Positive bars (grow up from y=110) -->
+            <rect x="48" y="82" width="24" height="28" rx="3" fill="rgba(0,230,138,0.5)"/>
+            <rect x="86" y="68" width="24" height="42" rx="3" fill="rgba(0,230,138,0.5)"/>
+            <rect x="162" y="48" width="24" height="62" rx="3" fill="rgba(0,230,138,0.6)"/>
+            <rect x="200" y="88" width="24" height="22" rx="3" fill="rgba(0,230,138,0.45)"/>
+            <rect x="276" y="56" width="24" height="54" rx="3" fill="rgba(0,230,138,0.55)"/>
+            <rect x="314" y="72" width="24" height="38" rx="3" fill="rgba(0,230,138,0.5)"/>
+            <rect x="352" y="76" width="24" height="34" rx="3" fill="rgba(0,230,138,0.5)"/>
+            <!-- Negative bars (grow down from y=110) -->
+            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,176,32,0.5)"/>
+            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,176,32,0.4)"/>
+            <!-- Month labels (y=180, well below bars) -->
+            <text x="60" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
+            <text x="98" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
+            <text x="136" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Sep</text>
+            <text x="174" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Oct</text>
+            <text x="212" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Nov</text>
+            <text x="250" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Dec</text>
+            <text x="288" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jan</text>
+            <text x="326" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Feb</text>
+            <text x="364" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Mar</text>
+            <!-- Value labels (above positive bars, below negative bars with spacing) -->
+            <text x="60" y="77" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+3.5%</text>
+            <text x="98" y="63" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+5.0%</text>
+            <text x="136" y="142" fill="rgba(255,176,32,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
+            <text x="174" y="43" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+7.0%</text>
+            <text x="212" y="83" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+2.5%</text>
+            <text x="250" y="134" fill="rgba(255,176,32,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
+            <text x="288" y="51" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+6.0%</text>
+            <text x="326" y="67" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.5%</text>
+            <text x="364" y="71" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.0%</text>
+          </svg>
+        </div>
+        <div class="chart-card">
+          <h3 class="chart-title">Drawdown</h3>
+          <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFB020" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#FFB020" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Y-axis labels -->
+            <text x="28" y="24" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">0%</text>
+            <text x="28" y="64" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-2%</text>
+            <text x="28" y="104" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-4%</text>
+            <text x="28" y="144" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-6%</text>
+            <!-- Grid lines -->
+            <line x1="32" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <line x1="32" y1="60" x2="390" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="32" y1="100" x2="390" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="32" y1="140" x2="390" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <!-- Drawdown area -->
+            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20 L390,20 L35,20 Z" fill="url(#dd-grad)"/>
+            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#FFB020" stroke-width="1.5" opacity="0.7"/>
+            <!-- Max DD marker -->
+            <circle cx="160" cy="85" r="3.5" fill="#FFB020" opacity="0.8"/>
+            <text x="160" y="100" fill="rgba(255,176,32,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
+          </svg>
         </div>
       </div>
 
@@ -529,20 +529,20 @@ svg text { font-family: var(--font); }
             <!-- Donut chart -->
             <svg width="110" height="110" viewBox="0 0 110 110">
               <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="10"/>
-              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(18,204,255,0.6)" stroke-width="10"
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(0,230,138,0.6)" stroke-width="10"
                 stroke-dasharray="177 100" stroke-dashoffset="-69" stroke-linecap="round"/>
-              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(175,51,255,0.5)" stroke-width="10"
+              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,176,32,0.5)" stroke-width="10"
                 stroke-dasharray="100 177" stroke-dashoffset="-246" stroke-linecap="round"/>
               <text x="55" y="50" fill="var(--white-92)" font-size="16" font-weight="700" text-anchor="middle">64%</text>
               <text x="55" y="65" fill="var(--white-55)" font-size="9" text-anchor="middle">Win Rate</text>
             </svg>
             <div style="font-size:12px;color:var(--white-75);">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--cyan);opacity:0.7;"></span>
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--green);opacity:0.7;"></span>
                 <span>Wins: 91 trades (+$28,400)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--purple);opacity:0.6;"></span>
+                <span style="width:8px;height:8px;border-radius:2px;background:var(--amber);opacity:0.6;"></span>
                 <span>Losses: 51 trades (-$9,980)</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;">
@@ -556,12 +556,12 @@ svg text { font-family: var(--font); }
           <h3 class="chart-title">Time of Day Analysis</h3>
           <svg width="100%" height="130" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
             <!-- Bars for each 4-hour block -->
-            <rect x="30" y="82" width="40" height="28" rx="3" fill="rgba(18,204,255,0.2)"/>
-            <rect x="85" y="62" width="40" height="48" rx="3" fill="rgba(18,204,255,0.3)"/>
-            <rect x="140" y="32" width="40" height="78" rx="3" fill="rgba(18,204,255,0.45)"/>
-            <rect x="195" y="47" width="40" height="63" rx="3" fill="rgba(18,204,255,0.35)"/>
-            <rect x="250" y="72" width="40" height="38" rx="3" fill="rgba(18,204,255,0.25)"/>
-            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(175,51,255,0.25)"/>
+            <rect x="30" y="82" width="40" height="28" rx="3" fill="rgba(0,230,138,0.2)"/>
+            <rect x="85" y="62" width="40" height="48" rx="3" fill="rgba(0,230,138,0.3)"/>
+            <rect x="140" y="32" width="40" height="78" rx="3" fill="rgba(0,230,138,0.45)"/>
+            <rect x="195" y="47" width="40" height="63" rx="3" fill="rgba(0,230,138,0.35)"/>
+            <rect x="250" y="72" width="40" height="38" rx="3" fill="rgba(0,230,138,0.25)"/>
+            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(255,176,32,0.25)"/>
             <!-- Labels -->
             <text x="50" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">0-4h</text>
             <text x="105" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">4-8h</text>
@@ -570,12 +570,12 @@ svg text { font-family: var(--font); }
             <text x="270" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">16-20h</text>
             <text x="325" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">20-24h</text>
             <!-- Value labels -->
-            <text x="50" y="78" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">12</text>
-            <text x="105" y="58" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">24</text>
-            <text x="160" y="28" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">42</text>
-            <text x="215" y="43" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">35</text>
-            <text x="270" y="68" fill="rgba(18,204,255,0.7)" font-size="8" text-anchor="middle">19</text>
-            <text x="325" y="88" fill="rgba(175,51,255,0.7)" font-size="8" text-anchor="middle">10</text>
+            <text x="50" y="78" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">12</text>
+            <text x="105" y="58" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">24</text>
+            <text x="160" y="28" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">42</text>
+            <text x="215" y="43" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">35</text>
+            <text x="270" y="68" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">19</text>
+            <text x="325" y="88" fill="rgba(255,176,32,0.7)" font-size="8" text-anchor="middle">10</text>
           </svg>
         </div>
       </div>
@@ -1495,8 +1495,8 @@ svg text { font-family: var(--font); }
           <text x="171" y="134" fill="var(--green)" font-size="10">+$1,200</text>
 
           <text x="110" y="158" fill="var(--white-75)" font-size="11" text-anchor="end">Sara White</text>
-          <rect x="90" y="146" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
-          <text x="70" y="160" fill="var(--red)" font-size="10">-$1,200</text>
+          <rect x="90" y="146" width="30" height="18" rx="4" fill="rgba(255,176,32,0.6)"/>
+          <text x="84" y="160" fill="var(--amber)" font-size="10" text-anchor="end">-$1,200</text>
         </svg>
       </div>
 
