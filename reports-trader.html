@@ -428,8 +428,11 @@ svg text { font-family: var(--font); }
         </div>
       </div>
 
-      <!-- Customize toggle -->
-      <button class="customize-toggle" id="customize-btn">&#9881; Customize Layout</button>
+      <!-- Customize controls -->
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+        <button class="customize-toggle" id="customize-btn">&#9881; Customize Layout</button>
+        <button class="customize-toggle" id="reset-btn" style="display:none;">&#8634; Reset Layout</button>
+      </div>
 
       <!-- Gridstack Dashboard -->
       <div class="grid-stack" id="perf-grid">
@@ -1912,16 +1915,63 @@ document.addEventListener('DOMContentLoaded', function() {
     animate: true
   }, '#perf-grid');
 
+  // ---- Save initial layout for reset ----
+  var defaultLayout = grid.save(false);
+
+  // ---- Content scaling: zoom everything proportionally ----
+  var BASE_WIDTH = 380; // reference card width where zoom = 1.0
+  var scaleObserver = new ResizeObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var w = entry.contentRect.width;
+      var zoom = Math.max(0.55, Math.min(1.4, w / BASE_WIDTH));
+      entry.target.style.zoom = zoom;
+    });
+  });
+  document.querySelectorAll('#perf-grid .grid-stack-item-content').forEach(function(el) {
+    scaleObserver.observe(el);
+  });
+
+  // Re-observe after any resize/drag (new elements might appear)
+  grid.on('added', function(event, items) {
+    items.forEach(function(item) {
+      var content = item.el.querySelector('.grid-stack-item-content');
+      if (content) scaleObserver.observe(content);
+    });
+  });
+
+  // ---- Customize toggle ----
   var btn = document.getElementById('customize-btn');
+  var resetBtn = document.getElementById('reset-btn');
+
   if (btn) {
     btn.addEventListener('click', function() {
       var isActive = btn.classList.toggle('active');
       if (isActive) {
         grid.setStatic(false);
         document.querySelector('.grid-stack').classList.add('grid-stack-editing');
+        resetBtn.style.display = '';
       } else {
         grid.setStatic(true);
         document.querySelector('.grid-stack').classList.remove('grid-stack-editing');
+        resetBtn.style.display = 'none';
+      }
+    });
+  }
+
+  // ---- Reset layout ----
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      grid.load(defaultLayout);
+      // Re-observe all content elements after reset
+      document.querySelectorAll('#perf-grid .grid-stack-item-content').forEach(function(el) {
+        scaleObserver.observe(el);
+      });
+      // Exit customize mode
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        grid.setStatic(true);
+        document.querySelector('.grid-stack').classList.remove('grid-stack-editing');
+        resetBtn.style.display = 'none';
       }
     });
   }
