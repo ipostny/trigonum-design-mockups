@@ -345,10 +345,14 @@ svg text { font-family: var(--font); }
 /* Lifecycle metrics grid scaling */
 .stat-metrics-grid { gap: clamp(4px, 1.5cqi, 16px) !important; margin-top: clamp(4px, 1cqi, 12px) !important; }
 /* Gridstack drag/resize handles — only visible in edit mode */
-.grid-stack-item > .ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
-.grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-handle { opacity: 0.6; }
-/* Resize handle: double-arrow icon at Gridstack's default margin-aware position */
-.grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-se {
+.ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
+.grid-stack.grid-stack-editing .ui-resizable-handle { opacity: 0.6; }
+/* Resize handle: moved inside .grid-stack-item-content by JS,
+   so it's always pinned to the visible card's bottom-right corner */
+.grid-stack.grid-stack-editing .ui-resizable-se {
+  position: absolute !important;
+  bottom: 4px !important;
+  right: 4px !important;
   width: 26px; height: 26px;
   background: rgba(18,204,255,0.15);
   border-radius: 8px 0 var(--r-lg) 0;
@@ -356,9 +360,10 @@ svg text { font-family: var(--font); }
   background-repeat: no-repeat;
   background-position: center;
   background-size: 14px 14px;
-  transform: rotate(0deg) !important; /* override Gridstack's -45deg rotation */
+  transform: rotate(0deg) !important;
+  z-index: 20;
 }
-.grid-stack.grid-stack-editing > .grid-stack-item > .ui-resizable-se:hover {
+.grid-stack.grid-stack-editing .ui-resizable-se:hover {
   background-color: rgba(18,204,255,0.3);
 }
 /* Drag handle indicator */
@@ -1989,6 +1994,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ---- Save initial layout for reset ----
   var defaultLayout = grid.save(false);
+
+  // ---- Move resize handles inside .grid-stack-item-content ----
+  // Gridstack places .ui-resizable-se on .grid-stack-item (the grid cell).
+  // If the content doesn't fill the full cell, the handle drifts outside
+  // the visible card. Moving it inside .grid-stack-item-content guarantees
+  // it's always at the card's bottom-right corner.
+  function moveHandlesInside() {
+    document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
+      var handle = item.querySelector(':scope > .ui-resizable-se');
+      var content = item.querySelector('.grid-stack-item-content');
+      if (handle && content) {
+        content.style.position = 'relative';
+        content.appendChild(handle);
+      }
+    });
+  }
+  moveHandlesInside();
+  // Re-run after Gridstack operations that recreate handles
+  grid.on('added', function() { setTimeout(moveHandlesInside, 50); });
 
   // ---- Hide / Show cards ----
   var hiddenPanel = document.getElementById('hidden-panel');
