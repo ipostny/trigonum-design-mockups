@@ -36,6 +36,11 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Hide ugly number input spinners globally */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
 body {
   font-family: var(--font);
   background: var(--navy-900);
@@ -362,7 +367,7 @@ body {
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-/* Leverage slider */
+/* Leverage selector — fixed options like real platform */
 .leverage-row {
   display: flex;
   align-items: center;
@@ -373,29 +378,42 @@ body {
   font-size: 11px;
   font-weight: 600;
   color: var(--white-55);
+  white-space: nowrap;
 }
-.leverage-slider {
+.leverage-options {
+  display: flex;
+  gap: 0;
   flex: 1;
-  height: 4px;
-  background: var(--white-08);
-  border-radius: 2px;
-  -webkit-appearance: none;
-  appearance: none;
+  background: var(--white-05);
+  border-radius: var(--r-sm);
+  padding: 2px;
+  border: 1px solid var(--white-08);
 }
-.leverage-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--cyan);
+.lev-btn {
+  flex: 1;
+  padding: 5px 2px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--white-45);
+  font-size: 10px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.12s ease;
+  text-align: center;
 }
-.leverage-value {
-  font-size: 13px;
+.lev-btn:hover { background: var(--white-08); color: var(--white-75); }
+.lev-btn.active {
+  background: var(--cyan);
+  color: var(--navy-900);
+  box-shadow: 0 1px 4px rgba(18,204,255,0.3);
   font-weight: 700;
+}
+.margin-type {
+  font-size: 10px;
   color: var(--cyan);
-  min-width: 36px;
-  text-align: right;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 /* TP/SL expandable */
@@ -769,9 +787,9 @@ body {
       <div class="order-form">
         <!-- Order Type -->
         <div class="order-type-tabs">
-          <button class="order-type-btn active">Market</button>
           <button class="order-type-btn">Limit</button>
-          <button class="order-type-btn">Stop</button>
+          <button class="order-type-btn active">Market</button>
+          <button class="order-type-btn">Conditional</button>
         </div>
 
         <!-- Buy/Sell -->
@@ -812,50 +830,56 @@ body {
           </div>
         </div>
 
-        <!-- Leverage -->
+        <!-- Leverage — fixed options -->
         <div class="leverage-row">
           <span class="leverage-label">Leverage</span>
-          <input class="leverage-slider" type="range" min="1" max="100" value="10">
-          <span class="leverage-value">10x</span>
+          <div class="leverage-options">
+            <button class="lev-btn">1x</button>
+            <button class="lev-btn">2x</button>
+            <button class="lev-btn">5x</button>
+            <button class="lev-btn active">10x</button>
+            <button class="lev-btn">25x</button>
+            <button class="lev-btn">50x</button>
+          </div>
+        </div>
+        <!-- Margin type + Time in Force -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="margin-type">Unified 10x</span>
+          <select style="background:var(--white-05);border:1px solid var(--white-08);border-radius:6px;padding:4px 8px;color:var(--white-75);font-size:10px;font-weight:600;font-family:var(--font);cursor:pointer;">
+            <option>GTC</option>
+            <option>IOC</option>
+            <option>FOK</option>
+            <option>Post Only</option>
+          </select>
         </div>
 
-        <!-- TP/SL -->
-        <div class="tpsl-toggle">&#9660; Take Profit / Stop Loss</div>
-        <div class="tpsl-fields">
-          <div class="order-field" style="margin-bottom:0;">
-            <div class="order-field-label"><span>TP Price</span></div>
-            <div class="order-input-wrapper">
-              <input class="order-input" type="number" value="88000" style="border-color:rgba(0,230,138,0.3);">
-              <span class="order-input-unit">USDT</span>
-            </div>
+        <!-- TP/SL — checkbox + summary (matches real platform modal pattern) -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:var(--white-03);border:1px solid var(--white-08);border-radius:var(--r-sm);cursor:pointer;" data-modal-trigger="modal-tpsl">
+          <div style="width:16px;height:16px;border-radius:4px;background:var(--cyan);display:flex;align-items:center;justify-content:center;">
+            <span style="color:var(--navy-900);font-size:10px;font-weight:900;">✓</span>
           </div>
-          <div class="order-field" style="margin-bottom:0;">
-            <div class="order-field-label"><span>SL Price</span></div>
-            <div class="order-input-wrapper">
-              <input class="order-input" type="number" value="82000" style="border-color:rgba(255,77,106,0.3);">
-              <span class="order-input-unit">USDT</span>
-            </div>
+          <span style="font-size:12px;font-weight:600;color:var(--white-75);flex:1;">Take Profit / Stop Loss</span>
+          <span style="font-size:10px;color:var(--white-45);">Edit ›</span>
+        </div>
+        <!-- TP/SL summary when set -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+          <div style="padding:6px 8px;background:rgba(0,230,138,0.06);border:1px solid rgba(0,230,138,0.15);border-radius:6px;">
+            <div style="font-size:9px;color:var(--white-45);">Take Profit</div>
+            <div style="font-size:11px;font-weight:600;color:var(--green);">$88,000.00</div>
+            <div style="font-size:9px;color:var(--green);">+$335.30 · +39.4% ROE</div>
+          </div>
+          <div style="padding:6px 8px;background:rgba(255,77,106,0.06);border:1px solid rgba(255,77,106,0.15);border-radius:6px;">
+            <div style="font-size:9px;color:var(--white-45);">Stop Loss</div>
+            <div style="font-size:11px;font-weight:600;color:var(--red);">$82,000.00</div>
+            <div style="font-size:9px;color:var(--red);">−$368.83 · −43.3% ROE</div>
           </div>
         </div>
-        <!-- TP/SL estimated PnL preview -->
-        <div class="tpsl-preview">
-          <div class="tpsl-est profit">
-            <div class="tpsl-est-label">Est. Profit</div>
-            <div class="tpsl-est-value">+$335.30</div>
-            <div style="font-size:9px;margin-top:1px;">+39.4% ROE</div>
-          </div>
-          <div class="tpsl-est loss">
-            <div class="tpsl-est-label">Est. Loss</div>
-            <div class="tpsl-est-value">−$368.83</div>
-            <div style="font-size:9px;margin-top:1px;">−43.3% ROE</div>
-          </div>
-        </div>
-        <!-- R:R ratio indicator -->
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:6px 10px;background:var(--white-03);border:1px solid var(--white-08);border-radius:6px;">
-          <span style="font-size:10px;color:var(--white-45);font-weight:600;">Risk : Reward</span>
+        <!-- R:R ratio -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:5px 10px;background:var(--white-03);border:1px solid var(--white-08);border-radius:6px;">
+          <span style="font-size:10px;color:var(--white-45);font-weight:600;">R:R</span>
           <div style="flex:1;height:4px;background:var(--white-08);border-radius:2px;overflow:hidden;display:flex;">
-            <div style="width:52%;height:100%;background:var(--red);"></div>
-            <div style="width:48%;height:100%;background:var(--green);"></div>
+            <div style="width:52%;height:100%;background:var(--red);border-radius:2px 0 0 2px;"></div>
+            <div style="width:48%;height:100%;background:var(--green);border-radius:0 2px 2px 0;"></div>
           </div>
           <span style="font-size:11px;font-weight:700;color:var(--white-85);">1 : 0.91</span>
         </div>
@@ -1186,6 +1210,96 @@ body {
     <div class="confirm-actions">
       <button class="btn-confirm-cancel" onclick="this.closest('.confirm-overlay').style.display='none'">Cancel</button>
       <button class="btn-confirm-place buy" style="box-shadow:0 4px 16px rgba(0,230,138,0.30);background:linear-gradient(180deg,#00E68A,#00CC7A);">Confirm Buy / Long</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TP/SL MODAL (matches real platform TPSLModal) ===== -->
+<div class="confirm-overlay" data-modal="modal-tpsl" style="display:none;">
+  <div class="confirm-card" style="width:420px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 class="confirm-title" style="margin-bottom:0;font-size:16px;">Take Profit / Stop Loss</h2>
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="background:none;border:none;color:var(--white-55);font-size:18px;cursor:pointer;padding:4px;">✕</button>
+    </div>
+
+    <!-- Mode selector: Full / Partial -->
+    <div style="display:flex;gap:0;margin-bottom:16px;background:var(--white-05);border-radius:var(--r-sm);padding:2px;border:1px solid var(--white-08);">
+      <button style="flex:1;padding:7px;border:none;border-radius:6px;background:var(--white-15);color:var(--white-92);font-size:11px;font-weight:600;cursor:pointer;">Entire Position</button>
+      <button style="flex:1;padding:7px;border:none;border-radius:6px;background:transparent;color:var(--white-45);font-size:11px;font-weight:600;cursor:pointer;">Partial</button>
+    </div>
+
+    <!-- Take Profit Section -->
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:600;color:var(--green);">Take Profit</span>
+        <!-- Calculate by selector: ROI / Change / P&L -->
+        <div style="display:flex;gap:0;background:var(--white-05);border-radius:6px;padding:2px;border:1px solid var(--white-08);">
+          <button style="padding:3px 8px;border:none;border-radius:4px;background:var(--white-15);color:var(--white-85);font-size:9px;font-weight:600;cursor:pointer;">ROI %</button>
+          <button style="padding:3px 8px;border:none;border-radius:4px;background:transparent;color:var(--white-45);font-size:9px;font-weight:600;cursor:pointer;">Change %</button>
+          <button style="padding:3px 8px;border:none;border-radius:4px;background:transparent;color:var(--white-45);font-size:9px;font-weight:600;cursor:pointer;">P&L</button>
+        </div>
+      </div>
+      <!-- Trigger price input -->
+      <div style="display:flex;gap:6px;margin-bottom:6px;">
+        <div style="flex:1;position:relative;">
+          <input type="number" value="88000" style="width:100%;background:var(--white-05);border:1px solid rgba(0,230,138,0.3);border-radius:6px;padding:8px 60px 8px 10px;color:var(--white-92);font-size:13px;font-weight:500;font-family:var(--font);">
+          <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--white-35);font-weight:600;">USDT</span>
+        </div>
+        <!-- Trigger type -->
+        <select style="background:var(--white-05);border:1px solid var(--white-08);border-radius:6px;padding:6px 8px;color:var(--white-75);font-size:10px;font-weight:600;font-family:var(--font);cursor:pointer;min-width:80px;">
+          <option>Last Price</option>
+          <option selected>Mark Price</option>
+          <option>Index Price</option>
+        </select>
+      </div>
+      <!-- Est. profit display -->
+      <div style="display:flex;justify-content:space-between;padding:4px 8px;background:rgba(0,230,138,0.06);border-radius:4px;">
+        <span style="font-size:10px;color:var(--white-45);">Est. Profit</span>
+        <span style="font-size:10px;font-weight:600;color:var(--green);">+$335.30 (+39.4% ROE)</span>
+      </div>
+    </div>
+
+    <!-- Stop Loss Section -->
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:600;color:var(--red);">Stop Loss</span>
+        <div style="display:flex;gap:0;background:var(--white-05);border-radius:6px;padding:2px;border:1px solid var(--white-08);">
+          <button style="padding:3px 8px;border:none;border-radius:4px;background:var(--white-15);color:var(--white-85);font-size:9px;font-weight:600;cursor:pointer;">ROI %</button>
+          <button style="padding:3px 8px;border:none;border-radius:4px;background:transparent;color:var(--white-45);font-size:9px;font-weight:600;cursor:pointer;">Change %</button>
+          <button style="padding:3px 8px;border:none;border-radius:4px;background:transparent;color:var(--white-45);font-size:9px;font-weight:600;cursor:pointer;">P&L</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:6px;">
+        <div style="flex:1;position:relative;">
+          <input type="number" value="82000" style="width:100%;background:var(--white-05);border:1px solid rgba(255,77,106,0.3);border-radius:6px;padding:8px 60px 8px 10px;color:var(--white-92);font-size:13px;font-weight:500;font-family:var(--font);">
+          <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--white-35);font-weight:600;">USDT</span>
+        </div>
+        <select style="background:var(--white-05);border:1px solid var(--white-08);border-radius:6px;padding:6px 8px;color:var(--white-75);font-size:10px;font-weight:600;font-family:var(--font);cursor:pointer;min-width:80px;">
+          <option>Last Price</option>
+          <option selected>Mark Price</option>
+          <option>Index Price</option>
+        </select>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 8px;background:rgba(255,77,106,0.06);border-radius:4px;">
+        <span style="font-size:10px;color:var(--white-45);">Est. Loss</span>
+        <span style="font-size:10px;font-weight:600;color:var(--red);">−$368.83 (−43.3% ROE)</span>
+      </div>
+    </div>
+
+    <!-- R:R Summary -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:8px 10px;background:var(--white-03);border:1px solid var(--white-08);border-radius:6px;">
+      <span style="font-size:10px;color:var(--white-45);font-weight:600;">Risk : Reward</span>
+      <div style="flex:1;height:4px;background:var(--white-08);border-radius:2px;overflow:hidden;display:flex;">
+        <div style="width:52%;height:100%;background:var(--red);border-radius:2px 0 0 2px;"></div>
+        <div style="width:48%;height:100%;background:var(--green);border-radius:0 2px 2px 0;"></div>
+      </div>
+      <span style="font-size:11px;font-weight:700;color:var(--white-85);">1 : 0.91</span>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:8px;">
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="flex:1;padding:10px;border:1px solid var(--white-15);border-radius:var(--r-md);background:transparent;color:var(--white-75);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">Cancel</button>
+      <button onclick="this.closest('.confirm-overlay').style.display='none'" style="flex:1;padding:10px;border:none;border-radius:var(--r-md);background:linear-gradient(180deg,var(--cyan),#0AB8E6);color:var(--navy-900);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px rgba(18,204,255,0.25);">Confirm TP/SL</button>
     </div>
   </div>
 </div>
