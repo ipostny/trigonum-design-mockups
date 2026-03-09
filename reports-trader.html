@@ -130,9 +130,10 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
   background: var(--card-gradient); border: 1px solid var(--white-08);
   border-radius: var(--r-lg); padding: 10px 12px 6px; box-shadow: var(--shadow-card); margin-bottom: 24px;
 }
-.chart-card svg { display: block; }
+.chart-card svg { display: block; width: 100%; }
 .chart-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-.charts-row { display: grid; grid-template-columns: 3fr 2fr; gap: 12px; margin-bottom: 24px; }
+.charts-row { display: grid; grid-template-columns: 3fr 2fr; gap: 12px; margin-bottom: 24px; align-items: start; }
+.charts-row .chart-card { margin-bottom: 0; }
 
 /* Table */
 .table-card {
