@@ -287,7 +287,7 @@ svg text { font-family: var(--font); }
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-card);
   padding: 20px;
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -308,11 +308,16 @@ svg text { font-family: var(--font); }
 .grid-stack-item-content svg {
   display: block;
   width: 100%;
-  height: auto;
-  flex-shrink: 0;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .grid-stack-item-content > div {
   width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.grid-stack-item-content table {
+  flex: 1 1 auto;
 }
 /* Gridstack drag/resize handles — only visible in edit mode */
 .grid-stack-item > .ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
@@ -430,7 +435,7 @@ svg text { font-family: var(--font); }
       <div class="grid-stack" id="perf-grid">
 
       <!-- Equity Curve — large (8 of 12 cols) -->
-      <div class="grid-stack-item" gs-w="8" gs-h="2">
+      <div class="grid-stack-item" gs-w="8" gs-h="8">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Equity Curve</h3>
         <svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid meet">
@@ -457,7 +462,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- PnL Calendar — small (4 of 12 cols) -->
-      <div class="grid-stack-item" gs-w="4" gs-h="4">
+      <div class="grid-stack-item" gs-w="4" gs-h="16">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">PnL Calendar &mdash; March 2026</h3>
         <div class="calendar-grid">
@@ -517,7 +522,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Monthly Returns — medium (6 of 12 cols) -->
-      <div class="grid-stack-item" gs-w="6" gs-h="3">
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Monthly Returns</h3>
         <svg viewBox="0 0 400 190" preserveAspectRatio="xMidYMid meet">
@@ -554,7 +559,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Drawdown — medium (6 of 12 cols) -->
-      <div class="grid-stack-item" gs-w="6" gs-h="3">
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Drawdown</h3>
         <svg viewBox="0 0 400 155" preserveAspectRatio="xMidYMid meet">
@@ -581,10 +586,10 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Win/Loss Distribution — small (4 of 12 cols) -->
-      <div class="grid-stack-item" gs-w="4" gs-h="3">
+      <div class="grid-stack-item" gs-w="4" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Win/Loss Distribution</h3>
-        <svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0;">
+        <svg viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="10"/>
           <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(0,230,138,0.6)" stroke-width="10"
             stroke-dasharray="193 108" stroke-dashoffset="-75" stroke-linecap="round"/>
@@ -608,7 +613,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Time of Day — small (4 of 12 cols) -->
-      <div class="grid-stack-item" gs-w="4" gs-h="2">
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Time of Day Analysis</h3>
         <svg viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
@@ -635,7 +640,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- PnL by Symbol — small (4 of 12 cols) -->
-      <div class="grid-stack-item" gs-w="4" gs-h="2">
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">PnL by Symbol</h3>
         <svg viewBox="0 0 400 145" preserveAspectRatio="xMidYMid meet">
@@ -661,10 +666,10 @@ svg text { font-family: var(--font); }
       <!-- ========== NEW WIDGETS FROM FRONTEND ========== -->
 
       <!-- Coin PnL Distribution, Count — small -->
-      <div class="grid-stack-item" gs-w="3" gs-h="3">
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Coin PnL Distribution, Count</h3>
-        <svg viewBox="0 0 180 180" width="160" height="160" style="max-width:160px;">
+        <svg viewBox="0 0 180 180">
           <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
           <circle cx="90" cy="90" r="70" fill="none" stroke="#4169E1" stroke-width="30"
             stroke-dasharray="352 88" stroke-dashoffset="-110" stroke-linecap="butt"/>
@@ -679,10 +684,10 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Coin PnL Profit Distribution, USD — small -->
-      <div class="grid-stack-item" gs-w="3" gs-h="3">
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Coin PnL Profit Distribution, USD</h3>
-        <svg viewBox="0 0 180 180" width="160" height="160" style="max-width:160px;">
+        <svg viewBox="0 0 180 180">
           <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
           <circle cx="90" cy="90" r="70" fill="none" stroke="#4169E1" stroke-width="30"
             stroke-dasharray="396 44" stroke-dashoffset="-110" stroke-linecap="butt"/>
@@ -697,10 +702,10 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Coin PnL Loss Distribution, USD — small -->
-      <div class="grid-stack-item" gs-w="3" gs-h="3">
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Coin PnL Loss Distribution, USD</h3>
-        <svg viewBox="0 0 180 180" width="160" height="160" style="max-width:160px;">
+        <svg viewBox="0 0 180 180">
           <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
           <circle cx="90" cy="90" r="70" fill="none" stroke="#4169E1" stroke-width="30"
             stroke-dasharray="440 0" stroke-dashoffset="-110" stroke-linecap="butt"/>
@@ -712,10 +717,10 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Trader PnL Distribution, Count — small -->
-      <div class="grid-stack-item" gs-w="3" gs-h="3">
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Trader PnL Distribution, Count</h3>
-        <svg viewBox="0 0 180 180" width="160" height="160" style="max-width:160px;">
+        <svg viewBox="0 0 180 180">
           <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
           <circle cx="90" cy="90" r="70" fill="none" stroke="#00E68A" stroke-width="30"
             stroke-dasharray="264 176" stroke-dashoffset="-110" stroke-linecap="butt"/>
@@ -730,7 +735,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Total PnL — small -->
-      <div class="grid-stack-item" gs-w="4" gs-h="2">
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
         <div class="grid-stack-item-content card--left">
         <h3 class="chart-title">Total PnL</h3>
         <div style="margin-top:4px;">
@@ -741,7 +746,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- P&L Ranking — small -->
-      <div class="grid-stack-item" gs-w="4" gs-h="2">
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
         <div class="grid-stack-item-content card--left">
         <h3 class="chart-title">P&amp;L Ranking</h3>
         <table style="width:100%;border-collapse:collapse;margin-top:8px;">
@@ -760,7 +765,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Total PnL Per Day — small -->
-      <div class="grid-stack-item" gs-w="4" gs-h="3">
+      <div class="grid-stack-item" gs-w="4" gs-h="12">
         <div class="grid-stack-item-content card--left">
         <h3 class="chart-title">Total PnL Per Day</h3>
         <table style="width:100%;border-collapse:collapse;margin-top:6px;">
@@ -784,7 +789,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Total PnL Change Trend, USD — medium -->
-      <div class="grid-stack-item" gs-w="6" gs-h="2">
+      <div class="grid-stack-item" gs-w="6" gs-h="8">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Total PnL Change Trend, USD</h3>
         <svg viewBox="0 0 500 160" preserveAspectRatio="xMidYMid meet">
@@ -817,7 +822,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Total PnL Change Trend, % — medium -->
-      <div class="grid-stack-item" gs-w="6" gs-h="2">
+      <div class="grid-stack-item" gs-w="6" gs-h="8">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Total PnL Change Trend, %</h3>
         <svg viewBox="0 0 500 160" preserveAspectRatio="xMidYMid meet">
@@ -847,7 +852,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- NET PnL Change Trend, USD — medium -->
-      <div class="grid-stack-item" gs-w="6" gs-h="3">
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">NET PnL Change Trend, USD</h3>
         <svg viewBox="0 0 500 180" preserveAspectRatio="xMidYMid meet">
@@ -876,7 +881,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Lifecycle Metrics — medium -->
-      <div class="grid-stack-item" gs-w="6" gs-h="2">
+      <div class="grid-stack-item" gs-w="6" gs-h="8">
         <div class="grid-stack-item-content">
         <h3 class="chart-title">Lifecycle Metrics</h3>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px;width:100%;">
@@ -901,7 +906,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Symbol Breakdown — medium -->
-      <div class="grid-stack-item" gs-w="6" gs-h="3">
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
         <div class="grid-stack-item-content card--left">
         <h3 class="chart-title" style="text-align:left;">Symbol Breakdown</h3>
         <div style="overflow-x:auto;margin-top:8px;">
@@ -946,7 +951,7 @@ svg text { font-family: var(--font); }
       </div>
 
       <!-- Time of Day Heatmap — large -->
-      <div class="grid-stack-item" gs-w="8" gs-h="3">
+      <div class="grid-stack-item" gs-w="8" gs-h="12">
         <div class="grid-stack-item-content card--left">
         <h3 class="chart-title" style="text-align:left;">Time of Day Heatmap</h3>
         <div style="overflow-x:auto;margin-top:8px;">
@@ -1898,7 +1903,7 @@ svg text { font-family: var(--font); }
 document.addEventListener('DOMContentLoaded', function() {
   var grid = GridStack.init({
     column: 12,
-    cellHeight: 120,
+    cellHeight: 30,
     margin: 8,
     staticGrid: true,
     float: false,
