@@ -1,0 +1,240 @@
+/**
+ * TrigonumTrade Design Mockups — Unified Card System
+ *
+ * ONE source of truth for card appearance, spacing, grids, and chart sizing.
+ * Linked from every mockup page AFTER the inline <style> block so these
+ * rules win on equal specificity (last-in wins).
+ *
+ * Card hierarchy:
+ *   .card              — base container  (20px padding)
+ *   .card--compact     — stat / KPI      (14px 16px)
+ *   .card--flush       — table wrapper   (0 padding, overflow hidden)
+ *   .card--spacious    — forms / legal   (28px padding)
+ *
+ * Grid containers:
+ *   .card-grid         — base grid (align-items: start, 16px gap)
+ *   .card-grid--2      — 2 equal columns
+ *   .card-grid--3      — 3 equal columns
+ *   .card-grid--4      — 4 equal columns
+ *   .card-grid--auto   — auto-fit, min 200px
+ *   .card-grid--chart  — 3fr + 2fr (equity + calendar pattern)
+ *
+ * Charts:
+ *   .card svg          — width 100%, height auto, display block
+ */
+
+/* ============================================================
+   BASE CARD
+   ============================================================ */
+.card,
+.chart-card,
+.stat-card,
+.summary-card,
+.table-card,
+.form-card,
+.filters-card,
+.strategy-section,
+.news-card,
+.member-card,
+.legal-content,
+.profile-header {
+  background: var(--card-gradient, linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95)));
+  border: 1px solid var(--white-08, rgba(255,255,255,0.08));
+  border-radius: var(--r-lg, 16px);
+  box-shadow: var(--shadow-card, 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15));
+}
+
+/* ============================================================
+   PADDING TIERS
+   ============================================================ */
+
+/* Standard — content cards, charts, filters */
+.card,
+.chart-card,
+.summary-card,
+.filters-card,
+.strategy-section,
+.news-card,
+.profile-header {
+  padding: 20px;
+}
+
+/* Compact — stat KPIs, member chips */
+.stat-card,
+.member-card {
+  padding: 14px 16px;
+}
+
+/* Flush — tables sit edge-to-edge inside the card */
+.table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Spacious — forms, legal, dialogs */
+.form-card,
+.legal-content {
+  padding: 28px;
+}
+
+/* Modifier overrides (can be combined with any card class) */
+.card--compact  { padding: 14px 16px !important; }
+.card--flush    { padding: 0 !important; overflow: hidden !important; }
+.card--spacious { padding: 28px !important; }
+
+
+/* ============================================================
+   CARD INTERNAL SPACING
+   ============================================================ */
+
+/* Title → content gap: always 8px */
+.card-title,
+.chart-title,
+.stat-group-title {
+  margin-bottom: 8px;
+}
+
+/* Stat card label → value */
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--white-55, rgba(255,255,255,0.55));
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+
+/* ============================================================
+   GRID CONTAINERS
+   The key rule: align-items: start — cards NEVER stretch to
+   match the tallest sibling. Each card is its natural height.
+   ============================================================ */
+.card-grid,
+.stats-row,
+.summary-grid,
+.charts-row,
+.top-row,
+.analytics-grid,
+.stats-layout,
+.programs-grid,
+.strategies-grid,
+.members-grid,
+.widget-grid,
+.allocation-layout {
+  display: grid;
+  gap: 16px;
+  align-items: start;     /* THE key rule — no stretching */
+  margin-bottom: 20px;
+}
+
+/* Remove bottom margin from cards inside grids (grid gap handles it) */
+.card-grid > .card,
+.card-grid > .chart-card,
+.card-grid > .stat-card,
+.card-grid > .summary-card,
+.stats-row > .stat-card,
+.summary-grid > .summary-card,
+.charts-row > .chart-card,
+.charts-row > .card {
+  margin-bottom: 0;
+}
+
+/* Column patterns */
+.card-grid--2,
+.analytics-grid,
+.allocation-layout,
+.programs-grid,
+.strategies-grid,
+.members-grid,
+.top-row,
+.stats-layout {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card-grid--3,
+.widget-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card-grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Auto-fit for stat rows — responsive, min 200px per card */
+.card-grid--auto,
+.stats-row {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Chart layout: equity curve (wider) + calendar/secondary (narrower) */
+.card-grid--chart,
+.charts-row {
+  grid-template-columns: 3fr 2fr;
+}
+
+/* Summary grids often want 4 columns */
+.summary-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+
+/* ============================================================
+   SVG CHARTS — fill width, aspect ratio controls height
+   ============================================================ */
+.chart-card svg,
+.card svg.chart-svg,
+.summary-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+
+/* ============================================================
+   HOVER EFFECTS
+   ============================================================ */
+.card:hover,
+.chart-card:hover,
+.stat-card:hover,
+.summary-card:hover,
+.news-card:hover,
+.member-card:hover {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+
+/* ============================================================
+   RESPONSIVE (< 1200px)
+   ============================================================ */
+@media (max-width: 1200px) {
+  .card-grid--chart,
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid,
+  .card-grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .card-grid--2,
+  .card-grid--3,
+  .card-grid--4,
+  .card-grid--auto,
+  .summary-grid,
+  .stats-row,
+  .analytics-grid,
+  .top-row,
+  .stats-layout {
+    grid-template-columns: 1fr;
+  }
+}
