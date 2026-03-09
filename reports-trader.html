@@ -549,6 +549,14 @@ svg text { font-family: var(--font); }
           <button class="page-size-btn" data-width="1280">M</button>
           <button class="page-size-btn active" data-width="0">Full</button>
         </div>
+        <div class="page-size-bar" id="margin-bar">
+          <span style="margin-right:2px;">Gap:</span>
+          <button class="page-size-btn" data-margin="0">0</button>
+          <button class="page-size-btn" data-margin="4">4</button>
+          <button class="page-size-btn active" data-margin="8">8</button>
+          <button class="page-size-btn" data-margin="16">16</button>
+          <button class="page-size-btn" data-margin="24">24</button>
+        </div>
       </div>
 
       <!-- Hidden widgets restore panel -->
@@ -2203,6 +2211,9 @@ document.addEventListener('DOMContentLoaded', function() {
       gridEl.style.maxWidth = '';
       gridEl.style.margin = '';
       pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
+      // Reset margin to default (8)
+      grid.margin(8);
+      marginBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-margin') === '8'); });
       // Exit customize mode
       if (btn.classList.contains('active')) {
         btn.classList.remove('active');
@@ -2211,6 +2222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hiddenPanel.classList.remove('editing');
         resetBtn.style.display = 'none';
         pageSizeBar.classList.remove('visible');
+        marginBar.classList.remove('visible');
       }
     });
   }
@@ -2237,13 +2249,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Show/hide page size bar with customize mode
+  // ---- Margin (gap) selector ----
+  var marginBar = document.getElementById('margin-bar');
+  var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
+
+  marginBtns.forEach(function(mBtn) {
+    mBtn.addEventListener('click', function() {
+      var m = parseInt(this.getAttribute('data-margin'));
+      marginBtns.forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      grid.margin(m);
+      // Force re-layout so cards fill the new gap space
+      setTimeout(function() { grid.onParentResize(); }, 50);
+    });
+  });
+
+  // Show/hide control bars with customize mode
   if (btn) {
     btn.addEventListener('click', function() {
       if (btn.classList.contains('active')) {
         pageSizeBar.classList.add('visible');
+        marginBar.classList.add('visible');
       } else {
         pageSizeBar.classList.remove('visible');
+        marginBar.classList.remove('visible');
       }
     });
   }
