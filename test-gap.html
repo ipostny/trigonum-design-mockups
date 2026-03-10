@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Gridstack v12 - Dynamic Margin Test</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@12/dist/gridstack.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@12/dist/gridstack-all.js"></script>
+  <style>
+    body { font-family: monospace; margin: 16px; background: #1a1a1a; color: #eee; }
+    .grid-stack-item-content.red { background: #e53935; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #fff; }
+    .grid-stack-item-content.blue { background: #1e88e5; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #fff; }
+    button { margin: 4px; padding: 8px 16px; font-family: monospace; font-size: 14px; cursor: pointer; background: #333; color: #eee; border: 1px solid #666; border-radius: 4px; }
+    button:hover { background: #555; }
+    pre#log { background: #111; padding: 12px; max-height: 300px; overflow-y: auto; font-size: 12px; border: 1px solid #333; }
+    #computed { background: #111; padding: 12px; font-size: 12px; border: 1px solid #333; white-space: pre; }
+  </style>
+</head>
+<body>
+  <h2>Gridstack v12 — Dynamic Margin Test</h2>
+  <p>Initial margin: <b>0</b>. Each button tries to set margin to <b>24px</b>.</p>
+
+  <div>
+    <button onclick="testA()">A: grid.margin(24)</button>
+    <button onclick="testB()">B: CSS variables</button>
+    <button onclick="testC()">C: Dynamic &lt;style&gt; !important</button>
+    <button onclick="testD()">D: opts + CSS vars</button>
+    <button onclick="testE()">E: Destroy + re-init</button>
+    <button onclick="resetGrid()">RESET (margin=0)</button>
+  </div>
+
+  <div class="grid-stack" id="gs"></div>
+
+  <h3>Computed styles on .grid-stack-item-content (updates every 500ms)</h3>
+  <div id="computed">waiting...</div>
+
+  <h3>Log</h3>
+  <pre id="log"></pre>
+
+<script>
+const logEl = document.getElementById('log');
+function log(msg) {
+  logEl.textContent += `[${new Date().toLocaleTimeString()}] ${msg}\n`;
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+const items = [
+  { x: 0, y: 0, w: 8, h: 3, content: '<div class="grid-stack-item-content red">8-col RED</div>' },
+  { x: 8, y: 0, w: 4, h: 3, content: '<div class="grid-stack-item-content blue">4-col BLUE</div>' },
+];
+
+let grid;
+
+function initGrid(margin) {
+  margin = margin || 0;
+  grid = GridStack.init({ column: 12, cellHeight: 80, margin: margin, disableResize: true, disableDrag: true }, '#gs');
+  grid.load(items);
+  log(`Grid initialized with margin=${margin}`);
+}
+
+initGrid(0);
+
+function testA() {
+  log('--- Button A: grid.margin(24) ---');
+  try {
+    grid.margin(24);
+    log('Called grid.margin(24). Check if gap appeared.');
+  } catch(e) {
+    log('ERROR: ' + e.message);
+  }
+}
+
+function testB() {
+  log('--- Button B: CSS variables on .grid-stack ---');
+  const el = document.getElementById('gs');
+  ['top','right','bottom','left'].forEach(side => {
+    el.style.setProperty(`--gs-item-margin-${side}`, '24px');
+  });
+  log('Set --gs-item-margin-{top,right,bottom,left} = 24px on .grid-stack element');
+}
+
+function testC() {
+  log('--- Button C: Dynamic <style> with !important ---');
+  let tag = document.getElementById('dynamic-margin-style');
+  if (tag) tag.remove();
+  tag = document.createElement('style');
+  tag.id = 'dynamic-margin-style';
+  tag.textContent = `
+    .grid-stack-item-content {
+      top: 24px !important;
+      right: 24px !important;
+      bottom: 24px !important;
+      left: 24px !important;
+    }
+  `;
+  document.head.appendChild(tag);
+  log('Injected <style> with top/right/bottom/left: 24px !important');
+}
+
+function testD() {
+  log('--- Button D: grid.opts.margin* + CSS vars ---');
+  grid.opts.margin = 24;
+  grid.opts.marginTop = 24;
+  grid.opts.marginRight = 24;
+  grid.opts.marginBottom = 24;
+  grid.opts.marginLeft = 24;
+  const el = document.getElementById('gs');
+  ['top','right','bottom','left'].forEach(side => {
+    el.style.setProperty(`--gs-item-margin-${side}`, '24px');
+  });
+  log('Set grid.opts.margin* = 24 AND CSS vars. Check if gap appeared.');
+}
+
+function testE() {
+  log('--- Button E: Destroy + re-init with margin=24 ---');
+  try {
+    grid.destroy(false);
+    document.getElementById('gs').innerHTML = '';
+    log('Destroyed grid. Re-initializing with margin=24...');
+    initGrid(24);
+    log('Re-init complete.');
+  } catch(e) {
+    log('ERROR: ' + e.message);
+  }
+}
+
+function resetGrid() {
+  log('--- RESET to margin=0 ---');
+  let tag = document.getElementById('dynamic-margin-style');
+  if (tag) tag.remove();
+  const el = document.getElementById('gs');
+  ['top','right','bottom','left'].forEach(side => {
+    el.style.removeProperty(`--gs-item-margin-${side}`);
+  });
+  try {
+    grid.destroy(false);
+    document.getElementById('gs').innerHTML = '';
+  } catch(e) {}
+  initGrid(0);
+}
+
+// Computed style monitor
+setInterval(() => {
+  const item = document.querySelector('.grid-stack-item-content');
+  if (!item) { document.getElementById('computed').textContent = 'No .grid-stack-item-content found'; return; }
+  const cs = getComputedStyle(item);
+  document.getElementById('computed').textContent =
+    `top:    ${cs.top}\nright:  ${cs.right}\nbottom: ${cs.bottom}\nleft:   ${cs.left}\nmargin: ${cs.margin}\npadding: ${cs.padding}`;
+}, 500);
+</script>
+</body>
+</html>
