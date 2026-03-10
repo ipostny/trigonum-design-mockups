@@ -2068,7 +2068,6 @@ document.addEventListener('DOMContentLoaded', function() {
       var handle = item.querySelector(':scope > .ui-resizable-se');
       var content = item.querySelector('.grid-stack-item-content');
       if (handle && content) {
-        content.style.position = 'relative';
         content.appendChild(handle);
       }
     });
@@ -2092,7 +2091,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!content) return;
     // Skip if buttons already exist (e.g. after grid re-init)
     if (content.querySelector('.card-hide-btn')) return;
-    content.style.position = 'relative';
     // Close button (×)
     var closeBtn = document.createElement('button');
     closeBtn.className = 'card-hide-btn';
@@ -2222,8 +2220,8 @@ document.addEventListener('DOMContentLoaded', function() {
       gridEl.style.maxWidth = '';
       gridEl.style.margin = '';
       pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
-      // 8. Reset global gap to default (clear override, let Gridstack default win)
-      gapStyle.textContent = '';
+      // 8. Reset global gap to default (8px)
+      grid.margin(8);
       marginBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-margin') === '8'); });
       // 9. Exit customize mode
       if (btn.classList.contains('active')) {
@@ -2260,49 +2258,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // ---- Global gap selector — dynamic <style> override ----
-  // Gridstack positions .grid-stack-item cells edge-to-edge.
-  // The visible gap = content inset (top/right/bottom/left) on each cell.
-  // A dynamic <style> with !important is the only approach that reliably
-  // overrides Gridstack's inline CSS variable system.
+  // ---- Global gap selector ----
+  // Uses grid.margin() API which sets --gs-item-margin-* CSS variables.
+  // These inset .grid-stack-item-content within each cell via position:absolute + top/right/bottom/left.
   var marginBar = document.getElementById('margin-bar');
   var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
 
-  // Create persistent style element for gap overrides
-  var gapStyle = document.createElement('style');
-  gapStyle.id = 'gap-override';
-  document.head.appendChild(gapStyle);
-
   function setGlobalGap(px) {
-    console.log('[GAP] Setting gap to', px, 'px');
-    // Use every possible selector to ensure override
-    var css =
-      '.grid-stack > .grid-stack-item > .grid-stack-item-content,' +
-      '#perf-grid > .grid-stack-item > .grid-stack-item-content,' +
-      '#perf-grid.grid-stack > .grid-stack-item > .grid-stack-item-content {' +
-      '  top: ' + px + 'px !important;' +
-      '  right: ' + px + 'px !important;' +
-      '  bottom: ' + px + 'px !important;' +
-      '  left: ' + px + 'px !important;' +
-      '}';
-    gapStyle.textContent = css;
-    console.log('[GAP] Style tag content:', gapStyle.textContent.substring(0, 100));
-    // Also set the CSS variables on the grid element directly
-    var el = document.getElementById('perf-grid');
-    if (el) {
-      var val = px + 'px';
-      el.style.setProperty('--gs-item-margin-top', val);
-      el.style.setProperty('--gs-item-margin-right', val);
-      el.style.setProperty('--gs-item-margin-bottom', val);
-      el.style.setProperty('--gs-item-margin-left', val);
-      console.log('[GAP] CSS vars set on #perf-grid, computed --gs-item-margin-top:', getComputedStyle(el).getPropertyValue('--gs-item-margin-top'));
-    }
-    // Log computed style of first card content
-    var firstContent = document.querySelector('#perf-grid .grid-stack-item-content');
-    if (firstContent) {
-      var cs = getComputedStyle(firstContent);
-      console.log('[GAP] First card computed: top=' + cs.top + ' right=' + cs.right + ' bottom=' + cs.bottom + ' left=' + cs.left);
-    }
+    grid.margin(px);
   }
 
   marginBtns.forEach(function(mBtn) {
