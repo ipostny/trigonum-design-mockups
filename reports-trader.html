@@ -2090,6 +2090,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function addCardButtons(item) {
     var content = item.querySelector('.grid-stack-item-content');
     if (!content) return;
+    // Skip if buttons already exist (e.g. after grid re-init)
+    if (content.querySelector('.card-hide-btn')) return;
     content.style.position = 'relative';
     // Close button (×)
     var closeBtn = document.createElement('button');
@@ -2265,8 +2267,36 @@ document.addEventListener('DOMContentLoaded', function() {
   var marginBar = document.getElementById('margin-bar');
   var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
 
+  var currentGap = 8;
+  var gridOpts = {
+    column: 12, cellHeight: 30, staticGrid: true,
+    float: false, handle: '.chart-title',
+    resizable: { handles: 'se' }, animate: true
+  };
+
   function setGlobalGap(px) {
-    grid.margin(px);
+    if (px === currentGap) return;
+    currentGap = px;
+    // Save current layout + edit state
+    var layout = grid.save(false);
+    var isEditing = btn.classList.contains('active');
+    // Destroy grid (keep DOM elements)
+    grid.destroy(false);
+    // Re-initialize with new margin
+    gridOpts.margin = px;
+    gridOpts.staticGrid = !isEditing;
+    grid = GridStack.init(gridOpts, '#perf-grid');
+    // Restore positions
+    grid.load(layout);
+    // Re-attach handles + buttons
+    moveHandlesInside();
+    document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
+      addCardButtons(item);
+    });
+    if (isEditing) {
+      document.querySelector('.grid-stack').classList.add('grid-stack-editing');
+    }
+    grid.on('added', function() { setTimeout(moveHandlesInside, 50); });
   }
 
   marginBtns.forEach(function(mBtn) {
