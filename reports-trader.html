@@ -2195,38 +2195,44 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ---- Reset layout — full clean reset ----
+  // ---- Reset layout — full destroy + re-create ----
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
-      // 1. Destroy the current grid completely
-      grid.removeAll(true);
-      // 2. Restore original HTML
       var gridEl = document.getElementById('perf-grid');
+      // 1. Destroy grid completely (removes all Gridstack internals but keeps DOM)
+      grid.destroy(false);
+      // 2. Restore original HTML (wipes any Gridstack-injected wrappers/handles)
       gridEl.innerHTML = defaultGridHTML;
-      // 3. Clear hidden items
-      hiddenItems.length = 0;
-      refreshHiddenPanel();
-      // 4. Re-initialize all grid items from the restored HTML
-      var items = gridEl.querySelectorAll('.grid-stack-item');
-      items.forEach(function(item) {
-        grid.makeWidget(item);
-      });
-      // 5. Restore default positions
-      grid.load(defaultLayout);
-      // 6. Re-inject buttons and move handles
-      items.forEach(function(item) { addCardButtons(item); });
-      moveHandlesInside();
-      // 7. Reset page size to full
+      // 3. Reset page size
       gridEl.style.maxWidth = '';
       gridEl.style.margin = '';
+      // 4. Re-create grid from scratch
+      grid = GridStack.init({
+        column: 12,
+        cellHeight: 30,
+        margin: 8,
+        staticGrid: true,
+        float: false,
+        handle: '.chart-title',
+        resizable: { handles: 'se' },
+        animate: true
+      }, '#perf-grid');
+      // 5. Re-wire the 'added' event for handle relocation
+      grid.on('added', function() { setTimeout(moveHandlesInside, 50); });
+      // 6. Re-inject card buttons + move handles inside content
+      gridEl.querySelectorAll('.grid-stack-item').forEach(function(item) {
+        addCardButtons(item);
+      });
+      moveHandlesInside();
+      // 7. Clear hidden items
+      hiddenItems.length = 0;
+      refreshHiddenPanel();
+      // 8. Reset UI controls
       pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
-      // 8. Reset global gap to default (8px)
-      grid.margin(8);
       marginBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-margin') === '8'); });
       // 9. Exit customize mode
       if (btn.classList.contains('active')) {
         btn.classList.remove('active');
-        grid.setStatic(true);
         gridEl.classList.remove('grid-stack-editing');
         hiddenPanel.classList.remove('editing');
         resetBtn.style.display = 'none';
