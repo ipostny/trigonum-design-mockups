@@ -2274,13 +2274,35 @@ document.addEventListener('DOMContentLoaded', function() {
   document.head.appendChild(gapStyle);
 
   function setGlobalGap(px) {
-    gapStyle.textContent =
-      '#perf-grid > .grid-stack-item > .grid-stack-item-content {' +
+    console.log('[GAP] Setting gap to', px, 'px');
+    // Use every possible selector to ensure override
+    var css =
+      '.grid-stack > .grid-stack-item > .grid-stack-item-content,' +
+      '#perf-grid > .grid-stack-item > .grid-stack-item-content,' +
+      '#perf-grid.grid-stack > .grid-stack-item > .grid-stack-item-content {' +
       '  top: ' + px + 'px !important;' +
       '  right: ' + px + 'px !important;' +
       '  bottom: ' + px + 'px !important;' +
       '  left: ' + px + 'px !important;' +
       '}';
+    gapStyle.textContent = css;
+    console.log('[GAP] Style tag content:', gapStyle.textContent.substring(0, 100));
+    // Also set the CSS variables on the grid element directly
+    var el = document.getElementById('perf-grid');
+    if (el) {
+      var val = px + 'px';
+      el.style.setProperty('--gs-item-margin-top', val);
+      el.style.setProperty('--gs-item-margin-right', val);
+      el.style.setProperty('--gs-item-margin-bottom', val);
+      el.style.setProperty('--gs-item-margin-left', val);
+      console.log('[GAP] CSS vars set on #perf-grid, computed --gs-item-margin-top:', getComputedStyle(el).getPropertyValue('--gs-item-margin-top'));
+    }
+    // Log computed style of first card content
+    var firstContent = document.querySelector('#perf-grid .grid-stack-item-content');
+    if (firstContent) {
+      var cs = getComputedStyle(firstContent);
+      console.log('[GAP] First card computed: top=' + cs.top + ' right=' + cs.right + ' bottom=' + cs.bottom + ' left=' + cs.left);
+    }
   }
 
   marginBtns.forEach(function(mBtn) {
