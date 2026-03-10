@@ -16,6 +16,14 @@
   --green:  #00E68A;
   --red:    #FF4D6A;
   --amber:  #FFB020;
+  /* Chart palette — ordered for donut/pie segments */
+  --chart-1: #12CCFF;   /* cyan — primary segment */
+  --chart-2: #00E68A;   /* green — secondary segment */
+  --chart-3: #FFB020;   /* amber — tertiary segment */
+  --chart-4: #AF33FF;   /* purple — quaternary segment */
+  --chart-5: #FF4D6A;   /* red — quinary / loss accent */
+  --chart-6: #3B82F6;   /* blue — extra segment */
+  --chart-line: #12CCFF; /* line chart stroke */
   --white-92: rgba(255,255,255,0.92);
   --white-75: rgba(255,255,255,0.75);
   --white-55: rgba(255,255,255,0.55);
@@ -279,7 +287,222 @@ svg text { font-family: var(--font); }
   letter-spacing: 1px; background: rgba(175,51,255,0.15); color: var(--purple);
   z-index: 9999;
 }
+/* Gridstack dark theme overrides */
+.grid-stack { margin-bottom: 20px; }
+.grid-stack-item-content {
+  container-type: inline-size;
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.grid-stack-item-content.card--left {
+  align-items: stretch;
+  text-align: left;
+}
+.grid-stack-item-content .chart-title {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.grid-stack-item-content.card--left .chart-title {
+  text-align: left;
+}
+.grid-stack-item-content svg {
+  display: block;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.grid-stack-item-content > div {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.grid-stack-item-content table {
+  flex: 1 1 auto;
+}
+
+/* ---- Container Query Font Scaling ----
+   9 tiers that scale proportionally with card width.
+   At 380px: 1cqi = 3.8px. clamp() prevents extremes. */
+.fs-hero     { font-size: clamp(18px, 7.4cqi, 42px) !important; }
+.fs-value-xl { font-size: clamp(14px, 5.8cqi, 34px) !important; }
+.fs-value-lg { font-size: clamp(12px, 4.7cqi, 28px) !important; }
+.fs-title    { font-size: clamp(11px, 4.2cqi, 24px) !important; }
+.fs-value-md { font-size: clamp(10px, 3.7cqi, 20px) !important; }
+.fs-body     { font-size: clamp(9px, 3.2cqi, 18px) !important; }
+.fs-label    { font-size: clamp(8px, 2.9cqi, 16px) !important; }
+.fs-small    { font-size: clamp(7px, 2.6cqi, 14px) !important; }
+.fs-tiny     { font-size: clamp(6px, 2.4cqi, 12px) !important; }
+
+/* Chart title inherits scaling */
+.grid-stack-item-content .chart-title { font-size: clamp(11px, 4.2cqi, 24px); }
+
+/* Calendar responsive override */
+.grid-stack-item-content .calendar-grid { grid-template-columns: repeat(7, 1fr); }
+.grid-stack-item-content .calendar-cell { width: auto; height: auto; aspect-ratio: 1.1; }
+.grid-stack-item-content .calendar-header-cell { font-size: clamp(6px, 2.1cqi, 11px); }
+
+/* Lifecycle metrics grid scaling */
+.stat-metrics-grid { gap: clamp(4px, 1.5cqi, 16px) !important; margin-top: clamp(4px, 1cqi, 12px) !important; }
+/* ---- Page size presets ---- */
+.page-size-bar {
+  display: none; align-items: center; gap: 6px;
+  margin-left: auto; font-size: 11px; color: var(--white-55);
+}
+.grid-stack-editing ~ .page-size-bar,
+.page-size-bar.visible { display: flex; }
+.page-size-btn {
+  padding: 4px 10px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600;
+  background: var(--white-05); border: 1px solid var(--white-08); color: var(--white-55);
+  cursor: pointer; font-family: var(--font); transition: all 0.15s;
+}
+.page-size-btn:hover { background: var(--white-08); color: var(--white-75); }
+.page-size-btn.active { background: rgba(18,204,255,0.15); color: var(--cyan); border-color: rgba(18,204,255,0.3); }
+
+/* ---- Per-card inner padding button ---- */
+.card-padding-btn {
+  display: none; position: absolute; z-index: 20;
+  top: 6px; right: 32px;
+  width: 22px; height: 22px; border-radius: 6px;
+  font-size: 11px; line-height: 1;
+  cursor: pointer; align-items: center; justify-content: center;
+  font-family: var(--font); transition: all 0.15s;
+  background: rgba(18,204,255,0.1); border: 1px solid rgba(18,204,255,0.2);
+  color: rgba(18,204,255,0.7);
+}
+.card-padding-btn:hover { background: rgba(18,204,255,0.25); color: #fff; }
+.grid-stack.grid-stack-editing .card-padding-btn { display: flex; }
+/* Padding tiers */
+.grid-stack-item-content.pad-compact { padding: 8px !important; }
+.grid-stack-item-content.pad-compact .chart-title { margin-bottom: 4px; }
+.grid-stack-item-content.pad-normal  { padding: 20px !important; }
+.grid-stack-item-content.pad-roomy   { padding: 32px !important; }
+
+/* Gridstack drag/resize handles — only visible in edit mode */
+.ui-resizable-handle { opacity: 0; transition: opacity 0.2s; }
+.grid-stack.grid-stack-editing .ui-resizable-handle { opacity: 0.6; }
+.grid-stack.grid-stack-editing .ui-resizable-se {
+  position: absolute !important;
+  bottom: 4px !important;
+  right: 4px !important;
+  width: 26px; height: 26px;
+  background: rgba(18,204,255,0.15);
+  border-radius: 8px 0 var(--r-lg) 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M14 2L2 14M14 2v5M14 2h-5M2 14v-5M2 14h5' stroke='%2312CCFF' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+  transform: rotate(0deg) !important;
+  z-index: 20;
+}
+.grid-stack.grid-stack-editing .ui-resizable-se:hover {
+  background-color: rgba(18,204,255,0.3);
+}
+/* Drag handle indicator */
+.grid-stack.grid-stack-editing .chart-title {
+  cursor: grab;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: -4px -8px 8px;
+}
+.grid-stack.grid-stack-editing .chart-title:active { cursor: grabbing; }
+/* Placeholder while dragging */
+.grid-stack-placeholder > .placeholder-content {
+  background: rgba(18,204,255,0.08) !important;
+  border: 2px dashed rgba(18,204,255,0.4) !important;
+  border-radius: var(--r-lg) !important;
+}
+/* Edit mode outline on cards */
+.grid-stack.grid-stack-editing > .grid-stack-item > .grid-stack-item-content {
+  outline: 1px dashed rgba(18,204,255,0.15);
+  outline-offset: -1px;
+}
+/* Hide-card close button — only visible in edit mode */
+.card-hide-btn {
+  display: none;
+  position: absolute; top: 6px; right: 6px; z-index: 20;
+  width: 22px; height: 22px; border-radius: 6px;
+  background: rgba(255,77,106,0.15); border: 1px solid rgba(255,77,106,0.3);
+  color: rgba(255,77,106,0.8); font-size: 14px; line-height: 1;
+  cursor: pointer; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.card-hide-btn:hover { background: rgba(255,77,106,0.35); color: #fff; }
+.grid-stack.grid-stack-editing .card-hide-btn { display: flex; }
+/* Hidden widgets panel */
+.hidden-widgets-panel {
+  display: none; margin-bottom: 12px; padding: 12px 16px;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--white-08);
+  border-radius: var(--r-md); font-size: 12px;
+}
+.hidden-widgets-panel.has-items.editing { display: block; }
+.hidden-widgets-panel .hw-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--white-55); margin-bottom: 8px;
+}
+.hidden-widget-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; margin: 3px 4px; border-radius: var(--r-full);
+  background: rgba(18,204,255,0.08); border: 1px solid rgba(18,204,255,0.2);
+  color: var(--cyan); font-size: 11px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s;
+}
+.hidden-widget-chip:hover { background: rgba(18,204,255,0.18); }
+
+/* ---- Card hover info overlay ---- */
+.card-hover-overlay {
+  position: absolute; inset: 0; z-index: 15;
+  background: rgba(13,13,36,0.92);
+  backdrop-filter: blur(8px);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+.grid-stack-item-content:hover > .card-hover-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* Don't show hover overlay in edit mode (interferes with drag/resize) */
+.grid-stack.grid-stack-editing .card-hover-overlay { display: none !important; }
+.card-hover-overlay .hover-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--cyan); margin-bottom: 10px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--white-08);
+}
+.card-hover-overlay .hover-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 3px 0;
+}
+.card-hover-overlay .hover-label {
+  font-size: 11px; color: var(--white-55);
+}
+.card-hover-overlay .hover-value {
+  font-size: 12px; font-weight: 600; color: var(--white-92);
+}
+.card-hover-overlay .hover-value.green { color: var(--green); }
+.card-hover-overlay .hover-value.red { color: var(--red); }
+.card-hover-overlay .hover-value.cyan { color: var(--cyan); }
+.card-hover-overlay .hover-divider {
+  height: 1px; background: var(--white-08); margin: 6px 0;
+}
 </style>
+<link href="https://cdn.jsdelivr.net/npm/gridstack@12/dist/gridstack.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gridstack@12/dist/gridstack-all.js"></script>
 <link rel="stylesheet" href="shared-interactive.css">
 <link rel="stylesheet" href="shared-cards.css">
 </head>
@@ -360,37 +583,106 @@ svg text { font-family: var(--font); }
         </div>
       </div>
 
-      <!-- Equity Curve + PnL Calendar side by side -->
-      <div class="charts-row">
-      <div class="chart-card">
-        <h3 class="chart-title">Equity Curve</h3>
-        <svg width="100%" height="160" viewBox="0 0 800 160" preserveAspectRatio="xMidYMid meet">
+      <!-- Trader filter (team lead only) -->
+      <div class="filters-bar" style="margin-bottom:12px;">
+        <div class="filter-group">
+          <label>Trader</label>
+          <select class="filter-input" id="tl-perf-trader-filter">
+            <option value="">All Traders</option>
+            <option>Jack Thompson</option>
+            <option>David Kim</option>
+            <option>Alex Sato</option>
+            <option>Maria Chen</option>
+            <option>Tom Lee</option>
+            <option>Sara White</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Customize controls -->
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="customize-toggle" id="tl-customize-btn">&#9881; Customize Layout</button>
+        <button class="customize-toggle" id="tl-reset-btn" style="display:none;">&#8634; Reset Layout</button>
+        <div class="page-size-bar" id="tl-page-size-bar">
+          <span style="margin-right:2px;">Page:</span>
+          <button class="page-size-btn" data-width="1000">S</button>
+          <button class="page-size-btn" data-width="1280">M</button>
+          <button class="page-size-btn active" data-width="0">Full</button>
+        </div>
+        <div class="page-size-bar" id="tl-margin-bar">
+          <span style="margin-right:2px;">Gap:</span>
+          <button class="page-size-btn" data-margin="0">0</button>
+          <button class="page-size-btn" data-margin="4">4</button>
+          <button class="page-size-btn active" data-margin="8">8</button>
+          <button class="page-size-btn" data-margin="16">16</button>
+          <button class="page-size-btn" data-margin="24">24</button>
+        </div>
+      </div>
+
+      <!-- Hidden widgets restore panel -->
+      <div class="hidden-widgets-panel" id="tl-hidden-panel">
+        <div class="hw-title">Hidden Widgets — click to restore</div>
+        <div id="tl-hidden-chips"></div>
+      </div>
+
+      <!-- Gridstack Dashboard -->
+      <div class="grid-stack" id="tl-perf-grid">
+
+      <!-- Equity Curve — large (8 of 12 cols) -->
+      <div class="grid-stack-item" gs-w="8" gs-h="8">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Equity Curve Details</div>
+          <div class="hover-row"><span class="hover-label">Starting Capital</span><span class="hover-value">$100,000</span></div>
+          <div class="hover-row"><span class="hover-label">Current Value</span><span class="hover-value green">$120,420</span></div>
+          <div class="hover-row"><span class="hover-label">Total Return</span><span class="hover-value green">+20.42%</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Period</span><span class="hover-value">Jul 2025 - Mar 2026 (9 months)</span></div>
+          <div class="hover-row"><span class="hover-label">Sharpe Ratio</span><span class="hover-value cyan">1.85</span></div>
+          <div class="hover-row"><span class="hover-label">Sortino Ratio</span><span class="hover-value cyan">2.41</span></div>
+          <div class="hover-row"><span class="hover-label">Max Drawdown</span><span class="hover-value red">-4.2%</span></div>
+          <div class="hover-row"><span class="hover-label">Avg Monthly Return</span><span class="hover-value green">+2.27%</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Equity Curve</h3>
+        <svg viewBox="0 0 800 160" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <linearGradient id="eq-grad" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="tl-eq-grad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#12CCFF" stop-opacity="0.15"/>
               <stop offset="100%" stop-color="#12CCFF" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <!-- Y-axis labels (left side) -->
-          <text x="38" y="18" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$120K</text>
-          <text x="38" y="50" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$115K</text>
-          <text x="38" y="90" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$110K</text>
-          <text x="38" y="130" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$105K</text>
-          <text x="38" y="170" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$100K</text>
-          <!-- Grid lines -->
+          <text class="fs-tiny" x="38" y="18" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$120K</text>
+          <text class="fs-tiny" x="38" y="45" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$115K</text>
+          <text class="fs-tiny" x="38" y="80" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$110K</text>
+          <text class="fs-tiny" x="38" y="115" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$105K</text>
+          <text class="fs-tiny" x="38" y="150" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$100K</text>
           <line x1="45" y1="14" x2="795" y2="14" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-          <line x1="45" y1="46" x2="795" y2="46" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-          <line x1="45" y1="86" x2="795" y2="86" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-          <line x1="45" y1="126" x2="795" y2="126" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-          <line x1="45" y1="166" x2="795" y2="166" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-          <!-- Area fill (chart area: x 50-790, y 10-170) -->
-          <path d="M50,160 L75,152 L100,148 L125,140 L150,136 L175,128 L200,132 L225,120 L250,112 L275,116 L300,104 L325,96 L350,92 L375,84 L400,88 L425,80 L450,76 L475,64 L500,60 L525,56 L550,52 L575,48 L600,44 L625,40 L650,36 L675,34 L700,32 L725,28 L750,24 L775,20 L790,16 L790,170 L50,170 Z" fill="url(#eq-grad)"/>
-          <!-- Line -->
-          <path d="M50,160 L75,152 L100,148 L125,140 L150,136 L175,128 L200,132 L225,120 L250,112 L275,116 L300,104 L325,96 L350,92 L375,84 L400,88 L425,80 L450,76 L475,64 L500,60 L525,56 L550,52 L575,48 L600,44 L625,40 L650,36 L675,34 L700,32 L725,28 L750,24 L775,20 L790,16" fill="none" stroke="#12CCFF" stroke-width="1.5"/>
+          <line x1="45" y1="41" x2="795" y2="41" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="45" y1="76" x2="795" y2="76" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="45" y1="111" x2="795" y2="111" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="45" y1="146" x2="795" y2="146" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <path d="M50,142 L75,135 L100,131 L125,124 L150,121 L175,114 L200,117 L225,107 L250,100 L275,103 L300,93 L325,86 L350,82 L375,76 L400,79 L425,72 L450,69 L475,58 L500,55 L525,52 L550,48 L575,45 L600,41 L625,38 L650,35 L675,33 L700,31 L725,27 L750,24 L775,20 L790,17 L790,150 L50,150 Z" fill="url(#tl-eq-grad)"/>
+          <path d="M50,142 L75,135 L100,131 L125,124 L150,121 L175,114 L200,117 L225,107 L250,100 L275,103 L300,93 L325,86 L350,82 L375,76 L400,79 L425,72 L450,69 L475,58 L500,55 L525,52 L550,48 L575,45 L600,41 L625,38 L650,35 L675,33 L700,31 L725,27 L750,24 L775,20 L790,17" fill="none" stroke="var(--chart-1)" stroke-width="1.5"/>
         </svg>
+        </div>
       </div>
-      <div class="chart-card">
-        <h3 class="chart-title">PnL Calendar &mdash; March 2026</h3>
+
+      <!-- PnL Calendar — small (4 of 12 cols) -->
+      <div class="grid-stack-item" gs-w="4" gs-h="16">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">PnL Calendar Details</div>
+          <div class="hover-row"><span class="hover-label">Month</span><span class="hover-value">March 2026</span></div>
+          <div class="hover-row"><span class="hover-label">Profitable Days</span><span class="hover-value green">5</span></div>
+          <div class="hover-row"><span class="hover-label">Loss Days</span><span class="hover-value red">2</span></div>
+          <div class="hover-row"><span class="hover-label">Flat Days</span><span class="hover-value">2</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Best Day</span><span class="hover-value green">Mar 4 (+$1,240)</span></div>
+          <div class="hover-row"><span class="hover-label">Worst Day</span><span class="hover-value red">Mar 6 (-$680)</span></div>
+          <div class="hover-row"><span class="hover-label">Month PnL</span><span class="hover-value green">+$2,180</span></div>
+          <div class="hover-row"><span class="hover-label">Win Day Rate</span><span class="hover-value cyan">71.4%</span></div>
+        </div>
+        <h3 class="chart-title fs-title">PnL Calendar &mdash; March 2026</h3>
         <div class="calendar-grid">
           <div class="calendar-header-cell">Mon</div>
           <div class="calendar-header-cell">Tue</div>
@@ -399,7 +691,6 @@ svg text { font-family: var(--font); }
           <div class="calendar-header-cell">Fri</div>
           <div class="calendar-header-cell">Sat</div>
           <div class="calendar-header-cell">Sun</div>
-          <!-- Week 1 (Mar starts on Sun) -->
           <div class="calendar-cell empty"></div>
           <div class="calendar-cell empty"></div>
           <div class="calendar-cell empty"></div>
@@ -407,7 +698,6 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell empty"></div>
           <div class="calendar-cell empty"></div>
           <div class="calendar-cell profit-2">1</div>
-          <!-- Week 2 -->
           <div class="calendar-cell profit-1">2</div>
           <div class="calendar-cell loss-1">3</div>
           <div class="calendar-cell profit-3">4</div>
@@ -415,7 +705,6 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell loss-2">6</div>
           <div class="calendar-cell neutral">7</div>
           <div class="calendar-cell neutral">8</div>
-          <!-- Week 3 (today = 9) -->
           <div class="calendar-cell profit-2 today">9</div>
           <div class="calendar-cell neutral">10</div>
           <div class="calendar-cell neutral">11</div>
@@ -423,7 +712,6 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell neutral">13</div>
           <div class="calendar-cell neutral">14</div>
           <div class="calendar-cell neutral">15</div>
-          <!-- Week 4 -->
           <div class="calendar-cell neutral">16</div>
           <div class="calendar-cell neutral">17</div>
           <div class="calendar-cell neutral">18</div>
@@ -431,7 +719,6 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell neutral">20</div>
           <div class="calendar-cell neutral">21</div>
           <div class="calendar-cell neutral">22</div>
-          <!-- Week 5 -->
           <div class="calendar-cell neutral">23</div>
           <div class="calendar-cell neutral">24</div>
           <div class="calendar-cell neutral">25</div>
@@ -439,146 +726,697 @@ svg text { font-family: var(--font); }
           <div class="calendar-cell neutral">27</div>
           <div class="calendar-cell neutral">28</div>
           <div class="calendar-cell neutral">29</div>
-          <!-- Week 6 -->
           <div class="calendar-cell neutral">30</div>
           <div class="calendar-cell neutral">31</div>
         </div>
-        <div style="display:flex;gap:12px;align-items:center;font-size:10px;color:var(--white-55);">
+        <div class="fs-small" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;color:var(--white-55);margin-top:8px;">
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,77,106,0.35);"></span> Loss</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(255,77,106,0.1);"></span> Small loss</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--white-05);"></span> No data</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.1);"></span> Small profit</span>
           <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,230,138,0.35);"></span> Profit</span>
         </div>
-      </div>
-      </div>
-
-      <!-- Monthly Returns + Drawdown side by side -->
-      <div class="charts-row">
-        <div class="chart-card">
-          <h3 class="chart-title">Monthly Returns</h3>
-          <svg width="100%" height="190" viewBox="0 0 400 190" preserveAspectRatio="xMidYMid meet">
-            <!-- Zero line at y=110 (gives more room below for negative bars + labels) -->
-            <line x1="30" y1="110" x2="390" y2="110" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-            <!-- Positive bars (grow up from y=110) -->
-            <rect x="48" y="82" width="24" height="28" rx="3" fill="rgba(0,230,138,0.5)"/>
-            <rect x="86" y="68" width="24" height="42" rx="3" fill="rgba(0,230,138,0.5)"/>
-            <rect x="162" y="48" width="24" height="62" rx="3" fill="rgba(0,230,138,0.6)"/>
-            <rect x="200" y="88" width="24" height="22" rx="3" fill="rgba(0,230,138,0.45)"/>
-            <rect x="276" y="56" width="24" height="54" rx="3" fill="rgba(0,230,138,0.55)"/>
-            <rect x="314" y="72" width="24" height="38" rx="3" fill="rgba(0,230,138,0.5)"/>
-            <rect x="352" y="76" width="24" height="34" rx="3" fill="rgba(0,230,138,0.5)"/>
-            <!-- Negative bars (grow down from y=110) -->
-            <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,77,106,0.5)"/>
-            <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,77,106,0.4)"/>
-            <!-- Month labels (y=180, well below bars) -->
-            <text x="60" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
-            <text x="98" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
-            <text x="136" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Sep</text>
-            <text x="174" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Oct</text>
-            <text x="212" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Nov</text>
-            <text x="250" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Dec</text>
-            <text x="288" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jan</text>
-            <text x="326" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Feb</text>
-            <text x="364" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Mar</text>
-            <!-- Value labels (above positive bars, below negative bars with spacing) -->
-            <text x="60" y="77" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+3.5%</text>
-            <text x="98" y="63" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+5.0%</text>
-            <text x="136" y="142" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
-            <text x="174" y="43" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+7.0%</text>
-            <text x="212" y="83" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+2.5%</text>
-            <text x="250" y="134" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
-            <text x="288" y="51" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+6.0%</text>
-            <text x="326" y="67" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.5%</text>
-            <text x="364" y="71" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.0%</text>
-          </svg>
-        </div>
-        <div class="chart-card">
-          <h3 class="chart-title">Drawdown</h3>
-          <svg width="100%" height="155" viewBox="0 0 400 155" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="dd-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#FF4D6A" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#FF4D6A" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <!-- Y-axis labels -->
-            <text x="28" y="24" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">0%</text>
-            <text x="28" y="64" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-2%</text>
-            <text x="28" y="104" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-4%</text>
-            <text x="28" y="144" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-6%</text>
-            <!-- Grid lines -->
-            <line x1="32" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-            <line x1="32" y1="60" x2="390" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-            <line x1="32" y1="100" x2="390" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-            <line x1="32" y1="140" x2="390" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-            <!-- Drawdown area -->
-            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20 L390,20 L35,20 Z" fill="url(#dd-grad)"/>
-            <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="#FF4D6A" stroke-width="1.5" opacity="0.7"/>
-            <!-- Max DD marker -->
-            <circle cx="160" cy="85" r="3.5" fill="#FF4D6A" opacity="0.8"/>
-            <text x="160" y="100" fill="rgba(255,77,106,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
-          </svg>
         </div>
       </div>
 
-      <!-- Performance breakdown -->
-      <div class="charts-row">
-        <div class="chart-card">
-          <h3 class="chart-title">Win/Loss Distribution</h3>
-          <div style="display:flex;gap:20px;align-items:center;">
-            <!-- Donut chart -->
-            <svg width="110" height="110" viewBox="0 0 110 110">
-              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="10"/>
-              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(0,230,138,0.6)" stroke-width="10"
-                stroke-dasharray="177 100" stroke-dashoffset="-69" stroke-linecap="round"/>
-              <circle cx="55" cy="55" r="44" fill="none" stroke="rgba(255,77,106,0.5)" stroke-width="10"
-                stroke-dasharray="100 177" stroke-dashoffset="-246" stroke-linecap="round"/>
-              <text x="55" y="50" fill="var(--white-92)" font-size="16" font-weight="700" text-anchor="middle">64%</text>
-              <text x="55" y="65" fill="var(--white-55)" font-size="9" text-anchor="middle">Win Rate</text>
-            </svg>
-            <div style="font-size:12px;color:var(--white-75);">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--green);opacity:0.7;"></span>
-                <span>Wins: 91 trades (+$28,400)</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--red);opacity:0.6;"></span>
-                <span>Losses: 51 trades (-$9,980)</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span style="width:8px;height:8px;border-radius:2px;background:var(--white-15);"></span>
-                <span>Avg Win: +$312 | Avg Loss: -$196</span>
-              </div>
-            </div>
+      <!-- Monthly Returns — medium (6 of 12 cols) -->
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Monthly Returns Details</div>
+          <div class="hover-row"><span class="hover-label">Best Month</span><span class="hover-value green">Oct +7.0%</span></div>
+          <div class="hover-row"><span class="hover-label">Worst Month</span><span class="hover-value red">Sep -2.5%</span></div>
+          <div class="hover-row"><span class="hover-label">Avg Monthly Return</span><span class="hover-value green">+3.17%</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Positive Months</span><span class="hover-value green">7 / 9</span></div>
+          <div class="hover-row"><span class="hover-label">Negative Months</span><span class="hover-value red">2 / 9</span></div>
+          <div class="hover-row"><span class="hover-label">Cumulative Return</span><span class="hover-value green">+28.5%</span></div>
+          <div class="hover-row"><span class="hover-label">Monthly Consistency</span><span class="hover-value cyan">77.8%</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Monthly Returns</h3>
+        <svg viewBox="0 0 400 190" preserveAspectRatio="xMidYMid meet">
+          <line x1="30" y1="110" x2="390" y2="110" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <rect x="48" y="82" width="24" height="28" rx="3" fill="rgba(0,230,138,0.5)"/>
+          <rect x="86" y="68" width="24" height="42" rx="3" fill="rgba(0,230,138,0.5)"/>
+          <rect x="162" y="48" width="24" height="62" rx="3" fill="rgba(0,230,138,0.6)"/>
+          <rect x="200" y="88" width="24" height="22" rx="3" fill="rgba(0,230,138,0.45)"/>
+          <rect x="276" y="56" width="24" height="54" rx="3" fill="rgba(0,230,138,0.55)"/>
+          <rect x="314" y="72" width="24" height="38" rx="3" fill="rgba(0,230,138,0.5)"/>
+          <rect x="352" y="76" width="24" height="34" rx="3" fill="rgba(0,230,138,0.5)"/>
+          <rect x="124" y="110" width="24" height="22" rx="3" fill="rgba(255,77,106,0.5)"/>
+          <rect x="238" y="110" width="24" height="14" rx="3" fill="rgba(255,77,106,0.4)"/>
+          <text class="fs-tiny" x="60" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jul</text>
+          <text class="fs-tiny" x="98" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Aug</text>
+          <text class="fs-tiny" x="136" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Sep</text>
+          <text class="fs-tiny" x="174" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Oct</text>
+          <text class="fs-tiny" x="212" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Nov</text>
+          <text class="fs-tiny" x="250" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Dec</text>
+          <text class="fs-tiny" x="288" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Jan</text>
+          <text class="fs-tiny" x="326" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Feb</text>
+          <text class="fs-tiny" x="364" y="180" fill="rgba(255,255,255,0.35)" font-size="9" text-anchor="middle">Mar</text>
+          <text class="fs-tiny" x="60" y="77" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+3.5%</text>
+          <text class="fs-tiny" x="98" y="63" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+5.0%</text>
+          <text class="fs-tiny" x="136" y="142" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-2.5%</text>
+          <text class="fs-tiny" x="174" y="43" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+7.0%</text>
+          <text class="fs-tiny" x="212" y="83" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+2.5%</text>
+          <text class="fs-tiny" x="250" y="134" fill="rgba(255,77,106,0.8)" font-size="8" text-anchor="middle">-1.5%</text>
+          <text class="fs-tiny" x="288" y="51" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+6.0%</text>
+          <text class="fs-tiny" x="326" y="67" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.5%</text>
+          <text class="fs-tiny" x="364" y="71" fill="rgba(0,230,138,0.8)" font-size="8" text-anchor="middle">+4.0%</text>
+        </svg>
+        </div>
+      </div>
+
+      <!-- Drawdown — medium (6 of 12 cols) -->
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Drawdown Details</div>
+          <div class="hover-row"><span class="hover-label">Max Drawdown</span><span class="hover-value red">-4.2%</span></div>
+          <div class="hover-row"><span class="hover-label">Max DD ($)</span><span class="hover-value red">-$4,536</span></div>
+          <div class="hover-row"><span class="hover-label">Current Drawdown</span><span class="hover-value green">0%</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Avg Drawdown</span><span class="hover-value">-1.8%</span></div>
+          <div class="hover-row"><span class="hover-label">Max DD Duration</span><span class="hover-value">18 days</span></div>
+          <div class="hover-row"><span class="hover-label">Avg Recovery Time</span><span class="hover-value">12 days</span></div>
+          <div class="hover-row"><span class="hover-label">DD Occurrences</span><span class="hover-value">6</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Drawdown</h3>
+        <svg viewBox="0 0 400 155" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="tl-dd-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FF4D6A" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#FF4D6A" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <text class="fs-tiny" x="28" y="24" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">0%</text>
+          <text class="fs-tiny" x="28" y="64" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-2%</text>
+          <text class="fs-tiny" x="28" y="104" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-4%</text>
+          <text class="fs-tiny" x="28" y="144" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-6%</text>
+          <line x1="32" y1="20" x2="390" y2="20" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="32" y1="60" x2="390" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="32" y1="100" x2="390" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="32" y1="140" x2="390" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20 L390,20 L35,20 Z" fill="url(#tl-dd-grad)"/>
+          <path d="M35,20 L70,20 L100,25 L130,50 L160,85 L190,65 L220,35 L250,20 L280,22 L310,40 L340,55 L370,32 L390,20" fill="none" stroke="var(--chart-5)" stroke-width="1.5" opacity="0.7"/>
+          <circle cx="160" cy="85" r="3.5" fill="var(--chart-5)" opacity="0.8"/>
+          <text class="fs-tiny" x="160" y="100" fill="rgba(255,77,106,0.8)" font-size="9" text-anchor="middle">-4.2%</text>
+        </svg>
+        </div>
+      </div>
+
+      <!-- Win/Loss Distribution — small (4 of 12 cols) -->
+      <div class="grid-stack-item" gs-w="4" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Win/Loss Details</div>
+          <div class="hover-row"><span class="hover-label">Win Rate</span><span class="hover-value green">64%</span></div>
+          <div class="hover-row"><span class="hover-label">Total Trades</span><span class="hover-value">142</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Wins</span><span class="hover-value green">91 (+$28,400)</span></div>
+          <div class="hover-row"><span class="hover-label">Losses</span><span class="hover-value red">51 (-$9,980)</span></div>
+          <div class="hover-row"><span class="hover-label">Avg Win</span><span class="hover-value green">+$312</span></div>
+          <div class="hover-row"><span class="hover-label">Avg Loss</span><span class="hover-value red">-$196</span></div>
+          <div class="hover-row"><span class="hover-label">Profit Factor</span><span class="hover-value cyan">2.85</span></div>
+          <div class="hover-row"><span class="hover-label">Expectancy</span><span class="hover-value green">+$129.7 / trade</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Win/Loss Distribution</h3>
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="10"/>
+          <circle cx="60" cy="60" r="48" fill="none" stroke="var(--chart-2)" stroke-width="10"
+            stroke-dasharray="193 108" stroke-dashoffset="-75" stroke-linecap="round" opacity="0.8"/>
+          <circle cx="60" cy="60" r="48" fill="none" stroke="var(--chart-5)" stroke-width="10"
+            stroke-dasharray="108 193" stroke-dashoffset="-268" stroke-linecap="round" opacity="0.7"/>
+          <text class="fs-value-lg" x="60" y="55" fill="var(--white-92)" font-size="18" font-weight="700" text-anchor="middle">64%</text>
+          <text class="fs-small" x="60" y="72" fill="var(--white-55)" font-size="10" text-anchor="middle">Win Rate</text>
+        </svg>
+        <div class="fs-label" style="color:var(--white-75);margin-top:8px;text-align:center;">
+          <div style="margin-bottom:4px;">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--green);opacity:0.7;vertical-align:middle;margin-right:4px;"></span>
+            Wins: 91 (+$28,400)
+          </div>
+          <div style="margin-bottom:4px;">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--red);opacity:0.6;vertical-align:middle;margin-right:4px;"></span>
+            Losses: 51 (-$9,980)
+          </div>
+          <div>Avg Win: +$312 | Avg Loss: -$196</div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Time of Day — small (4 of 12 cols) -->
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Time of Day Details</div>
+          <div class="hover-row"><span class="hover-label">Best Period</span><span class="hover-value green">8-12h (42 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">Worst Period</span><span class="hover-value red">20-24h (10 trades)</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">0-4h</span><span class="hover-value">12 trades (+$840)</span></div>
+          <div class="hover-row"><span class="hover-label">4-8h</span><span class="hover-value">24 trades (+$2,100)</span></div>
+          <div class="hover-row"><span class="hover-label">8-12h</span><span class="hover-value green">42 trades (+$5,600)</span></div>
+          <div class="hover-row"><span class="hover-label">12-16h</span><span class="hover-value">35 trades (+$3,200)</span></div>
+          <div class="hover-row"><span class="hover-label">16-20h</span><span class="hover-value">19 trades (+$1,100)</span></div>
+          <div class="hover-row"><span class="hover-label">20-24h</span><span class="hover-value red">10 trades (-$420)</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Time of Day Analysis</h3>
+        <svg viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
+          <rect x="30" y="82" width="40" height="28" rx="3" fill="rgba(0,230,138,0.2)"/>
+          <rect x="85" y="62" width="40" height="48" rx="3" fill="rgba(0,230,138,0.3)"/>
+          <rect x="140" y="32" width="40" height="78" rx="3" fill="rgba(0,230,138,0.45)"/>
+          <rect x="195" y="47" width="40" height="63" rx="3" fill="rgba(0,230,138,0.35)"/>
+          <rect x="250" y="72" width="40" height="38" rx="3" fill="rgba(0,230,138,0.25)"/>
+          <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(255,77,106,0.25)"/>
+          <text class="fs-tiny" x="50" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">0-4h</text>
+          <text class="fs-tiny" x="105" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">4-8h</text>
+          <text class="fs-tiny" x="160" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">8-12h</text>
+          <text class="fs-tiny" x="215" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">12-16h</text>
+          <text class="fs-tiny" x="270" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">16-20h</text>
+          <text class="fs-tiny" x="325" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">20-24h</text>
+          <text class="fs-tiny" x="50" y="78" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">12</text>
+          <text class="fs-tiny" x="105" y="58" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">24</text>
+          <text class="fs-tiny" x="160" y="28" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">42</text>
+          <text class="fs-tiny" x="215" y="43" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">35</text>
+          <text class="fs-tiny" x="270" y="68" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">19</text>
+          <text class="fs-tiny" x="325" y="88" fill="rgba(255,77,106,0.7)" font-size="8" text-anchor="middle">10</text>
+        </svg>
+        </div>
+      </div>
+
+      <!-- PnL by Symbol — small (4 of 12 cols) -->
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">PnL by Symbol Details</div>
+          <div class="hover-row"><span class="hover-label">Symbols Traded</span><span class="hover-value">5</span></div>
+          <div class="hover-row"><span class="hover-label">Net Total PnL</span><span class="hover-value green">+$18,420</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">BTC</span><span class="hover-value green">+$8,200 (38 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">ETH</span><span class="hover-value green">+$5,700 (31 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">SOL</span><span class="hover-value green">+$4,100 (28 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">DOGE</span><span class="hover-value green">+$2,400 (26 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">XRP</span><span class="hover-value red">-$1,980 (19 trades)</span></div>
+        </div>
+        <h3 class="chart-title fs-title">PnL by Symbol</h3>
+        <svg viewBox="0 0 400 145" preserveAspectRatio="xMidYMid meet">
+          <text class="fs-small" x="45" y="18" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="end">BTC</text>
+          <rect x="50" y="8" width="200" height="14" rx="3" fill="rgba(0,230,138,0.4)"/>
+          <text class="fs-tiny" x="256" y="18" fill="rgba(0,230,138,0.8)" font-size="9">+$8,200</text>
+          <text class="fs-small" x="45" y="42" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="end">ETH</text>
+          <rect x="50" y="32" width="140" height="14" rx="3" fill="rgba(0,230,138,0.35)"/>
+          <text class="fs-tiny" x="196" y="42" fill="rgba(0,230,138,0.8)" font-size="9">+$5,700</text>
+          <text class="fs-small" x="45" y="66" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="end">SOL</text>
+          <rect x="50" y="56" width="100" height="14" rx="3" fill="rgba(0,230,138,0.3)"/>
+          <text class="fs-tiny" x="156" y="66" fill="rgba(0,230,138,0.8)" font-size="9">+$4,100</text>
+          <text class="fs-small" x="45" y="90" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="end">DOGE</text>
+          <rect x="50" y="80" width="60" height="14" rx="3" fill="rgba(0,230,138,0.25)"/>
+          <text class="fs-tiny" x="116" y="90" fill="rgba(0,230,138,0.8)" font-size="9">+$2,400</text>
+          <text class="fs-small" x="45" y="114" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="end">XRP</text>
+          <rect x="50" y="104" width="30" height="14" rx="3" fill="rgba(255,77,106,0.3)"/>
+          <text class="fs-tiny" x="86" y="114" fill="rgba(255,77,106,0.8)" font-size="9">-$1,980</text>
+        </svg>
+        </div>
+      </div>
+
+      <!-- ========== NEW WIDGETS FROM FRONTEND ========== -->
+
+      <!-- Coin PnL Distribution, Count — small -->
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">PnL Distribution by Count</div>
+          <div class="hover-row"><span class="hover-label">Total Trades</span><span class="hover-value">12</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">BTCUSDT</span><span class="hover-value cyan">10 trades (83.3%)</span></div>
+          <div class="hover-row"><span class="hover-label">OGSUSDT</span><span class="hover-value">2 trades (16.7%)</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Coin PnL Distribution, Count</h3>
+        <svg viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-1)" stroke-width="30"
+            stroke-dasharray="352 88" stroke-dashoffset="-110" stroke-linecap="butt"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-3)" stroke-width="30"
+            stroke-dasharray="88 352" stroke-dashoffset="-462" stroke-linecap="butt"/>
+        </svg>
+        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> BTCUSDT
+          <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-3);vertical-align:middle;margin-left:8px;margin-right:3px;"></span> OGSUSDT
+        </div>
+        </div>
+      </div>
+
+      <!-- Coin PnL Profit Distribution, USD — small -->
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Profit Distribution by USD</div>
+          <div class="hover-row"><span class="hover-label">Total Profit</span><span class="hover-value green">+$17,365.61</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">BTCUSDT</span><span class="hover-value green">+$17,200.14 (99.0%)</span></div>
+          <div class="hover-row"><span class="hover-label">OGSUSDT</span><span class="hover-value green">+$165.47 (1.0%)</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Coin PnL Profit Distribution, USD</h3>
+        <svg viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-1)" stroke-width="30"
+            stroke-dasharray="396 44" stroke-dashoffset="-110" stroke-linecap="butt"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-3)" stroke-width="30"
+            stroke-dasharray="44 396" stroke-dashoffset="-506" stroke-linecap="butt"/>
+        </svg>
+        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> BTCUSDT
+          <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-3);vertical-align:middle;margin-left:8px;margin-right:3px;"></span> OGSUSDT
+        </div>
+        </div>
+      </div>
+
+      <!-- Coin PnL Loss Distribution, USD — small -->
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Loss Distribution by USD</div>
+          <div class="hover-row"><span class="hover-label">Total Loss</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">BTCUSDT</span><span class="hover-value red">-$167.50 (100%)</span></div>
+          <div class="hover-row"><span class="hover-label">OGSUSDT</span><span class="hover-value">$0 (0%)</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Coin PnL Loss Distribution, USD</h3>
+        <svg viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-1)" stroke-width="30"
+            stroke-dasharray="440 0" stroke-dashoffset="-110" stroke-linecap="butt"/>
+        </svg>
+        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> BTCUSDT
+        </div>
+        </div>
+      </div>
+
+      <!-- Trader PnL Distribution, Count — small -->
+      <div class="grid-stack-item" gs-w="3" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Trader Distribution by Count</div>
+          <div class="hover-row"><span class="hover-label">Total Trades</span><span class="hover-value">12</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">trader</span><span class="hover-value cyan">7 trades (58.3%)</span></div>
+          <div class="hover-row"><span class="hover-label">Test Trader</span><span class="hover-value">5 trades (41.7%)</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">trader PnL</span><span class="hover-value red">-$220.73</span></div>
+          <div class="hover-row"><span class="hover-label">Test Trader PnL</span><span class="hover-value green">+$53.23</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Trader PnL Distribution, Count</h3>
+        <svg viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="30"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-1)" stroke-width="30"
+            stroke-dasharray="264 176" stroke-dashoffset="-110" stroke-linecap="butt"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-3)" stroke-width="30"
+            stroke-dasharray="176 264" stroke-dashoffset="-374" stroke-linecap="butt"/>
+        </svg>
+        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> trader
+          <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-3);vertical-align:middle;margin-left:8px;margin-right:3px;"></span> Test Trader
+        </div>
+        </div>
+      </div>
+
+      <!-- Total PnL — small -->
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
+        <div class="grid-stack-item-content card--left">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Total PnL Details</div>
+          <div class="hover-row"><span class="hover-label">Realized PnL</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-row"><span class="hover-label">Return %</span><span class="hover-value red">-0.24%</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Period</span><span class="hover-value">March 2026</span></div>
+          <div class="hover-row"><span class="hover-label">Gross Profit</span><span class="hover-value green">+$17,365.61</span></div>
+          <div class="hover-row"><span class="hover-label">Gross Loss</span><span class="hover-value red">-$17,533.11</span></div>
+          <div class="hover-row"><span class="hover-label">Fees Paid</span><span class="hover-value">$42.80</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Total PnL</h3>
+        <div style="margin-top:4px;">
+          <div class="fs-hero" style="font-weight:800;color:var(--red);">-167.5 <span class="fs-value-md" style="font-weight:600;color:var(--white-55);">USD</span></div>
+          <div class="fs-value-lg" style="font-weight:700;color:var(--red);margin-top:2px;">-0.24 %</div>
+        </div>
+        </div>
+      </div>
+
+      <!-- P&L Ranking — small -->
+      <div class="grid-stack-item" gs-w="4" gs-h="8">
+        <div class="grid-stack-item-content card--left">
+        <div class="card-hover-overlay">
+          <div class="hover-title">P&amp;L Ranking Details</div>
+          <div class="hover-row"><span class="hover-label">Symbols</span><span class="hover-value">2</span></div>
+          <div class="hover-row"><span class="hover-label">Net PnL</span><span class="hover-value red">-$114.30</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">#1 BTCUSDT</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-row"><span class="hover-label">&nbsp;&nbsp;Trades</span><span class="hover-value">10</span></div>
+          <div class="hover-row"><span class="hover-label">#2 OGSUSDT</span><span class="hover-value green">+$53.20</span></div>
+          <div class="hover-row"><span class="hover-label">&nbsp;&nbsp;Trades</span><span class="hover-value">2</span></div>
+        </div>
+        <h3 class="chart-title fs-title">P&amp;L Ranking</h3>
+        <table style="width:100%;border-collapse:collapse;margin-top:8px;">
+          <tbody>
+            <tr style="border-bottom:1px solid var(--white-08);">
+              <td class="fs-body" style="padding:6px 0;color:var(--white-75);">BTCUSDT</td>
+              <td class="fs-body" style="padding:6px 0;color:var(--red);text-align:right;">$ -167.5</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--white-08);">
+              <td class="fs-body" style="padding:6px 0;color:var(--white-75);">OGSUSDT</td>
+              <td class="fs-body" style="padding:6px 0;color:var(--green);text-align:right;">$ +53.2</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <!-- Total PnL Per Day — small -->
+      <div class="grid-stack-item" gs-w="4" gs-h="12">
+        <div class="grid-stack-item-content card--left">
+        <div class="card-hover-overlay">
+          <div class="hover-title">PnL Per Day Details</div>
+          <div class="hover-row"><span class="hover-label">Period</span><span class="hover-value">Mar 2 - Mar 8</span></div>
+          <div class="hover-row"><span class="hover-label">Active Days</span><span class="hover-value">1 / 7</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Mar 2</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-row"><span class="hover-label">Mar 3-8</span><span class="hover-value">$0.00</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Weekly Total</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-row"><span class="hover-label">Avg Daily PnL</span><span class="hover-value red">-$23.93</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Total PnL Per Day</h3>
+        <table style="width:100%;border-collapse:collapse;margin-top:6px;">
+          <thead>
+            <tr>
+              <th class="fs-small" style="padding:4px 0;font-weight:600;color:var(--white-55);text-align:left;border-bottom:1px solid var(--white-08);">Date</th>
+              <th class="fs-small" style="padding:4px 0;font-weight:600;color:var(--white-55);text-align:right;border-bottom:1px solid var(--white-08);">Closed PnL</th>
+            </tr>
+          </thead>
+          <tbody class="fs-label" style="color:var(--white-75);">
+            <tr><td style="padding:3px 0;">3/8/2026</td><td style="text-align:right;">0</td></tr>
+            <tr><td style="padding:3px 0;">3/7/2026</td><td style="text-align:right;">0</td></tr>
+            <tr><td style="padding:3px 0;">3/6/2026</td><td style="text-align:right;">0</td></tr>
+            <tr><td style="padding:3px 0;">3/5/2026</td><td style="text-align:right;">0</td></tr>
+            <tr><td style="padding:3px 0;">3/4/2026</td><td style="text-align:right;">0</td></tr>
+            <tr><td style="padding:3px 0;">3/3/2026</td><td style="text-align:right;">0</td></tr>
+            <tr><td style="padding:3px 0;">3/2/2026</td><td style="text-align:right;color:var(--red);">-167.5</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <!-- Total PnL Change Trend, USD — medium -->
+      <div class="grid-stack-item" gs-w="6" gs-h="8">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">PnL Trend (USD)</div>
+          <div class="hover-row"><span class="hover-label">Period</span><span class="hover-value">Mar 2 - Mar 9</span></div>
+          <div class="hover-row"><span class="hover-label">Current Value</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Trend</span><span class="hover-value">Flat (no new trades)</span></div>
+          <div class="hover-row"><span class="hover-label">Data Points</span><span class="hover-value">8</span></div>
+          <div class="hover-row"><span class="hover-label">Min</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-row"><span class="hover-label">Max</span><span class="hover-value red">-$167.50</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Total PnL Change Trend, USD</h3>
+        <svg viewBox="0 0 500 160" preserveAspectRatio="xMidYMid meet">
+          <line x1="40" y1="20" x2="480" y2="20" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="40" y1="80" x2="480" y2="80" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="40" y1="140" x2="480" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <text class="fs-tiny" x="35" y="84" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">-168</text>
+          <polyline points="60,80 120,80 180,80 240,80 300,80 360,80 420,80 460,80" fill="none" stroke="var(--chart-line)" stroke-width="1.5"/>
+          <circle cx="60" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="120" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="180" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="240" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="300" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="360" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="420" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="460" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <text class="fs-tiny" x="60" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/2</text>
+          <text class="fs-tiny" x="120" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/3</text>
+          <text class="fs-tiny" x="180" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/4</text>
+          <text class="fs-tiny" x="240" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/5</text>
+          <text class="fs-tiny" x="300" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/6</text>
+          <text class="fs-tiny" x="360" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/7</text>
+          <text class="fs-tiny" x="420" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/8</text>
+          <text class="fs-tiny" x="460" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/9</text>
+        </svg>
+        </div>
+      </div>
+
+      <!-- Total PnL Change Trend, % — medium -->
+      <div class="grid-stack-item" gs-w="6" gs-h="8">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">PnL Trend (%)</div>
+          <div class="hover-row"><span class="hover-label">Period</span><span class="hover-value">Mar 2 - Mar 9</span></div>
+          <div class="hover-row"><span class="hover-label">Current</span><span class="hover-value red">-0.24%</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Trend</span><span class="hover-value">Flat (no new trades)</span></div>
+          <div class="hover-row"><span class="hover-label">Capital Base</span><span class="hover-value">$70,000</span></div>
+          <div class="hover-row"><span class="hover-label">Min %</span><span class="hover-value red">-0.24%</span></div>
+          <div class="hover-row"><span class="hover-label">Max %</span><span class="hover-value red">-0.24%</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Total PnL Change Trend, %</h3>
+        <svg viewBox="0 0 500 160" preserveAspectRatio="xMidYMid meet">
+          <line x1="40" y1="20" x2="480" y2="20" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="40" y1="80" x2="480" y2="80" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="4"/>
+          <line x1="40" y1="140" x2="480" y2="140" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <text class="fs-tiny" x="35" y="84" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">0</text>
+          <polyline points="60,80 120,80 180,80 240,80 300,80 360,80 420,80 460,80" fill="none" stroke="var(--chart-line)" stroke-width="1.5"/>
+          <circle cx="60" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="120" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="180" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="240" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="300" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="360" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="420" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <circle cx="460" cy="80" r="4" fill="var(--chart-line)" stroke="var(--navy-900)" stroke-width="1.5"/>
+          <text class="fs-tiny" x="60" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/2</text>
+          <text class="fs-tiny" x="120" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/3</text>
+          <text class="fs-tiny" x="180" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/4</text>
+          <text class="fs-tiny" x="240" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/5</text>
+          <text class="fs-tiny" x="300" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/6</text>
+          <text class="fs-tiny" x="360" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/7</text>
+          <text class="fs-tiny" x="420" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/8</text>
+          <text class="fs-tiny" x="460" y="155" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/9</text>
+        </svg>
+        </div>
+      </div>
+
+      <!-- NET PnL Change Trend, USD — medium -->
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">NET PnL Trend Details</div>
+          <div class="hover-row"><span class="hover-label">Period</span><span class="hover-value">Mar 2 - Mar 8</span></div>
+          <div class="hover-row"><span class="hover-label">NET PnL</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Active Day</span><span class="hover-value">Mar 2 only</span></div>
+          <div class="hover-row"><span class="hover-label">Mar 2 PnL</span><span class="hover-value red">-$167.50</span></div>
+          <div class="hover-row"><span class="hover-label">Mar 3-8</span><span class="hover-value">$0.00 (no activity)</span></div>
+          <div class="hover-row"><span class="hover-label">Fees Included</span><span class="hover-value">Yes</span></div>
+        </div>
+        <h3 class="chart-title fs-title">NET PnL Change Trend, USD</h3>
+        <svg viewBox="0 0 500 180" preserveAspectRatio="xMidYMid meet">
+          <text class="fs-tiny" x="35" y="24" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="end">0</text>
+          <text class="fs-tiny" x="35" y="60" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="end">-50</text>
+          <text class="fs-tiny" x="35" y="96" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="end">-100</text>
+          <text class="fs-tiny" x="35" y="132" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="end">-150</text>
+          <text class="fs-tiny" x="35" y="165" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="end">-200</text>
+          <line x1="40" y1="20" x2="480" y2="20" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+          <line x1="40" y1="56" x2="480" y2="56" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="40" y1="92" x2="480" y2="92" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="40" y1="128" x2="480" y2="128" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <rect x="52" y="20" width="40" height="125" rx="2" fill="rgba(255,77,106,0.55)"/>
+          <text class="fs-tiny" x="72" y="175" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/2/2026</text>
+          <text class="fs-tiny" x="132" y="175" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/3/2026</text>
+          <text class="fs-tiny" x="192" y="175" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/4/2026</text>
+          <text class="fs-tiny" x="252" y="175" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/5/2026</text>
+          <text class="fs-tiny" x="312" y="175" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/6/2026</text>
+          <text class="fs-tiny" x="372" y="175" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/7/2026</text>
+          <text class="fs-tiny" x="432" y="175" fill="rgba(255,255,255,0.3)" font-size="7" text-anchor="middle">3/8/2026</text>
+        </svg>
+        </div>
+      </div>
+
+      <!-- Lifecycle Metrics — medium -->
+      <div class="grid-stack-item" gs-w="6" gs-h="8">
+        <div class="grid-stack-item-content">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Lifecycle Metrics Details</div>
+          <div class="hover-row"><span class="hover-label">Win Rate</span><span class="hover-value green">100%</span></div>
+          <div class="hover-row"><span class="hover-label">Avg Holding Time</span><span class="hover-value">26 minutes</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Best Trade</span><span class="hover-value green">$14,733.31</span></div>
+          <div class="hover-row"><span class="hover-label">Worst Trade</span><span class="hover-value red">$14,678.72</span></div>
+          <div class="hover-row"><span class="hover-label">Total Lifecycles</span><span class="hover-value">12</span></div>
+          <div class="hover-row"><span class="hover-label">Avg PnL / Trade</span><span class="hover-value green">+$1,433.01</span></div>
+          <div class="hover-row"><span class="hover-label">Longest Trade</span><span class="hover-value">2h 14m</span></div>
+          <div class="hover-row"><span class="hover-label">Shortest Trade</span><span class="hover-value">3m 22s</span></div>
+        </div>
+        <h3 class="chart-title fs-title">Lifecycle Metrics</h3>
+        <div class="stat-metrics-grid" style="display:grid;grid-template-columns:repeat(4,1fr);width:100%;">
+          <div style="text-align:center;">
+            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Win Rate</div>
+            <div class="fs-value-xl" style="font-weight:800;color:var(--green);">100%</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Avg Holding</div>
+            <div class="fs-value-xl" style="font-weight:800;">26m</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Best Trade</div>
+            <div class="fs-value-lg" style="font-weight:800;color:var(--green);">14,733.31</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Worst Trade</div>
+            <div class="fs-value-lg" style="font-weight:800;color:var(--red);">14,678.724</div>
           </div>
         </div>
-        <div class="chart-card">
-          <h3 class="chart-title">Time of Day Analysis</h3>
-          <svg width="100%" height="130" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
-            <!-- Bars for each 4-hour block -->
-            <rect x="30" y="82" width="40" height="28" rx="3" fill="rgba(0,230,138,0.2)"/>
-            <rect x="85" y="62" width="40" height="48" rx="3" fill="rgba(0,230,138,0.3)"/>
-            <rect x="140" y="32" width="40" height="78" rx="3" fill="rgba(0,230,138,0.45)"/>
-            <rect x="195" y="47" width="40" height="63" rx="3" fill="rgba(0,230,138,0.35)"/>
-            <rect x="250" y="72" width="40" height="38" rx="3" fill="rgba(0,230,138,0.25)"/>
-            <rect x="305" y="92" width="40" height="18" rx="3" fill="rgba(255,77,106,0.25)"/>
-            <!-- Labels -->
-            <text x="50" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">0-4h</text>
-            <text x="105" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">4-8h</text>
-            <text x="160" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">8-12h</text>
-            <text x="215" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">12-16h</text>
-            <text x="270" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">16-20h</text>
-            <text x="325" y="122" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="middle">20-24h</text>
-            <!-- Value labels -->
-            <text x="50" y="78" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">12</text>
-            <text x="105" y="58" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">24</text>
-            <text x="160" y="28" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">42</text>
-            <text x="215" y="43" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">35</text>
-            <text x="270" y="68" fill="rgba(0,230,138,0.7)" font-size="8" text-anchor="middle">19</text>
-            <text x="325" y="88" fill="rgba(255,77,106,0.7)" font-size="8" text-anchor="middle">10</text>
-          </svg>
         </div>
+      </div>
+
+      <!-- Symbol Breakdown — medium -->
+      <div class="grid-stack-item" gs-w="6" gs-h="12">
+        <div class="grid-stack-item-content card--left">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Symbol Breakdown Details</div>
+          <div class="hover-row"><span class="hover-label">Total Symbols</span><span class="hover-value">2</span></div>
+          <div class="hover-row"><span class="hover-label">Total Trades</span><span class="hover-value">12</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">BTCUSDT</span><span class="hover-value">10 trades, 90% WR</span></div>
+          <div class="hover-row"><span class="hover-label">&nbsp;&nbsp;PnL</span><span class="hover-value green">+$17,200.14</span></div>
+          <div class="hover-row"><span class="hover-label">&nbsp;&nbsp;Avg Duration</span><span class="hover-value">26m</span></div>
+          <div class="hover-row"><span class="hover-label">OGSUSDT</span><span class="hover-value">2 trades, 100% WR</span></div>
+          <div class="hover-row"><span class="hover-label">&nbsp;&nbsp;PnL</span><span class="hover-value green">+$165.47</span></div>
+          <div class="hover-row"><span class="hover-label">&nbsp;&nbsp;Avg Duration</span><span class="hover-value">0s</span></div>
+        </div>
+        <h3 class="chart-title fs-title" style="text-align:left;">Symbol Breakdown</h3>
+        <div style="overflow-x:auto;margin-top:8px;">
+          <table class="fs-label" style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--white-08);">
+                <th class="fs-small" style="padding:6px 8px;text-align:left;font-weight:600;color:var(--white-55);">Symbol</th>
+                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Trade Count</th>
+                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Win Count</th>
+                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Loss Count</th>
+                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Win Rate &#9660;</th>
+                <th class="fs-small" style="padding:6px 8px;text-align:right;font-weight:600;color:var(--white-55);">Total PnL</th>
+                <th class="fs-small" style="padding:6px 8px;text-align:right;font-weight:600;color:var(--white-55);">Avg PnL</th>
+                <th class="fs-small" style="padding:6px 8px;text-align:right;font-weight:600;color:var(--white-55);">Avg Duration</th>
+              </tr>
+            </thead>
+            <tbody style="color:var(--white-75);">
+              <tr style="border-bottom:1px solid var(--white-05);">
+                <td style="padding:6px 8px;font-weight:600;">BTCUSDT</td>
+                <td style="padding:6px 8px;text-align:center;">10</td>
+                <td style="padding:6px 8px;text-align:center;">9</td>
+                <td style="padding:6px 8px;text-align:center;">1</td>
+                <td style="padding:6px 8px;text-align:center;">90%</td>
+                <td style="padding:6px 8px;text-align:right;color:var(--green);">17,200.14</td>
+                <td style="padding:6px 8px;text-align:right;color:var(--green);">11,760.094</td>
+                <td style="padding:6px 8px;text-align:right;">26m</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 8px;font-weight:600;">OGSUSDT</td>
+                <td style="padding:6px 8px;text-align:center;">2</td>
+                <td style="padding:6px 8px;text-align:center;">2</td>
+                <td style="padding:6px 8px;text-align:center;">0</td>
+                <td style="padding:6px 8px;text-align:center;">100%</td>
+                <td style="padding:6px 8px;text-align:right;color:var(--green);">165.466</td>
+                <td style="padding:6px 8px;text-align:right;color:var(--green);">153.233</td>
+                <td style="padding:6px 8px;text-align:right;">0s</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
+      </div>
+
+      <!-- Time of Day Heatmap — large -->
+      <div class="grid-stack-item" gs-w="8" gs-h="12">
+        <div class="grid-stack-item-content card--left">
+        <div class="card-hover-overlay">
+          <div class="hover-title">Heatmap Details</div>
+          <div class="hover-row"><span class="hover-label">Active Slots</span><span class="hover-value">7 of 168</span></div>
+          <div class="hover-row"><span class="hover-label">Most Active Day</span><span class="hover-value cyan">Tuesday</span></div>
+          <div class="hover-divider"></div>
+          <div class="hover-row"><span class="hover-label">Tue 4-5h</span><span class="hover-value green">+$82 (2 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">Tue 5-6h</span><span class="hover-value green">+$91 (2 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">Tue 6-7h</span><span class="hover-value green">+$210 (3 trades)</span></div>
+          <div class="hover-row"><span class="hover-label">Mon 2-3h</span><span class="hover-value red">-$167 (1 trade)</span></div>
+          <div class="hover-row"><span class="hover-label">Sat 4-5h</span><span class="hover-value green">+$45 (1 trade)</span></div>
+          <div class="hover-row"><span class="hover-label">Sun 19-20h</span><span class="hover-value green">+$120 (2 trades)</span></div>
+        </div>
+        <h3 class="chart-title fs-title" style="text-align:left;">Time of Day Heatmap</h3>
+        <div style="overflow-x:auto;margin-top:8px;">
+          <table class="fs-tiny" style="border-collapse:collapse;width:100%;">
+            <thead>
+              <tr>
+                <th style="padding:2px 4px;color:var(--white-35);font-weight:500;"></th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">0</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">1</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">2</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">3</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">4</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">5</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">6</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">7</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">8</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">9</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">10</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">11</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">12</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">13</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">14</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">15</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">16</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">17</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">18</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">19</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">20</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">21</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">22</th>
+                <th style="padding:2px 3px;color:var(--white-35);font-weight:500;text-align:center;">23</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Monday</td>
+                <td></td><td></td><td style="background:rgba(255,77,106,0.3);border-radius:2px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Tuesday</td>
+                <td></td><td></td><td></td><td></td><td style="background:rgba(0,230,138,0.25);border-radius:2px;"></td><td style="background:rgba(0,230,138,0.25);border-radius:2px;"></td><td style="background:rgba(0,230,138,0.45);border-radius:2px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Wednesday</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Thursday</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Friday</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Saturday</td>
+                <td></td><td></td><td></td><td></td><td style="background:rgba(0,230,138,0.15);border-radius:2px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              </tr>
+              <tr>
+                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Sunday</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="background:rgba(0,230,138,0.35);border-radius:2px;"></td><td></td><td></td><td></td><td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
+      </div>
+
       </div>
     </div>
 
@@ -1761,8 +2599,8 @@ svg text { font-family: var(--font); }
           <text x="171" y="134" fill="var(--green)" font-size="10">+$1,200</text>
 
           <text x="110" y="158" fill="var(--white-75)" font-size="11" text-anchor="end">Sara White</text>
-          <rect x="90" y="146" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
-          <text x="145" y="160" fill="var(--red)" font-size="10">-$1,200</text>
+          <rect x="120" y="146" width="30" height="18" rx="4" fill="rgba(255,77,106,0.6)"/>
+          <text x="156" y="160" fill="var(--red)" font-size="10">-$1,200</text>
         </svg>
       </div>
 
@@ -1915,5 +2753,432 @@ svg text { font-family: var(--font); }
 })();
 </script>
 <script src="shared-interactive.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var grid = GridStack.init({
+    column: 12,
+    cellHeight: 30,
+    margin: 8,
+    staticGrid: true,
+    float: false,
+    handle: '.chart-title',
+    resizable: { handles: 'se' },
+    animate: true
+  }, '#tl-perf-grid');
+
+  // ---- Save initial state for full reset ----
+  var defaultLayout = grid.save(false);
+  var defaultGridHTML = document.getElementById('tl-perf-grid').innerHTML;
+
+  // ---- Move resize handles inside .grid-stack-item-content ----
+  function moveHandlesInside() {
+    document.querySelectorAll('#tl-perf-grid .grid-stack-item').forEach(function(item) {
+      var handle = item.querySelector(':scope > .ui-resizable-se');
+      var content = item.querySelector('.grid-stack-item-content');
+      if (handle && content) {
+        content.appendChild(handle);
+      }
+    });
+  }
+  moveHandlesInside();
+  grid.on('added', function() { setTimeout(moveHandlesInside, 50); });
+
+  // ---- Hide / Show cards ----
+  var hiddenPanel = document.getElementById('tl-hidden-panel');
+  var hiddenChips = document.getElementById('tl-hidden-chips');
+  var hiddenItems = [];
+
+  // Padding density levels
+  var padLevels = ['pad-normal', 'pad-compact', 'pad-roomy'];
+  var padIcons  = ['P', 'P\u2013', 'P+'];
+  var padTitles = ['Normal padding', 'Compact padding', 'Roomy padding'];
+
+  function addCardButtons(item) {
+    var content = item.querySelector('.grid-stack-item-content');
+    if (!content) return;
+    if (content.querySelector('.card-hide-btn')) return;
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'card-hide-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.title = 'Hide this widget';
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      hideCard(item);
+    });
+    content.appendChild(closeBtn);
+    var padBtn = document.createElement('button');
+    padBtn.className = 'card-padding-btn';
+    padBtn.innerHTML = padIcons[0];
+    padBtn.title = padTitles[0];
+    padBtn.setAttribute('data-pad-idx', '0');
+    padBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      var idx = (parseInt(this.getAttribute('data-pad-idx')) + 1) % padLevels.length;
+      this.setAttribute('data-pad-idx', String(idx));
+      this.innerHTML = padIcons[idx];
+      this.title = padTitles[idx];
+      padLevels.forEach(function(c) { content.classList.remove(c); });
+      content.classList.add(padLevels[idx]);
+    });
+    content.appendChild(padBtn);
+  }
+
+  document.querySelectorAll('#tl-perf-grid .grid-stack-item').forEach(function(item) {
+    addCardButtons(item);
+  });
+
+  function getCardTitle(item) {
+    var titleEl = item.querySelector('.chart-title');
+    return titleEl ? titleEl.textContent.trim() : 'Widget';
+  }
+
+  function hideCard(item) {
+    var title = getCardTitle(item);
+    var savedData = {
+      w: parseInt(item.getAttribute('gs-w')) || 6,
+      h: parseInt(item.getAttribute('gs-h')) || 8
+    };
+    var html = item.querySelector('.grid-stack-item-content').outerHTML;
+    grid.removeWidget(item, true);
+    hiddenItems.push({ html: html, title: title, savedData: savedData });
+    refreshHiddenPanel();
+  }
+
+  function restoreCard(index) {
+    var entry = hiddenItems[index];
+    if (!entry) return;
+    hiddenItems.splice(index, 1);
+    var wrapper = document.createElement('div');
+    wrapper.className = 'grid-stack-item';
+    wrapper.innerHTML = entry.html;
+    var newEl = grid.addWidget(wrapper, {
+      w: entry.savedData.w,
+      h: entry.savedData.h,
+      autoPosition: true
+    });
+    addCardButtons(newEl);
+    refreshHiddenPanel();
+  }
+
+  function refreshHiddenPanel() {
+    hiddenChips.innerHTML = '';
+    hiddenItems.forEach(function(entry, i) {
+      var chip = document.createElement('span');
+      chip.className = 'hidden-widget-chip';
+      chip.textContent = '+ ' + entry.title;
+      chip.addEventListener('click', function() { restoreCard(i); });
+      hiddenChips.appendChild(chip);
+    });
+    hiddenPanel.classList.toggle('has-items', hiddenItems.length > 0);
+  }
+
+  // ---- Customize toggle ----
+  var btn = document.getElementById('tl-customize-btn');
+  var resetBtn = document.getElementById('tl-reset-btn');
+
+  if (btn) {
+    btn.addEventListener('click', function() {
+      var isActive = btn.classList.toggle('active');
+      if (isActive) {
+        grid.setStatic(false);
+        document.querySelector('#tl-perf-grid').classList.add('grid-stack-editing');
+        hiddenPanel.classList.add('editing');
+        resetBtn.style.display = '';
+      } else {
+        grid.setStatic(true);
+        document.querySelector('#tl-perf-grid').classList.remove('grid-stack-editing');
+        hiddenPanel.classList.remove('editing');
+        resetBtn.style.display = 'none';
+      }
+    });
+  }
+
+  // ---- Reset layout ----
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      var gridEl = document.getElementById('tl-perf-grid');
+      grid.destroy(false);
+      gridEl.innerHTML = defaultGridHTML;
+      gridEl.style.maxWidth = '';
+      gridEl.style.margin = '';
+      grid = GridStack.init({
+        column: 12,
+        cellHeight: 30,
+        margin: 8,
+        staticGrid: true,
+        float: false,
+        handle: '.chart-title',
+        resizable: { handles: 'se' },
+        animate: true
+      }, '#tl-perf-grid');
+      grid.on('added', function() { setTimeout(moveHandlesInside, 50); });
+      gridEl.querySelectorAll('.grid-stack-item').forEach(function(item) {
+        addCardButtons(item);
+      });
+      moveHandlesInside();
+      hiddenItems.length = 0;
+      refreshHiddenPanel();
+      pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
+      marginBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-margin') === '8'); });
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        gridEl.classList.remove('grid-stack-editing');
+        hiddenPanel.classList.remove('editing');
+        resetBtn.style.display = 'none';
+        pageSizeBar.classList.remove('visible');
+        marginBar.classList.remove('visible');
+      }
+    });
+  }
+
+  // ---- Page size selector ----
+  var pageSizeBar = document.getElementById('tl-page-size-bar');
+  var pageSizeBtns = pageSizeBar ? pageSizeBar.querySelectorAll('.page-size-btn') : [];
+  var gridEl = document.getElementById('tl-perf-grid');
+
+  pageSizeBtns.forEach(function(psBtn) {
+    psBtn.addEventListener('click', function() {
+      var w = parseInt(this.getAttribute('data-width'));
+      pageSizeBtns.forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      if (w > 0) {
+        gridEl.style.maxWidth = w + 'px';
+        gridEl.style.margin = '0 auto';
+      } else {
+        gridEl.style.maxWidth = '';
+        gridEl.style.margin = '';
+      }
+      setTimeout(function() { grid.onParentResize(); }, 50);
+    });
+  });
+
+  // ---- Global gap selector ----
+  var marginBar = document.getElementById('tl-margin-bar');
+  var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
+
+  function setGlobalGap(px) {
+    grid.margin(px);
+  }
+
+  marginBtns.forEach(function(mBtn) {
+    mBtn.addEventListener('click', function() {
+      var m = parseInt(this.getAttribute('data-margin'));
+      marginBtns.forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      setGlobalGap(m);
+    });
+  });
+
+  // Show/hide control bars with customize mode
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (btn.classList.contains('active')) {
+        pageSizeBar.classList.add('visible');
+        marginBar.classList.add('visible');
+      } else {
+        pageSizeBar.classList.remove('visible');
+        marginBar.classList.remove('visible');
+      }
+    });
+  }
+});
+</script>
+
+<!-- ============================================================
+     TRADE DETAIL MODAL
+     Opens when clicking "View" on any lifecycle trade
+     Shows: Price chart, trade parameters, linked orders, journal
+     ============================================================ -->
+<div class="modal-overlay" id="modal-trade-detail" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:960px;margin:0 auto;background:var(--navy-800);border:1px solid var(--white-08);border-radius:var(--r-lg);overflow:hidden;">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--white-08);">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:20px;font-weight:800;">BTCUSDT</span>
+        <span style="padding:4px 10px;border-radius:var(--r-full);font-size:11px;font-weight:700;background:rgba(0,230,138,0.15);color:var(--green);">LONG</span>
+        <span style="padding:4px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;background:var(--white-05);color:var(--white-55);">Closed</span>
+      </div>
+      <button onclick="document.getElementById('modal-trade-detail').style.display='none'" style="background:none;border:none;color:var(--white-55);font-size:22px;cursor:pointer;padding:4px 8px;">&times;</button>
+    </div>
+
+    <!-- Key metrics row -->
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--white-08);">
+      <div style="background:var(--navy-800);padding:16px;text-align:center;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Entry Price</div>
+        <div style="font-size:16px;font-weight:700;">$85,100.00</div>
+      </div>
+      <div style="background:var(--navy-800);padding:16px;text-align:center;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Exit Price</div>
+        <div style="font-size:16px;font-weight:700;">$85,750.00</div>
+      </div>
+      <div style="background:var(--navy-800);padding:16px;text-align:center;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Volume</div>
+        <div style="font-size:16px;font-weight:700;">0.5 BTC</div>
+      </div>
+      <div style="background:var(--navy-800);padding:16px;text-align:center;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Leverage</div>
+        <div style="font-size:16px;font-weight:700;">10x</div>
+      </div>
+      <div style="background:var(--navy-800);padding:16px;text-align:center;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Realized PnL</div>
+        <div style="font-size:16px;font-weight:700;color:var(--green);">+$325.00</div>
+      </div>
+      <div style="background:var(--navy-800);padding:16px;text-align:center;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">ROI</div>
+        <div style="font-size:16px;font-weight:700;color:var(--green);">+0.76%</div>
+      </div>
+    </div>
+
+    <div style="padding:24px;">
+      <!-- Price chart placeholder -->
+      <div style="background:var(--white-03);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;margin-bottom:24px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:12px;letter-spacing:1px;">Price Chart &mdash; BTCUSDT 5m</div>
+        <svg viewBox="0 0 800 200" width="100%" preserveAspectRatio="xMidYMid meet">
+          <!-- Y axis -->
+          <text x="35" y="25" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$85,800</text>
+          <text x="35" y="75" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$85,500</text>
+          <text x="35" y="125" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$85,200</text>
+          <text x="35" y="175" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$84,900</text>
+          <line x1="40" y1="20" x2="790" y2="20" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="40" y1="70" x2="790" y2="70" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="40" y1="120" x2="790" y2="120" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <line x1="40" y1="170" x2="790" y2="170" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+          <!-- Candlestick-style price line -->
+          <polyline points="60,160 100,150 140,145 180,140 220,130 260,135 300,120 340,115 380,110 420,95 460,85 500,80 540,75 560,70 600,60 640,55 680,50 720,45 760,40 790,35" fill="none" stroke="var(--chart-line)" stroke-width="2"/>
+          <!-- Entry marker -->
+          <line x1="100" y1="20" x2="100" y2="180" stroke="var(--cyan)" stroke-width="1" stroke-dasharray="4"/>
+          <circle cx="100" cy="150" r="6" fill="var(--cyan)" stroke="var(--navy-800)" stroke-width="2"/>
+          <text x="105" y="15" fill="var(--cyan)" font-size="9" font-weight="600">ENTRY $85,100</text>
+          <!-- TP/SL marker -->
+          <line x1="260" y1="20" x2="260" y2="180" stroke="var(--amber)" stroke-width="1" stroke-dasharray="4"/>
+          <text x="265" y="15" fill="var(--amber)" font-size="9" font-weight="600">TP/SL SET</text>
+          <!-- Exit marker -->
+          <line x1="720" y1="20" x2="720" y2="180" stroke="var(--green)" stroke-width="1" stroke-dasharray="4"/>
+          <circle cx="720" cy="45" r="6" fill="var(--green)" stroke="var(--navy-800)" stroke-width="2"/>
+          <text x="725" y="15" fill="var(--green)" font-size="9" font-weight="600">EXIT $85,750</text>
+        </svg>
+      </div>
+
+      <!-- Trade details grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+        <!-- Left: Trade parameters -->
+        <div>
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">Trade Parameters</div>
+          <div style="background:var(--white-03);border-radius:var(--r-md);padding:16px;">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Trader</span><span style="font-size:12px;font-weight:600;">Jack Thompson</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Account</span><span style="font-size:12px;font-weight:600;">Main Portfolio</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Entry Time</span><span style="font-size:12px;">Mar 9, 10:15:42</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Exit Time</span><span style="font-size:12px;">Mar 9, 14:32:18</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Duration</span><span style="font-size:12px;">4h 17m</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Margin Mode</span><span style="font-size:12px;">Cross</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Peak Position Size</span><span style="font-size:12px;">0.5 BTC ($42,550)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--white-55);font-size:12px;">Notional Value</span><span style="font-size:12px;">$42,550.00</span></div>
+          </div>
+        </div>
+        <!-- Right: PnL breakdown -->
+        <div>
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">PnL Breakdown</div>
+          <div style="background:var(--white-03);border-radius:var(--r-md);padding:16px;">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Gross PnL</span><span style="font-size:12px;font-weight:600;color:var(--green);">+$325.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Trading Fees</span><span style="font-size:12px;color:var(--red);">-$42.55</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Funding Fees</span><span style="font-size:12px;color:var(--red);">-$3.20</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--white-15);margin-top:4px;"><span style="font-size:13px;font-weight:700;">Net PnL</span><span style="font-size:13px;font-weight:700;color:var(--green);">+$279.25</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);margin-top:8px;"><span style="color:var(--white-55);font-size:12px;">Max Unrealized Profit</span><span style="font-size:12px;color:var(--green);">+$412.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Max Unrealized Loss</span><span style="font-size:12px;color:var(--red);">-$85.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--white-55);font-size:12px;">Risk/Reward Achieved</span><span style="font-size:12px;font-weight:600;color:var(--cyan);">3.29:1</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Linked Orders table -->
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">Linked Orders (3)</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse;background:var(--white-03);border-radius:var(--r-md);overflow:hidden;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--white-08);">
+            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Role</th>
+            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Type</th>
+            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Side</th>
+            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Qty</th>
+            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Price</th>
+            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Fill Price</th>
+            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Fee</th>
+            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Time</th>
+            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Status</th>
+          </tr>
+        </thead>
+        <tbody style="color:var(--white-75);">
+          <tr style="border-bottom:1px solid var(--white-05);">
+            <td style="padding:8px 12px;"><span style="color:var(--cyan);font-weight:700;">ENTRY</span></td>
+            <td style="padding:8px 12px;">Market</td>
+            <td style="padding:8px 12px;color:var(--green);font-weight:600;">Buy</td>
+            <td style="padding:8px 12px;text-align:right;">0.5 BTC</td>
+            <td style="padding:8px 12px;text-align:right;">Market</td>
+            <td style="padding:8px 12px;text-align:right;">$85,100.00</td>
+            <td style="padding:8px 12px;text-align:right;color:var(--red);">$21.28</td>
+            <td style="padding:8px 12px;">Mar 9, 10:15:42</td>
+            <td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:var(--green);">Filled</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--white-05);">
+            <td style="padding:8px 12px;"><span style="color:var(--amber);font-weight:700;">TP/SL</span></td>
+            <td style="padding:8px 12px;">Conditional</td>
+            <td style="padding:8px 12px;color:var(--white-55);">&mdash;</td>
+            <td style="padding:8px 12px;text-align:right;">&mdash;</td>
+            <td style="padding:8px 12px;text-align:right;">TP: $86,200 / SL: $84,800</td>
+            <td style="padding:8px 12px;text-align:right;">&mdash;</td>
+            <td style="padding:8px 12px;text-align:right;">&mdash;</td>
+            <td style="padding:8px 12px;">Mar 9, 10:16:01</td>
+            <td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:600;background:rgba(255,176,32,0.15);color:var(--amber);">Active</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;"><span style="color:var(--green);font-weight:700;">CLOSE</span></td>
+            <td style="padding:8px 12px;">Limit</td>
+            <td style="padding:8px 12px;color:var(--red);font-weight:600;">Sell</td>
+            <td style="padding:8px 12px;text-align:right;">0.5 BTC</td>
+            <td style="padding:8px 12px;text-align:right;">$85,750.00</td>
+            <td style="padding:8px 12px;text-align:right;">$85,750.00</td>
+            <td style="padding:8px 12px;text-align:right;color:var(--red);">$21.27</td>
+            <td style="padding:8px 12px;">Mar 9, 14:32:18</td>
+            <td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:var(--green);">Filled</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Journal notes -->
+      <div style="margin-top:24px;">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">Trade Journal</div>
+        <div style="background:var(--white-03);border-radius:var(--r-md);padding:16px;">
+          <div style="font-size:13px;color:var(--white-75);line-height:1.6;">
+            Entered BTC long on support bounce at $85,100 with 10x leverage. Price respected the 4H demand zone as expected. Set TP at $86,200 (1.3% move) and SL at $84,800 (-0.35%).
+            Closed manually at $85,750 after 4h — didn't want to hold through the NY session open.
+            <span style="color:var(--green);font-weight:600;">+0.76% ROI</span>, solid risk/reward of 3.29:1.
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px;">
+            <span style="padding:3px 8px;border-radius:var(--r-full);font-size:10px;background:rgba(18,204,255,0.1);color:var(--cyan);">trend-following</span>
+            <span style="padding:3px 8px;border-radius:var(--r-full);font-size:10px;background:rgba(0,230,138,0.1);color:var(--green);">support-bounce</span>
+            <span style="padding:3px 8px;border-radius:var(--r-full);font-size:10px;background:rgba(175,51,255,0.1);color:var(--purple);">manual-close</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Wire up View buttons in Lifecycle tab to open trade detail modal
+document.querySelectorAll('#tab-lifecycle .btn-export').forEach(function(btn) {
+  if (btn.textContent.trim() === 'View') {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('modal-trade-detail').style.display = 'block';
+    });
+  }
+});
+// Close modal on overlay click
+document.getElementById('modal-trade-detail').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+</script>
 </body>
 </html>
