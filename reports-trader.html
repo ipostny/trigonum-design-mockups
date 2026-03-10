@@ -2222,8 +2222,8 @@ document.addEventListener('DOMContentLoaded', function() {
       gridEl.style.maxWidth = '';
       gridEl.style.margin = '';
       pageSizeBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-width') === '0'); });
-      // 8. Reset global gap to default (8px)
-      setGlobalGap(8);
+      // 8. Reset global gap to default (clear override, let Gridstack default win)
+      gapStyle.textContent = '';
       marginBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-margin') === '8'); });
       // 9. Exit customize mode
       if (btn.classList.contains('active')) {
@@ -2260,35 +2260,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // ---- Global gap selector — uses grid.margin() API ----
-  // grid.margin() updates BOTH the CSS variables AND the internal layout
-  // engine. Only setting CSS vars causes visual overlaps because Gridstack
-  // still calculates positions with the old margin.
+  // ---- Global gap selector — dynamic <style> override ----
+  // Gridstack positions .grid-stack-item cells edge-to-edge.
+  // The visible gap = content inset (top/right/bottom/left) on each cell.
+  // A dynamic <style> with !important is the only approach that reliably
+  // overrides Gridstack's inline CSS variable system.
   var marginBar = document.getElementById('margin-bar');
   var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
 
+  // Create persistent style element for gap overrides
+  var gapStyle = document.createElement('style');
+  gapStyle.id = 'gap-override';
+  document.head.appendChild(gapStyle);
+
   function setGlobalGap(px) {
-    // 1. Update Gridstack's internal margin options
-    grid.opts.margin = px;
-    grid.opts.marginTop = px;
-    grid.opts.marginRight = px;
-    grid.opts.marginBottom = px;
-    grid.opts.marginLeft = px;
-    grid.opts.marginUnit = 'px';
-    // 2. Update the CSS custom properties that Gridstack uses for rendering
-    var el = document.getElementById('perf-grid');
-    var val = px + 'px';
-    el.style.setProperty('--gs-item-margin-top', val);
-    el.style.setProperty('--gs-item-margin-right', val);
-    el.style.setProperty('--gs-item-margin-bottom', val);
-    el.style.setProperty('--gs-item-margin-left', val);
-    // 3. Also try the official API (may or may not work in v12)
-    if (typeof grid.margin === 'function') {
-      try { grid.margin(px); } catch(e) { /* silent */ }
-    }
-    // 4. Force layout recalculation
-    grid.engine.margin = px;
-    grid.compact();
+    gapStyle.textContent =
+      '#perf-grid > .grid-stack-item > .grid-stack-item-content {' +
+      '  top: ' + px + 'px !important;' +
+      '  right: ' + px + 'px !important;' +
+      '  bottom: ' + px + 'px !important;' +
+      '  left: ' + px + 'px !important;' +
+      '}';
   }
 
   marginBtns.forEach(function(mBtn) {
