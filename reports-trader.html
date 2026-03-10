@@ -2267,36 +2267,28 @@ document.addEventListener('DOMContentLoaded', function() {
   var marginBar = document.getElementById('margin-bar');
   var marginBtns = marginBar ? marginBar.querySelectorAll('.page-size-btn') : [];
 
-  var currentGap = 8;
-  var gridOpts = {
-    column: 12, cellHeight: 30, staticGrid: true,
-    float: false, handle: '.chart-title',
-    resizable: { handles: 'se' }, animate: true
-  };
-
   function setGlobalGap(px) {
-    if (px === currentGap) return;
-    currentGap = px;
-    // Save current layout + edit state
-    var layout = grid.save(false);
-    var isEditing = btn.classList.contains('active');
-    // Destroy grid (keep DOM elements)
-    grid.destroy(false);
-    // Re-initialize with new margin
-    gridOpts.margin = px;
-    gridOpts.staticGrid = !isEditing;
-    grid = GridStack.init(gridOpts, '#perf-grid');
-    // Restore positions
-    grid.load(layout);
-    // Re-attach handles + buttons
-    moveHandlesInside();
-    document.querySelectorAll('#perf-grid .grid-stack-item').forEach(function(item) {
-      addCardButtons(item);
-    });
-    if (isEditing) {
-      document.querySelector('.grid-stack').classList.add('grid-stack-editing');
+    // 1. Update Gridstack's internal margin options
+    grid.opts.margin = px;
+    grid.opts.marginTop = px;
+    grid.opts.marginRight = px;
+    grid.opts.marginBottom = px;
+    grid.opts.marginLeft = px;
+    grid.opts.marginUnit = 'px';
+    // 2. Update the CSS custom properties that Gridstack uses for rendering
+    var el = document.getElementById('perf-grid');
+    var val = px + 'px';
+    el.style.setProperty('--gs-item-margin-top', val);
+    el.style.setProperty('--gs-item-margin-right', val);
+    el.style.setProperty('--gs-item-margin-bottom', val);
+    el.style.setProperty('--gs-item-margin-left', val);
+    // 3. Also try the official API (may or may not work in v12)
+    if (typeof grid.margin === 'function') {
+      try { grid.margin(px); } catch(e) { /* silent */ }
     }
-    grid.on('added', function() { setTimeout(moveHandlesInside, 50); });
+    // 4. Force layout recalculation
+    grid.engine.margin = px;
+    grid.compact();
   }
 
   marginBtns.forEach(function(mBtn) {
