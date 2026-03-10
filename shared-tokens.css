@@ -64,7 +64,10 @@
 }
 
 /* ==== BASE RESET ==== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* NOTE: Only box-sizing here. Do NOT reset margin/padding globally —
+   it breaks Gridstack layout (.grid-stack-item relies on its own margins)
+   and strips browser defaults from elements styled by third-party CSS. */
+*, *::before, *::after { box-sizing: border-box; }
 
 /* ==== TYPOGRAPHY — Section headers ==== */
 .section-title {
