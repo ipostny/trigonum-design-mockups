@@ -2513,7 +2513,8 @@ document.addEventListener('DOMContentLoaded', function() {
         gridEl.style.margin = '';
       }
       // Trigger Gridstack re-layout after width change
-      setTimeout(function() { grid.onParentResize(); }, 50);
+      // Gridstack v12: onResize() replaces the old onParentResize()
+      setTimeout(function() { grid.onResize(); }, 50);
     });
   });
 
