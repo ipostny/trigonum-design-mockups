@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TrigonumTrade — Team Lead Reports (Performance, PnL, Orders, Lifecycle, Team Analytics)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared-tokens.css">
 <style>
 :root {
   --navy-900: #0D0D24;
@@ -63,7 +64,7 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
 
 /* Page header */
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.page-title { font-size: 28px; font-weight: 800; }
+.page-title { font-size: 20px; font-weight: 700; }
 .header-actions { display: flex; gap: 8px; }
 .btn-export {
   background: var(--white-08); color: var(--white-75); border: 1px solid var(--white-15);
@@ -130,7 +131,7 @@ body { font-family: var(--font); background: var(--navy-900); color: var(--white
   font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--white-55); margin-bottom: 4px;
 }
-.stat-value { font-size: 22px; font-weight: 800; }
+.stat-value { font-size: 28px; font-weight: 800; }
 .stat-sub { font-size: 12px; color: var(--white-55); margin-top: 4px; }
 
 /* Chart card */
@@ -553,12 +554,12 @@ svg text { font-family: var(--font); }
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Total PnL</div>
-          <div class="stat-value" style="color:var(--green);">+$18,420</div>
+          <div class="stat-value text-profit">+$18,420</div>
           <div class="stat-sub">Last 30 days</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Win Rate</div>
-          <div class="stat-value" style="color:var(--green);">64.1%</div>
+          <div class="stat-value text-profit">64.1%</div>
           <div class="stat-sub">91 of 142 trades</div>
         </div>
         <div class="stat-card">
@@ -568,7 +569,7 @@ svg text { font-family: var(--font); }
         </div>
         <div class="stat-card">
           <div class="stat-label">Max Drawdown</div>
-          <div class="stat-value" style="color:var(--red);">-4.2%</div>
+          <div class="stat-value text-loss">-4.2%</div>
           <div class="stat-sub">Peak to trough</div>
         </div>
         <div class="stat-card">
@@ -578,7 +579,7 @@ svg text { font-family: var(--font); }
         </div>
         <div class="stat-card">
           <div class="stat-label">Avg Trade</div>
-          <div class="stat-value" style="color:var(--green);">+$129.72</div>
+          <div class="stat-value text-profit">+$129.72</div>
           <div class="stat-sub">142 trades total</div>
         </div>
       </div>
@@ -958,7 +959,7 @@ svg text { font-family: var(--font); }
           <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-3)" stroke-width="30"
             stroke-dasharray="88 352" stroke-dashoffset="-462" stroke-linecap="butt"/>
         </svg>
-        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+        <div class="fs-small text-muted" style="margin-top:6px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> BTCUSDT
           <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-3);vertical-align:middle;margin-left:8px;margin-right:3px;"></span> OGSUSDT
         </div>
@@ -983,7 +984,7 @@ svg text { font-family: var(--font); }
           <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-3)" stroke-width="30"
             stroke-dasharray="44 396" stroke-dashoffset="-506" stroke-linecap="butt"/>
         </svg>
-        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+        <div class="fs-small text-muted" style="margin-top:6px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> BTCUSDT
           <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-3);vertical-align:middle;margin-left:8px;margin-right:3px;"></span> OGSUSDT
         </div>
@@ -1006,7 +1007,7 @@ svg text { font-family: var(--font); }
           <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-1)" stroke-width="30"
             stroke-dasharray="440 0" stroke-dashoffset="-110" stroke-linecap="butt"/>
         </svg>
-        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+        <div class="fs-small text-muted" style="margin-top:6px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> BTCUSDT
         </div>
         </div>
@@ -1033,7 +1034,7 @@ svg text { font-family: var(--font); }
           <circle cx="90" cy="90" r="70" fill="none" stroke="var(--chart-3)" stroke-width="30"
             stroke-dasharray="176 264" stroke-dashoffset="-374" stroke-linecap="butt"/>
         </svg>
-        <div class="fs-small" style="color:var(--white-55);margin-top:6px;">
+        <div class="fs-small text-muted" style="margin-top:6px;">
           <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-1);vertical-align:middle;margin-right:3px;"></span> trader
           <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--chart-3);vertical-align:middle;margin-left:8px;margin-right:3px;"></span> Test Trader
         </div>
@@ -1055,8 +1056,8 @@ svg text { font-family: var(--font); }
         </div>
         <h3 class="chart-title fs-title">Total PnL</h3>
         <div style="margin-top:4px;">
-          <div class="fs-hero" style="font-weight:800;color:var(--red);">-167.5 <span class="fs-value-md" style="font-weight:600;color:var(--white-55);">USD</span></div>
-          <div class="fs-value-lg" style="font-weight:700;color:var(--red);margin-top:2px;">-0.24 %</div>
+          <div class="fs-hero text-loss" style="font-weight:800;">-167.5 <span class="fs-value-md text-muted" style="font-weight:600;">USD</span></div>
+          <div class="fs-value-lg text-loss" style="font-weight:700;margin-top:2px;">-0.24 %</div>
         </div>
         </div>
       </div>
@@ -1079,11 +1080,11 @@ svg text { font-family: var(--font); }
           <tbody>
             <tr style="border-bottom:1px solid var(--white-08);">
               <td class="fs-body" style="padding:6px 0;color:var(--white-75);">BTCUSDT</td>
-              <td class="fs-body" style="padding:6px 0;color:var(--red);text-align:right;">$ -167.5</td>
+              <td class="fs-body text-loss" style="padding:6px 0;text-align:right;">$ -167.5</td>
             </tr>
             <tr style="border-bottom:1px solid var(--white-08);">
               <td class="fs-body" style="padding:6px 0;color:var(--white-75);">OGSUSDT</td>
-              <td class="fs-body" style="padding:6px 0;color:var(--green);text-align:right;">$ +53.2</td>
+              <td class="fs-body text-profit" style="padding:6px 0;text-align:right;">$ +53.2</td>
             </tr>
           </tbody>
         </table>
@@ -1108,8 +1109,8 @@ svg text { font-family: var(--font); }
         <table style="width:100%;border-collapse:collapse;margin-top:6px;">
           <thead>
             <tr>
-              <th class="fs-small" style="padding:4px 0;font-weight:600;color:var(--white-55);text-align:left;border-bottom:1px solid var(--white-08);">Date</th>
-              <th class="fs-small" style="padding:4px 0;font-weight:600;color:var(--white-55);text-align:right;border-bottom:1px solid var(--white-08);">Closed PnL</th>
+              <th class="fs-small text-muted" style="padding:4px 0;font-weight:600;text-align:left;border-bottom:1px solid var(--white-08);">Date</th>
+              <th class="fs-small text-muted" style="padding:4px 0;font-weight:600;text-align:right;border-bottom:1px solid var(--white-08);">Closed PnL</th>
             </tr>
           </thead>
           <tbody class="fs-label" style="color:var(--white-75);">
@@ -1119,7 +1120,7 @@ svg text { font-family: var(--font); }
             <tr><td style="padding:3px 0;">3/5/2026</td><td style="text-align:right;">0</td></tr>
             <tr><td style="padding:3px 0;">3/4/2026</td><td style="text-align:right;">0</td></tr>
             <tr><td style="padding:3px 0;">3/3/2026</td><td style="text-align:right;">0</td></tr>
-            <tr><td style="padding:3px 0;">3/2/2026</td><td style="text-align:right;color:var(--red);">-167.5</td></tr>
+            <tr><td style="padding:3px 0;">3/2/2026</td><td class="text-loss" style="text-align:right;">-167.5</td></tr>
           </tbody>
         </table>
         </div>
@@ -1259,20 +1260,20 @@ svg text { font-family: var(--font); }
         <h3 class="chart-title fs-title">Lifecycle Metrics</h3>
         <div class="stat-metrics-grid" style="display:grid;grid-template-columns:repeat(4,1fr);width:100%;">
           <div style="text-align:center;">
-            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Win Rate</div>
-            <div class="fs-value-xl" style="font-weight:800;color:var(--green);">100%</div>
+            <div class="fs-small stat-label" style="margin-bottom:4px;">Win Rate</div>
+            <div class="fs-value-xl text-profit" style="font-weight:800;">100%</div>
           </div>
           <div style="text-align:center;">
-            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Avg Holding</div>
+            <div class="fs-small stat-label" style="margin-bottom:4px;">Avg Holding</div>
             <div class="fs-value-xl" style="font-weight:800;">26m</div>
           </div>
           <div style="text-align:center;">
-            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Best Trade</div>
-            <div class="fs-value-lg" style="font-weight:800;color:var(--green);">14,733.31</div>
+            <div class="fs-small stat-label" style="margin-bottom:4px;">Best Trade</div>
+            <div class="fs-value-lg text-profit" style="font-weight:800;">14,733.31</div>
           </div>
           <div style="text-align:center;">
-            <div class="fs-small" style="color:var(--white-55);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Worst Trade</div>
-            <div class="fs-value-lg" style="font-weight:800;color:var(--red);">14,678.724</div>
+            <div class="fs-small stat-label" style="margin-bottom:4px;">Worst Trade</div>
+            <div class="fs-value-lg text-loss" style="font-weight:800;">14,678.724</div>
           </div>
         </div>
         </div>
@@ -1298,14 +1299,14 @@ svg text { font-family: var(--font); }
           <table class="fs-label" style="width:100%;border-collapse:collapse;">
             <thead>
               <tr style="border-bottom:1px solid var(--white-08);">
-                <th class="fs-small" style="padding:6px 8px;text-align:left;font-weight:600;color:var(--white-55);">Symbol</th>
-                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Trade Count</th>
-                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Win Count</th>
-                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Loss Count</th>
-                <th class="fs-small" style="padding:6px 8px;text-align:center;font-weight:600;color:var(--white-55);">Win Rate &#9660;</th>
-                <th class="fs-small" style="padding:6px 8px;text-align:right;font-weight:600;color:var(--white-55);">Total PnL</th>
-                <th class="fs-small" style="padding:6px 8px;text-align:right;font-weight:600;color:var(--white-55);">Avg PnL</th>
-                <th class="fs-small" style="padding:6px 8px;text-align:right;font-weight:600;color:var(--white-55);">Avg Duration</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:left;font-weight:600;">Symbol</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:center;font-weight:600;">Trade Count</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:center;font-weight:600;">Win Count</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:center;font-weight:600;">Loss Count</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:center;font-weight:600;">Win Rate &#9660;</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:right;font-weight:600;">Total PnL</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:right;font-weight:600;">Avg PnL</th>
+                <th class="fs-small text-muted" style="padding:6px 8px;text-align:right;font-weight:600;">Avg Duration</th>
               </tr>
             </thead>
             <tbody style="color:var(--white-75);">
@@ -1315,8 +1316,8 @@ svg text { font-family: var(--font); }
                 <td style="padding:6px 8px;text-align:center;">9</td>
                 <td style="padding:6px 8px;text-align:center;">1</td>
                 <td style="padding:6px 8px;text-align:center;">90%</td>
-                <td style="padding:6px 8px;text-align:right;color:var(--green);">17,200.14</td>
-                <td style="padding:6px 8px;text-align:right;color:var(--green);">11,760.094</td>
+                <td class="text-profit" style="padding:6px 8px;text-align:right;">17,200.14</td>
+                <td class="text-profit" style="padding:6px 8px;text-align:right;">11,760.094</td>
                 <td style="padding:6px 8px;text-align:right;">26m</td>
               </tr>
               <tr>
@@ -1325,8 +1326,8 @@ svg text { font-family: var(--font); }
                 <td style="padding:6px 8px;text-align:center;">2</td>
                 <td style="padding:6px 8px;text-align:center;">0</td>
                 <td style="padding:6px 8px;text-align:center;">100%</td>
-                <td style="padding:6px 8px;text-align:right;color:var(--green);">165.466</td>
-                <td style="padding:6px 8px;text-align:right;color:var(--green);">153.233</td>
+                <td class="text-profit" style="padding:6px 8px;text-align:right;">165.466</td>
+                <td class="text-profit" style="padding:6px 8px;text-align:right;">153.233</td>
                 <td style="padding:6px 8px;text-align:right;">0s</td>
               </tr>
             </tbody>
@@ -1384,31 +1385,31 @@ svg text { font-family: var(--font); }
             </thead>
             <tbody>
               <tr>
-                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Monday</td>
+                <td class="text-muted" style="padding:2px 4px;font-weight:600;white-space:nowrap;">Monday</td>
                 <td></td><td></td><td style="background:rgba(255,77,106,0.3);border-radius:2px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
               </tr>
               <tr>
-                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Tuesday</td>
+                <td class="text-muted" style="padding:2px 4px;font-weight:600;white-space:nowrap;">Tuesday</td>
                 <td></td><td></td><td></td><td></td><td style="background:rgba(0,230,138,0.25);border-radius:2px;"></td><td style="background:rgba(0,230,138,0.25);border-radius:2px;"></td><td style="background:rgba(0,230,138,0.45);border-radius:2px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
               </tr>
               <tr>
-                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Wednesday</td>
+                <td class="text-muted" style="padding:2px 4px;font-weight:600;white-space:nowrap;">Wednesday</td>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
               </tr>
               <tr>
-                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Thursday</td>
+                <td class="text-muted" style="padding:2px 4px;font-weight:600;white-space:nowrap;">Thursday</td>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
               </tr>
               <tr>
-                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Friday</td>
+                <td class="text-muted" style="padding:2px 4px;font-weight:600;white-space:nowrap;">Friday</td>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
               </tr>
               <tr>
-                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Saturday</td>
+                <td class="text-muted" style="padding:2px 4px;font-weight:600;white-space:nowrap;">Saturday</td>
                 <td></td><td></td><td></td><td></td><td style="background:rgba(0,230,138,0.15);border-radius:2px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
               </tr>
               <tr>
-                <td style="padding:2px 4px;color:var(--white-55);font-weight:600;white-space:nowrap;">Sunday</td>
+                <td class="text-muted" style="padding:2px 4px;font-weight:600;white-space:nowrap;">Sunday</td>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td style="background:rgba(0,230,138,0.35);border-radius:2px;"></td><td></td><td></td><td></td><td></td>
               </tr>
             </tbody>
@@ -1454,20 +1455,20 @@ svg text { font-family: var(--font); }
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Total PnL</div>
-          <div class="stat-value" style="color:var(--green);">+$18,420</div>
+          <div class="stat-value text-profit">+$18,420</div>
           <div class="stat-sub">Last 30 days</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Realized PnL</div>
-          <div class="stat-value" style="color:var(--green);">+$15,200</div>
+          <div class="stat-value text-profit">+$15,200</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Unrealized PnL</div>
-          <div class="stat-value" style="color:var(--green);">+$3,220</div>
+          <div class="stat-value text-profit">+$3,220</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Total Fees</div>
-          <div class="stat-value" style="color:var(--red);">-$1,840</div>
+          <div class="stat-value text-loss">-$1,840</div>
         </div>
       </div>
 
@@ -1586,8 +1587,8 @@ svg text { font-family: var(--font); }
               <td>$85,100.00</td>
               <td>$85,750.00</td>
               <td>0.5 BTC</td>
-              <td style="color:var(--green);font-weight:600;">+$325.00</td>
-              <td style="color:var(--green);">+0.76%</td>
+              <td class="text-profit" style="font-weight:600;">+$325.00</td>
+              <td class="text-profit">+0.76%</td>
               <td>$42.55</td>
             </tr>
             <tr>
@@ -1597,8 +1598,8 @@ svg text { font-family: var(--font); }
               <td>$3,480.00</td>
               <td>$3,450.00</td>
               <td>10 ETH</td>
-              <td style="color:var(--green);font-weight:600;">+$300.00</td>
-              <td style="color:var(--green);">+0.86%</td>
+              <td class="text-profit" style="font-weight:600;">+$300.00</td>
+              <td class="text-profit">+0.86%</td>
               <td>$34.49</td>
             </tr>
             <tr>
@@ -1608,8 +1609,8 @@ svg text { font-family: var(--font); }
               <td>$148.50</td>
               <td>$146.00</td>
               <td>100 SOL</td>
-              <td style="color:var(--red);font-weight:600;">-$250.00</td>
-              <td style="color:var(--red);">-1.68%</td>
+              <td class="text-loss" style="font-weight:600;">-$250.00</td>
+              <td class="text-loss">-1.68%</td>
               <td>$14.80</td>
             </tr>
             <tr>
@@ -1619,8 +1620,8 @@ svg text { font-family: var(--font); }
               <td>$84,200.00</td>
               <td>$85,100.00</td>
               <td>0.3 BTC</td>
-              <td style="color:var(--green);font-weight:600;">+$270.00</td>
-              <td style="color:var(--green);">+1.07%</td>
+              <td class="text-profit" style="font-weight:600;">+$270.00</td>
+              <td class="text-profit">+1.07%</td>
               <td>$25.26</td>
             </tr>
             <tr>
@@ -1630,8 +1631,8 @@ svg text { font-family: var(--font); }
               <td>$3,390.00</td>
               <td>$3,450.00</td>
               <td>5 ETH</td>
-              <td style="color:var(--green);font-weight:600;">+$300.00</td>
-              <td style="color:var(--green);">+1.77%</td>
+              <td class="text-profit" style="font-weight:600;">+$300.00</td>
+              <td class="text-profit">+1.77%</td>
               <td>$17.25</td>
             </tr>
           </tbody>
@@ -1917,8 +1918,8 @@ svg text { font-family: var(--font); }
               <td>$85,100.00</td>
               <td>$85,750.00</td>
               <td>0.5 BTC</td>
-              <td style="color:var(--green);font-weight:600;">+$325.00</td>
-              <td style="color:var(--green);">+0.76%</td>
+              <td class="text-profit" style="font-weight:600;">+$325.00</td>
+              <td class="text-profit">+0.76%</td>
               <td>$42.55</td>
               <td>3</td>
               <td><span class="badge badge-closed">Closed</span></td>
@@ -1939,32 +1940,32 @@ svg text { font-family: var(--font); }
                 <!-- Summary metrics grid -->
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Leverage</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">10x</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Peak Size</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">0.5 BTC</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$325.00</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Realised PnL</div>
+                    <div class="text-profit" style="font-size:14px;font-weight:700;">+$325.00</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$42.55</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Fees</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$42.55</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$3.20</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Funding Fee</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$3.20</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$279.25</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Net PnL</div>
+                    <div class="text-profit" style="font-size:14px;font-weight:700;">+$279.25</div>
                   </div>
                 </div>
                 <!-- Linked Orders table -->
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <div class="stat-label" style="margin-bottom:6px;">Linked Orders</div>
                 <table style="width:100%;font-size:12px;border-collapse:collapse;">
                   <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
                     <td style="padding:4px 8px;">Role</td>
@@ -1975,7 +1976,7 @@ svg text { font-family: var(--font); }
                     <td>Time</td>
                     <td>Status</td>
                   </tr>
-                  <tr style="color:var(--white-55);">
+                  <tr class="text-muted">
                     <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
                     <td class="side-buy">Buy</td>
                     <td>0.5 BTC</td>
@@ -1984,7 +1985,7 @@ svg text { font-family: var(--font); }
                     <td>Mar 9, 10:15</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
-                  <tr style="color:var(--white-55);">
+                  <tr class="text-muted">
                     <td style="padding:4px 8px;"><span style="color:var(--amber);font-weight:600;">ADD</span></td>
                     <td class="side-buy">Buy</td>
                     <td>0.0 BTC</td>
@@ -1993,8 +1994,8 @@ svg text { font-family: var(--font); }
                     <td>Mar 9, 10:16</td>
                     <td><span class="badge badge-open" style="font-size:9px;">TP/SL</span></td>
                   </tr>
-                  <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                  <tr class="text-muted">
+                    <td style="padding:4px 8px;"><span class="text-profit" style="font-weight:600;">CLOSE</span></td>
                     <td class="side-sell">Sell</td>
                     <td>0.5 BTC</td>
                     <td>$85,750.00</td>
@@ -2017,8 +2018,8 @@ svg text { font-family: var(--font); }
               <td>$3,480.00</td>
               <td>$3,450.00</td>
               <td>10 ETH</td>
-              <td style="color:var(--green);font-weight:600;">+$300.00</td>
-              <td style="color:var(--green);">+0.86%</td>
+              <td class="text-profit" style="font-weight:600;">+$300.00</td>
+              <td class="text-profit">+0.86%</td>
               <td>$34.49</td>
               <td>2</td>
               <td><span class="badge badge-closed">Closed</span></td>
@@ -2037,32 +2038,32 @@ svg text { font-family: var(--font); }
                 <!-- Summary metrics grid -->
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Leverage</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">5x</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Peak Size</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">10 ETH</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$300.00</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Realised PnL</div>
+                    <div class="text-profit" style="font-size:14px;font-weight:700;">+$300.00</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$34.49</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Fees</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$34.49</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Funding Fee</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-55);">$0.00</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$265.51</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Net PnL</div>
+                    <div class="text-profit" style="font-size:14px;font-weight:700;">+$265.51</div>
                   </div>
                 </div>
                 <!-- Linked Orders table -->
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <div class="stat-label" style="margin-bottom:6px;">Linked Orders</div>
                 <table style="width:100%;font-size:12px;border-collapse:collapse;">
                   <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
                     <td style="padding:4px 8px;">Role</td>
@@ -2073,7 +2074,7 @@ svg text { font-family: var(--font); }
                     <td>Time</td>
                     <td>Status</td>
                   </tr>
-                  <tr style="color:var(--white-55);">
+                  <tr class="text-muted">
                     <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
                     <td class="side-sell">Sell</td>
                     <td>10 ETH</td>
@@ -2082,8 +2083,8 @@ svg text { font-family: var(--font); }
                     <td>Mar 8, 14:20</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
-                  <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                  <tr class="text-muted">
+                    <td style="padding:4px 8px;"><span class="text-profit" style="font-weight:600;">CLOSE</span></td>
                     <td class="side-buy">Buy</td>
                     <td>10 ETH</td>
                     <td>$3,450.00</td>
@@ -2106,8 +2107,8 @@ svg text { font-family: var(--font); }
               <td>$148.50</td>
               <td>$146.00</td>
               <td>100 SOL</td>
-              <td style="color:var(--red);font-weight:600;">-$250.00</td>
-              <td style="color:var(--red);">-1.68%</td>
+              <td class="text-loss" style="font-weight:600;">-$250.00</td>
+              <td class="text-loss">-1.68%</td>
               <td>$14.80</td>
               <td>3</td>
               <td><span class="badge badge-closed">Closed</span></td>
@@ -2128,32 +2129,32 @@ svg text { font-family: var(--font); }
                 <!-- Summary metrics grid -->
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Leverage</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">10x</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Peak Size</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">100 SOL</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$250.00</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Realised PnL</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$250.00</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$14.80</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Fees</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$14.80</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$1.10</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Funding Fee</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$1.10</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$265.90</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Net PnL</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$265.90</div>
                   </div>
                 </div>
                 <!-- Linked Orders table -->
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <div class="stat-label" style="margin-bottom:6px;">Linked Orders</div>
                 <table style="width:100%;font-size:12px;border-collapse:collapse;">
                   <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
                     <td style="padding:4px 8px;">Role</td>
@@ -2164,7 +2165,7 @@ svg text { font-family: var(--font); }
                     <td>Time</td>
                     <td>Status</td>
                   </tr>
-                  <tr style="color:var(--white-55);">
+                  <tr class="text-muted">
                     <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
                     <td class="side-buy">Buy</td>
                     <td>100 SOL</td>
@@ -2173,7 +2174,7 @@ svg text { font-family: var(--font); }
                     <td>Mar 8, 07:30</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
-                  <tr style="color:var(--white-55);">
+                  <tr class="text-muted">
                     <td style="padding:4px 8px;"><span style="color:var(--amber);font-weight:600;">ADD</span></td>
                     <td>&mdash;</td>
                     <td>&mdash;</td>
@@ -2182,8 +2183,8 @@ svg text { font-family: var(--font); }
                     <td>Mar 8, 07:31</td>
                     <td><span class="badge badge-cancelled" style="font-size:9px;">SL Hit</span></td>
                   </tr>
-                  <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                  <tr class="text-muted">
+                    <td style="padding:4px 8px;"><span class="text-profit" style="font-weight:600;">CLOSE</span></td>
                     <td class="side-sell">Sell</td>
                     <td>100 SOL</td>
                     <td>$146.00</td>
@@ -2206,8 +2207,8 @@ svg text { font-family: var(--font); }
               <td>$84,200.00</td>
               <td>$85,100.00</td>
               <td>0.3 BTC</td>
-              <td style="color:var(--green);font-weight:600;">+$270.00</td>
-              <td style="color:var(--green);">+1.07%</td>
+              <td class="text-profit" style="font-weight:600;">+$270.00</td>
+              <td class="text-profit">+1.07%</td>
               <td>$25.26</td>
               <td>2</td>
               <td><span class="badge badge-closed">Closed</span></td>
@@ -2226,32 +2227,32 @@ svg text { font-family: var(--font); }
                 <!-- Summary metrics grid -->
                 <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;">
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Leverage</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Leverage</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">10x</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Peak Size</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Peak Size</div>
                     <div style="font-size:14px;font-weight:700;color:var(--white-92);">0.3 BTC</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Realised PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$270.00</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Realised PnL</div>
+                    <div class="text-profit" style="font-size:14px;font-weight:700;">+$270.00</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Fees</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$25.26</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Fees</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$25.26</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Funding Fee</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--red);">-$5.80</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Funding Fee</div>
+                    <div class="text-loss" style="font-size:14px;font-weight:700;">-$5.80</div>
                   </div>
                   <div style="background:var(--white-03);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:2px;">Net PnL</div>
-                    <div style="font-size:14px;font-weight:700;color:var(--green);">+$238.94</div>
+                    <div class="stat-label" style="font-size:9px;margin-bottom:2px;">Net PnL</div>
+                    <div class="text-profit" style="font-size:14px;font-weight:700;">+$238.94</div>
                   </div>
                 </div>
                 <!-- Linked Orders table -->
-                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:6px;letter-spacing:1px;">Linked Orders</div>
+                <div class="stat-label" style="margin-bottom:6px;">Linked Orders</div>
                 <table style="width:100%;font-size:12px;border-collapse:collapse;">
                   <tr style="color:var(--white-35);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">
                     <td style="padding:4px 8px;">Role</td>
@@ -2262,7 +2263,7 @@ svg text { font-family: var(--font); }
                     <td>Time</td>
                     <td>Status</td>
                   </tr>
-                  <tr style="color:var(--white-55);">
+                  <tr class="text-muted">
                     <td style="padding:4px 8px;"><span style="color:var(--cyan);font-weight:600;">ENTRY</span></td>
                     <td class="side-buy">Buy</td>
                     <td>0.3 BTC</td>
@@ -2271,8 +2272,8 @@ svg text { font-family: var(--font); }
                     <td>Mar 7, 14:05</td>
                     <td><span class="badge badge-filled" style="font-size:9px;">Filled</span></td>
                   </tr>
-                  <tr style="color:var(--white-55);">
-                    <td style="padding:4px 8px;"><span style="color:var(--green);font-weight:600;">CLOSE</span></td>
+                  <tr class="text-muted">
+                    <td style="padding:4px 8px;"><span class="text-profit" style="font-weight:600;">CLOSE</span></td>
                     <td class="side-sell">Sell</td>
                     <td>0.3 BTC</td>
                     <td>$85,100.00</td>
@@ -2363,9 +2364,9 @@ svg text { font-family: var(--font); }
           <tbody>
             <tr>
               <td style="font-weight:600;color:var(--white-92);">Jack Thompson</td>
-              <td style="color:var(--green);">2,450.00</td>
-              <td style="color:var(--green);">8,120.50</td>
-              <td style="color:var(--red);">-340.80</td>
+              <td class="text-profit">2,450.00</td>
+              <td class="text-profit">8,120.50</td>
+              <td class="text-loss">-340.80</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
@@ -2375,17 +2376,17 @@ svg text { font-family: var(--font); }
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);">10,229.70</td>
+              <td class="text-profit">10,229.70</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);font-weight:600;">10,229.70</td>
+              <td class="text-profit" style="font-weight:600;">10,229.70</td>
             </tr>
             <tr>
               <td style="font-weight:600;color:var(--white-92);">David Kim</td>
-              <td style="color:var(--green);">1,890.30</td>
-              <td style="color:var(--green);">5,640.20</td>
-              <td style="color:var(--green);">420.15</td>
+              <td class="text-profit">1,890.30</td>
+              <td class="text-profit">5,640.20</td>
+              <td class="text-profit">420.15</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
@@ -2395,17 +2396,17 @@ svg text { font-family: var(--font); }
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);">7,950.65</td>
+              <td class="text-profit">7,950.65</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);font-weight:600;">7,950.65</td>
+              <td class="text-profit" style="font-weight:600;">7,950.65</td>
             </tr>
             <tr>
               <td style="font-weight:600;color:var(--white-92);">Alex Sato</td>
-              <td style="color:var(--green);">980.50</td>
-              <td style="color:var(--green);">3,210.80</td>
-              <td style="color:var(--red);">-185.40</td>
+              <td class="text-profit">980.50</td>
+              <td class="text-profit">3,210.80</td>
+              <td class="text-loss">-185.40</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
@@ -2415,17 +2416,17 @@ svg text { font-family: var(--font); }
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);">4,005.90</td>
+              <td class="text-profit">4,005.90</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);font-weight:600;">4,005.90</td>
+              <td class="text-profit" style="font-weight:600;">4,005.90</td>
             </tr>
             <tr>
               <td style="font-weight:600;color:var(--white-92);">Maria Chen</td>
-              <td style="color:var(--green);">1,120.40</td>
-              <td style="color:var(--green);">2,870.60</td>
-              <td style="color:var(--green);">310.25</td>
+              <td class="text-profit">1,120.40</td>
+              <td class="text-profit">2,870.60</td>
+              <td class="text-profit">310.25</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
@@ -2435,17 +2436,17 @@ svg text { font-family: var(--font); }
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);">4,301.25</td>
+              <td class="text-profit">4,301.25</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);font-weight:600;">4,301.25</td>
+              <td class="text-profit" style="font-weight:600;">4,301.25</td>
             </tr>
             <tr>
               <td style="font-weight:600;color:var(--white-92);">Tom Lee</td>
-              <td style="color:var(--green);">340.20</td>
-              <td style="color:var(--green);">1,050.80</td>
-              <td style="color:var(--red);">-89.50</td>
+              <td class="text-profit">340.20</td>
+              <td class="text-profit">1,050.80</td>
+              <td class="text-loss">-89.50</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
@@ -2455,17 +2456,17 @@ svg text { font-family: var(--font); }
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);">1,301.50</td>
+              <td class="text-profit">1,301.50</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);font-weight:600;">1,301.50</td>
+              <td class="text-profit" style="font-weight:600;">1,301.50</td>
             </tr>
             <tr>
               <td style="font-weight:600;color:var(--white-92);">Sara White</td>
-              <td style="color:var(--red);">-420.60</td>
-              <td style="color:var(--red);">-680.30</td>
-              <td style="color:var(--red);">-99.10</td>
+              <td class="text-loss">-420.60</td>
+              <td class="text-loss">-680.30</td>
+              <td class="text-loss">-99.10</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
@@ -2475,17 +2476,17 @@ svg text { font-family: var(--font); }
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--red);">-1,200.00</td>
+              <td class="text-loss">-1,200.00</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--red);font-weight:600;">-1,200.00</td>
+              <td class="text-loss" style="font-weight:600;">-1,200.00</td>
             </tr>
             <tr style="background:var(--white-05);font-weight:600;">
               <td style="font-weight:700;color:var(--white-92);">Team Total</td>
-              <td style="color:var(--green);">6,360.80</td>
-              <td style="color:var(--green);">20,212.60</td>
-              <td style="color:var(--green);">15.60</td>
+              <td class="text-profit">6,360.80</td>
+              <td class="text-profit">20,212.60</td>
+              <td class="text-profit">15.60</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
@@ -2495,11 +2496,11 @@ svg text { font-family: var(--font); }
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);">26,589.00</td>
+              <td class="text-profit">26,589.00</td>
               <td>0.00</td>
               <td>0.00</td>
               <td>0.00</td>
-              <td style="color:var(--green);font-weight:700;">26,589.00</td>
+              <td class="text-profit" style="font-weight:700;">26,589.00</td>
             </tr>
           </tbody>
         </table>
@@ -2629,10 +2630,10 @@ svg text { font-family: var(--font); }
                 </div>
               </td>
               <td>142</td>
-              <td style="color:var(--green);">64.1%</td>
-              <td style="color:var(--green);font-weight:600;">+$18,420</td>
+              <td class="text-profit">64.1%</td>
+              <td class="text-profit" style="font-weight:600;">+$18,420</td>
               <td>$129.72</td>
-              <td style="color:var(--red);">-4.2%</td>
+              <td class="text-loss">-4.2%</td>
               <td>2.14</td>
               <td>1.87</td>
               <td><a href="trader-analytics.html" style="color:var(--cyan);font-size:12px;text-decoration:none;">View &rarr;</a></td>
@@ -2645,10 +2646,10 @@ svg text { font-family: var(--font); }
                 </div>
               </td>
               <td>98</td>
-              <td style="color:var(--green);">59.2%</td>
-              <td style="color:var(--green);font-weight:600;">+$12,800</td>
+              <td class="text-profit">59.2%</td>
+              <td class="text-profit" style="font-weight:600;">+$12,800</td>
               <td>$130.61</td>
-              <td style="color:var(--red);">-6.8%</td>
+              <td class="text-loss">-6.8%</td>
               <td>1.76</td>
               <td>1.52</td>
               <td><a href="trader-analytics.html" style="color:var(--cyan);font-size:12px;text-decoration:none;">View &rarr;</a></td>
@@ -2662,9 +2663,9 @@ svg text { font-family: var(--font); }
               </td>
               <td>210</td>
               <td>51.4%</td>
-              <td style="color:var(--green);font-weight:600;">+$8,960</td>
+              <td class="text-profit" style="font-weight:600;">+$8,960</td>
               <td>$42.67</td>
-              <td style="color:var(--red);">-8.1%</td>
+              <td class="text-loss">-8.1%</td>
               <td>1.34</td>
               <td>0.98</td>
               <td><a href="trader-analytics.html" style="color:var(--cyan);font-size:12px;text-decoration:none;">View &rarr;</a></td>
@@ -2677,10 +2678,10 @@ svg text { font-family: var(--font); }
                 </div>
               </td>
               <td>56</td>
-              <td style="color:var(--green);">62.5%</td>
-              <td style="color:var(--green);font-weight:600;">+$5,500</td>
+              <td class="text-profit">62.5%</td>
+              <td class="text-profit" style="font-weight:600;">+$5,500</td>
               <td>$98.21</td>
-              <td style="color:var(--red);">-3.5%</td>
+              <td class="text-loss">-3.5%</td>
               <td>1.95</td>
               <td>1.64</td>
               <td><a href="trader-analytics.html" style="color:var(--cyan);font-size:12px;text-decoration:none;">View &rarr;</a></td>
@@ -2694,9 +2695,9 @@ svg text { font-family: var(--font); }
               </td>
               <td>34</td>
               <td>52.9%</td>
-              <td style="color:var(--green);font-weight:600;">+$1,200</td>
+              <td class="text-profit" style="font-weight:600;">+$1,200</td>
               <td>$35.29</td>
-              <td style="color:var(--red);">-5.2%</td>
+              <td class="text-loss">-5.2%</td>
               <td>1.12</td>
               <td>0.74</td>
               <td><a href="trader-analytics.html" style="color:var(--cyan);font-size:12px;text-decoration:none;">View &rarr;</a></td>
@@ -2709,10 +2710,10 @@ svg text { font-family: var(--font); }
                 </div>
               </td>
               <td>28</td>
-              <td style="color:var(--red);">42.9%</td>
-              <td style="color:var(--red);font-weight:600;">-$1,200</td>
+              <td class="text-loss">42.9%</td>
+              <td class="text-loss" style="font-weight:600;">-$1,200</td>
               <td>-$42.86</td>
-              <td style="color:var(--red);">-12.3%</td>
+              <td class="text-loss">-12.3%</td>
               <td>0.78</td>
               <td>-0.34</td>
               <td><a href="trader-analytics.html" style="color:var(--cyan);font-size:12px;text-decoration:none;">View &rarr;</a></td>
@@ -3006,35 +3007,35 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Key metrics row -->
     <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--white-08);">
       <div style="background:var(--navy-800);padding:16px;text-align:center;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Entry Price</div>
+        <div class="stat-label" style="font-size:10px;margin-bottom:4px;">Entry Price</div>
         <div style="font-size:16px;font-weight:700;">$85,100.00</div>
       </div>
       <div style="background:var(--navy-800);padding:16px;text-align:center;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Exit Price</div>
+        <div class="stat-label" style="font-size:10px;margin-bottom:4px;">Exit Price</div>
         <div style="font-size:16px;font-weight:700;">$85,750.00</div>
       </div>
       <div style="background:var(--navy-800);padding:16px;text-align:center;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Volume</div>
+        <div class="stat-label" style="font-size:10px;margin-bottom:4px;">Volume</div>
         <div style="font-size:16px;font-weight:700;">0.5 BTC</div>
       </div>
       <div style="background:var(--navy-800);padding:16px;text-align:center;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Leverage</div>
+        <div class="stat-label" style="font-size:10px;margin-bottom:4px;">Leverage</div>
         <div style="font-size:16px;font-weight:700;">10x</div>
       </div>
       <div style="background:var(--navy-800);padding:16px;text-align:center;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">Realized PnL</div>
-        <div style="font-size:16px;font-weight:700;color:var(--green);">+$325.00</div>
+        <div class="stat-label" style="font-size:10px;margin-bottom:4px;">Realized PnL</div>
+        <div class="text-profit" style="font-size:16px;font-weight:700;">+$325.00</div>
       </div>
       <div style="background:var(--navy-800);padding:16px;text-align:center;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--white-55);margin-bottom:4px;">ROI</div>
-        <div style="font-size:16px;font-weight:700;color:var(--green);">+0.76%</div>
+        <div class="stat-label" style="font-size:10px;margin-bottom:4px;">ROI</div>
+        <div class="text-profit" style="font-size:16px;font-weight:700;">+0.76%</div>
       </div>
     </div>
 
     <div style="padding:24px;">
       <!-- Price chart placeholder -->
       <div style="background:var(--white-03);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;margin-bottom:24px;">
-        <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:12px;letter-spacing:1px;">Price Chart &mdash; BTCUSDT 5m</div>
+        <div class="stat-label" style="font-size:12px;margin-bottom:12px;">Price Chart &mdash; BTCUSDT 5m</div>
         <svg viewBox="0 0 800 200" width="100%" preserveAspectRatio="xMidYMid meet">
           <!-- Y axis -->
           <text x="35" y="25" fill="rgba(255,255,255,0.3)" font-size="9" text-anchor="end">$85,800</text>
@@ -3065,58 +3066,58 @@ document.addEventListener('DOMContentLoaded', function() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
         <!-- Left: Trade parameters -->
         <div>
-          <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">Trade Parameters</div>
+          <div class="stat-label" style="font-size:12px;margin-bottom:10px;">Trade Parameters</div>
           <div style="background:var(--white-03);border-radius:var(--r-md);padding:16px;">
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Trader</span><span style="font-size:12px;font-weight:600;">Jack Thompson</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Account</span><span style="font-size:12px;font-weight:600;">Main Portfolio</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Entry Time</span><span style="font-size:12px;">Mar 9, 10:15:42</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Exit Time</span><span style="font-size:12px;">Mar 9, 14:32:18</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Duration</span><span style="font-size:12px;">4h 17m</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Margin Mode</span><span style="font-size:12px;">Cross</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Peak Position Size</span><span style="font-size:12px;">0.5 BTC ($42,550)</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--white-55);font-size:12px;">Notional Value</span><span style="font-size:12px;">$42,550.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Trader</span><span style="font-size:12px;font-weight:600;">Jack Thompson</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Account</span><span style="font-size:12px;font-weight:600;">Main Portfolio</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Entry Time</span><span style="font-size:12px;">Mar 9, 10:15:42</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Exit Time</span><span style="font-size:12px;">Mar 9, 14:32:18</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Duration</span><span style="font-size:12px;">4h 17m</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Margin Mode</span><span style="font-size:12px;">Cross</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Peak Position Size</span><span style="font-size:12px;">0.5 BTC ($42,550)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;"><span class="text-muted" style="font-size:12px;">Notional Value</span><span style="font-size:12px;">$42,550.00</span></div>
           </div>
         </div>
         <!-- Right: PnL breakdown -->
         <div>
-          <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">PnL Breakdown</div>
+          <div class="stat-label" style="font-size:12px;margin-bottom:10px;">PnL Breakdown</div>
           <div style="background:var(--white-03);border-radius:var(--r-md);padding:16px;">
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Gross PnL</span><span style="font-size:12px;font-weight:600;color:var(--green);">+$325.00</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Trading Fees</span><span style="font-size:12px;color:var(--red);">-$42.55</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Funding Fees</span><span style="font-size:12px;color:var(--red);">-$3.20</span></div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--white-15);margin-top:4px;"><span style="font-size:13px;font-weight:700;">Net PnL</span><span style="font-size:13px;font-weight:700;color:var(--green);">+$279.25</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);margin-top:8px;"><span style="color:var(--white-55);font-size:12px;">Max Unrealized Profit</span><span style="font-size:12px;color:var(--green);">+$412.00</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span style="color:var(--white-55);font-size:12px;">Max Unrealized Loss</span><span style="font-size:12px;color:var(--red);">-$85.00</span></div>
-            <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--white-55);font-size:12px;">Risk/Reward Achieved</span><span style="font-size:12px;font-weight:600;color:var(--cyan);">3.29:1</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Gross PnL</span><span class="text-profit" style="font-size:12px;font-weight:600;">+$325.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Trading Fees</span><span class="text-loss" style="font-size:12px;">-$42.55</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Funding Fees</span><span class="text-loss" style="font-size:12px;">-$3.20</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--white-15);margin-top:4px;"><span style="font-size:13px;font-weight:700;">Net PnL</span><span class="text-profit" style="font-size:13px;font-weight:700;">+$279.25</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);margin-top:8px;"><span class="text-muted" style="font-size:12px;">Max Unrealized Profit</span><span class="text-profit" style="font-size:12px;">+$412.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--white-05);"><span class="text-muted" style="font-size:12px;">Max Unrealized Loss</span><span class="text-loss" style="font-size:12px;">-$85.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;"><span class="text-muted" style="font-size:12px;">Risk/Reward Achieved</span><span style="font-size:12px;font-weight:600;color:var(--cyan);">3.29:1</span></div>
           </div>
         </div>
       </div>
 
       <!-- Linked Orders table -->
-      <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">Linked Orders (3)</div>
+      <div class="stat-label" style="font-size:12px;margin-bottom:10px;">Linked Orders (3)</div>
       <table style="width:100%;font-size:12px;border-collapse:collapse;background:var(--white-03);border-radius:var(--r-md);overflow:hidden;">
         <thead>
           <tr style="border-bottom:1px solid var(--white-08);">
-            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Role</th>
-            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Type</th>
-            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Side</th>
-            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Qty</th>
-            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Price</th>
-            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Fill Price</th>
-            <th style="padding:10px 12px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Fee</th>
-            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Time</th>
-            <th style="padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--white-55);font-weight:600;">Status</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:left;font-size:10px;letter-spacing:0.5px;">Role</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:left;font-size:10px;letter-spacing:0.5px;">Type</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:left;font-size:10px;letter-spacing:0.5px;">Side</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:right;font-size:10px;letter-spacing:0.5px;">Qty</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:right;font-size:10px;letter-spacing:0.5px;">Price</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:right;font-size:10px;letter-spacing:0.5px;">Fill Price</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:right;font-size:10px;letter-spacing:0.5px;">Fee</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:left;font-size:10px;letter-spacing:0.5px;">Time</th>
+            <th class="stat-label" style="padding:10px 12px;text-align:left;font-size:10px;letter-spacing:0.5px;">Status</th>
           </tr>
         </thead>
         <tbody style="color:var(--white-75);">
           <tr style="border-bottom:1px solid var(--white-05);">
             <td style="padding:8px 12px;"><span style="color:var(--cyan);font-weight:700;">ENTRY</span></td>
             <td style="padding:8px 12px;">Market</td>
-            <td style="padding:8px 12px;color:var(--green);font-weight:600;">Buy</td>
+            <td class="text-profit" style="padding:8px 12px;font-weight:600;">Buy</td>
             <td style="padding:8px 12px;text-align:right;">0.5 BTC</td>
             <td style="padding:8px 12px;text-align:right;">Market</td>
             <td style="padding:8px 12px;text-align:right;">$85,100.00</td>
-            <td style="padding:8px 12px;text-align:right;color:var(--red);">$21.28</td>
+            <td class="text-loss" style="padding:8px 12px;text-align:right;">$21.28</td>
             <td style="padding:8px 12px;">Mar 9, 10:15:42</td>
             <td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:var(--green);">Filled</span></td>
           </tr>
@@ -3132,13 +3133,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:600;background:rgba(255,176,32,0.15);color:var(--amber);">Active</span></td>
           </tr>
           <tr>
-            <td style="padding:8px 12px;"><span style="color:var(--green);font-weight:700;">CLOSE</span></td>
+            <td style="padding:8px 12px;"><span class="text-profit" style="font-weight:700;">CLOSE</span></td>
             <td style="padding:8px 12px;">Limit</td>
-            <td style="padding:8px 12px;color:var(--red);font-weight:600;">Sell</td>
+            <td class="text-loss" style="padding:8px 12px;font-weight:600;">Sell</td>
             <td style="padding:8px 12px;text-align:right;">0.5 BTC</td>
             <td style="padding:8px 12px;text-align:right;">$85,750.00</td>
             <td style="padding:8px 12px;text-align:right;">$85,750.00</td>
-            <td style="padding:8px 12px;text-align:right;color:var(--red);">$21.27</td>
+            <td class="text-loss" style="padding:8px 12px;text-align:right;">$21.27</td>
             <td style="padding:8px 12px;">Mar 9, 14:32:18</td>
             <td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:var(--r-full);font-size:10px;font-weight:600;background:rgba(0,230,138,0.15);color:var(--green);">Filled</span></td>
           </tr>
@@ -3147,12 +3148,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       <!-- Journal notes -->
       <div style="margin-top:24px;">
-        <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--white-55);margin-bottom:10px;letter-spacing:1px;">Trade Journal</div>
+        <div class="stat-label" style="font-size:12px;margin-bottom:10px;">Trade Journal</div>
         <div style="background:var(--white-03);border-radius:var(--r-md);padding:16px;">
           <div style="font-size:13px;color:var(--white-75);line-height:1.6;">
             Entered BTC long on support bounce at $85,100 with 10x leverage. Price respected the 4H demand zone as expected. Set TP at $86,200 (1.3% move) and SL at $84,800 (-0.35%).
             Closed manually at $85,750 after 4h — didn't want to hold through the NY session open.
-            <span style="color:var(--green);font-weight:600;">+0.76% ROI</span>, solid risk/reward of 3.29:1.
+            <span class="text-profit" style="font-weight:600;">+0.76% ROI</span>, solid risk/reward of 3.29:1.
           </div>
           <div style="display:flex;gap:6px;margin-top:10px;">
             <span style="padding:3px 8px;border-radius:var(--r-full);font-size:10px;background:rgba(18,204,255,0.1);color:var(--cyan);">trend-following</span>

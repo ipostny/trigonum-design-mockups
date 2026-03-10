@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TrigonumTrade — Trading Terminal</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared-tokens.css">
 <style>
 :root {
   --navy-900: #0D0D24;
@@ -876,10 +877,10 @@ body {
   content: '';
   position: absolute;
   bottom: -1px;
-  left: 16px;
-  right: 16px;
+  left: 20%;
+  right: 20%;
   height: 2px;
-  background: var(--cyan);
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
 }
 .bottom-tab .tab-count {
   margin-left: 4px;
@@ -972,6 +973,18 @@ body {
 }
 .btn-confirm-place.buy { background: var(--green); color: var(--navy-900); }
 .btn-confirm-place.sell { background: var(--red); color: white; }
+
+/* Sub-tab active underline */
+.sub-tab { position: relative; }
+.sub-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
 </style>
 <link rel="stylesheet" href="shared-interactive.css">
 <link rel="stylesheet" href="shared-cards.css">
@@ -1002,8 +1015,8 @@ body {
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
     <!-- Terminal / Analytics sub-tabs -->
     <div style="display:flex;border-bottom:1px solid var(--white-08);padding:0 20px;background:var(--navy-800);" data-tab-group="trading-tabs">
-      <button class="sub-tab active" data-tab-target="panel-terminal" style="padding:10px 16px;font-size:13px;font-weight:600;background:none;border:none;color:var(--white-92);cursor:pointer;border-bottom:2px solid var(--cyan);">Terminal</button>
-      <button class="sub-tab" data-tab-target="panel-analytics" style="padding:10px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--white-55);cursor:pointer;border-bottom:2px solid transparent;">Analytics</button>
+      <button class="sub-tab active" data-tab-target="panel-terminal" style="padding:10px 16px;font-size:13px;font-weight:600;background:none;border:none;color:var(--white-92);cursor:pointer;">Terminal</button>
+      <button class="sub-tab" data-tab-target="panel-analytics" style="padding:10px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--white-55);cursor:pointer;">Analytics</button>
     </div>
 
     <!-- ====== PANEL: TERMINAL ====== -->

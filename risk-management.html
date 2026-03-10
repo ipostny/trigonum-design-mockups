@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TrigonumTrade — Risk Management (Team + Actions + Policies)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared-tokens.css">
 <style>
 :root {
   --navy-900: #0D0D24;
@@ -163,7 +164,7 @@ body {
 }
 
 .summary-card .label { font-size: 11px; color: var(--white-55); margin-bottom: 6px; }
-.summary-card .value { font-size: 24px; font-weight: 800; }
+.summary-card .value { font-size: 28px; font-weight: 800; }
 .summary-card .sub { font-size: 12px; color: var(--white-55); margin-top: 4px; }
 
 .status-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
@@ -183,19 +184,19 @@ body {
 }
 
 .filter-select {
-  background: var(--navy-700); color: var(--white-75);
+  background: var(--white-05); color: var(--white-75);
   border: 1px solid var(--white-15); border-radius: var(--r-sm);
   padding: 8px 12px; font-size: 12px; font-family: var(--font);
 }
 
 .btn-export {
   margin-left: auto;
-  padding: 8px 16px; font-size: 12px; font-weight: 600;
-  background: none; border: 1px solid var(--white-15);
-  color: var(--white-55); border-radius: var(--r-sm); cursor: pointer;
+  padding: 10px 20px; font-size: 13px; font-weight: 600;
+  background: transparent; border: 1px solid var(--white-15);
+  color: var(--white-75); border-radius: var(--r-md); cursor: pointer;
 }
 
-.btn-export:hover { color: var(--white-75); border-color: var(--white-35); }
+.btn-export:hover { color: var(--white-92); border-color: var(--white-35); }
 
 /* Auto-refresh indicator */
 .refresh-indicator {
@@ -241,7 +242,7 @@ body {
 
 /* Policy dropdown */
 .policy-select {
-  background: var(--navy-700); color: var(--white-75);
+  background: var(--white-05); color: var(--white-75);
   border: 1px solid var(--white-15); border-radius: var(--r-sm);
   padding: 6px 10px; font-size: 12px; font-family: var(--font);
   cursor: pointer; width: 130px;
@@ -369,7 +370,7 @@ body {
 .form-field .label { font-size: 12px; color: var(--white-55); margin-bottom: 6px; }
 .form-field input, .form-field textarea {
   width: 100%;
-  background: var(--navy-700); color: var(--white-75);
+  background: var(--white-05); color: var(--white-75);
   border: 1px solid var(--white-15); border-radius: var(--r-sm);
   padding: 10px 14px; font-size: 13px; font-family: var(--font);
 }
@@ -437,8 +438,9 @@ body {
 }
 .period-pill:hover { color: var(--white-75); }
 .period-pill.active {
-  background: var(--white-15);
-  color: var(--white-92);
+  background: var(--cyan);
+  color: var(--navy-900);
+  border-color: var(--cyan);
 }
 
 /* PnL colors */
@@ -465,8 +467,8 @@ body {
 }
 .pill-tab:hover { color: var(--white-75); }
 .pill-tab.active {
-  background: var(--white-15);
-  color: var(--white-92);
+  background: var(--cyan);
+  color: var(--navy-900);
 }
 </style>
 <link rel="stylesheet" href="shared-interactive.css">
@@ -824,16 +826,16 @@ body {
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;">
         <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;">
           <div style="font-size:12px;color:var(--white-55);margin-bottom:8px;">Capital Under Management</div>
-          <div style="font-size:24px;font-weight:700;">$1,082,789</div>
+          <div style="font-size:28px;font-weight:800;">$1,082,789</div>
         </div>
         <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;">
           <div style="font-size:12px;color:var(--white-55);margin-bottom:8px;">Realized PnL (Day)</div>
-          <div style="font-size:24px;font-weight:700;color:var(--green);">+$5,420</div>
+          <div style="font-size:28px;font-weight:800;color:var(--green);">+$5,420</div>
           <div style="font-size:12px;color:var(--green);margin-top:4px;">+0.50%</div>
         </div>
         <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-md);padding:20px;">
           <div style="font-size:12px;color:var(--white-55);margin-bottom:8px;">Realized PnL (Week)</div>
-          <div style="font-size:24px;font-weight:700;color:var(--green);">+$18,350</div>
+          <div style="font-size:28px;font-weight:800;color:var(--green);">+$18,350</div>
           <div style="font-size:12px;color:var(--green);margin-top:4px;">+1.72%</div>
         </div>
       </div>
@@ -977,15 +979,15 @@ body {
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;">
           <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-lg);padding:20px;">
             <div style="font-size:11px;color:var(--white-55);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Капитал под управлением</div>
-            <div style="font-size:24px;font-weight:800;">$87,420</div>
+            <div style="font-size:28px;font-weight:800;">$87,420</div>
           </div>
           <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-lg);padding:20px;">
             <div style="font-size:11px;color:var(--white-55);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Изменение за период</div>
-            <div style="font-size:24px;font-weight:800;color:var(--green);">+$1,280 <span style="font-size:14px;font-weight:600;">(+1.5%)</span></div>
+            <div style="font-size:28px;font-weight:800;color:var(--green);">+$1,280 <span style="font-size:14px;font-weight:600;">(+1.5%)</span></div>
           </div>
           <div style="background:var(--card-gradient);border:1px solid var(--white-08);border-radius:var(--r-lg);padding:20px;">
             <div style="font-size:11px;color:var(--white-55);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Статистика за месяц</div>
-            <div style="font-size:24px;font-weight:800;color:var(--cyan);">57 <span style="font-size:14px;font-weight:600;color:var(--white-55);">сделок</span></div>
+            <div style="font-size:28px;font-weight:800;color:var(--cyan);">57 <span style="font-size:14px;font-weight:600;color:var(--white-55);">сделок</span></div>
             <div style="font-size:12px;color:var(--white-55);margin-top:4px;">Win Rate: <span style="color:var(--green);font-weight:600;">68%</span> &middot; Avg DD: <span style="color:var(--red);font-weight:600;">-2.4%</span></div>
           </div>
         </div>

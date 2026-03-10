@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TrigonumTrade — Team Analytics (Hierarchical Table + Trade Detail)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared-tokens.css">
 <style>
 :root {
   --navy-900: #0D0D24;
@@ -190,7 +191,7 @@ body {
   background: none; border: none; border-radius: var(--r-full); cursor: pointer;
 }
 
-.period-pill.active { background: var(--white-15); color: var(--white-92); }
+.period-pill.active { background: var(--cyan); color: var(--navy-900); border-color: var(--cyan); }
 
 /* Summary cards */
 .summary-row {
@@ -208,7 +209,7 @@ body {
 }
 
 .summary-card .label { font-size: 12px; color: var(--white-55); margin-bottom: 6px; }
-.summary-card .value { font-size: 26px; font-weight: 800; }
+.summary-card .value { font-size: 28px; font-weight: 800; }
 .summary-card .delta { font-size: 13px; font-weight: 600; margin-top: 4px; }
 .summary-card .delta.up { color: var(--green); }
 .summary-card .delta.down { color: var(--red); }
@@ -256,16 +257,16 @@ body {
 .btn-group { display: flex; gap: 8px; }
 
 .btn-outline {
-  font-size: 11px; font-weight: 600;
-  color: var(--white-55);
-  background: none;
+  font-size: 13px; font-weight: 600;
+  color: var(--white-75);
+  background: transparent;
   border: 1px solid var(--white-15);
-  border-radius: var(--r-sm);
-  padding: 6px 12px;
+  border-radius: var(--r-md);
+  padding: 10px 20px;
   cursor: pointer;
 }
 
-.btn-outline:hover { color: var(--white-75); border-color: var(--white-35); }
+.btn-outline:hover { color: var(--white-92); border-color: var(--white-35); }
 .btn-outline.accent { color: var(--cyan); border-color: rgba(18,204,255,0.3); }
 
 /* Table */
@@ -563,7 +564,7 @@ body {
 }
 
 .filter-select {
-  background: var(--navy-700);
+  background: var(--white-05);
   color: var(--white-75);
   border: 1px solid var(--white-15);
   border-radius: var(--r-sm);
@@ -573,7 +574,7 @@ body {
 }
 
 .filter-input {
-  background: var(--navy-700);
+  background: var(--white-05);
   color: var(--white-75);
   border: 1px solid var(--white-15);
   border-radius: var(--r-sm);
@@ -584,14 +585,14 @@ body {
 }
 
 .btn-filter {
-  padding: 8px 16px;
-  font-size: 12px; font-weight: 600;
-  border-radius: var(--r-sm);
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 600;
+  border-radius: var(--r-md);
   border: none; cursor: pointer;
 }
 
 .btn-apply { background: var(--cyan); color: var(--navy-900); }
-.btn-reset { background: none; border: 1px solid var(--white-15); color: var(--white-55); }
+.btn-reset { background: transparent; border: 1px solid var(--white-15); color: var(--white-75); }
 
 /* Separator */
 .section-divider {
@@ -608,7 +609,7 @@ body {
 
 /* Search */
 .search-input {
-  background: var(--navy-700);
+  background: var(--white-05);
   border: 1px solid var(--white-15);
   border-radius: var(--r-sm);
   padding: 8px 14px 8px 32px;

@@ -1,0 +1,290 @@
+/*
+ * TRIGONUM DESIGN SYSTEM — Shared Tokens
+ *
+ * Single source of truth for all design variables and base component classes.
+ * Every page mockup MUST <link> this file before page-specific <style> blocks.
+ * Mirrors _system.html and maps to globals.css in trigonum-frontend-v2.
+ */
+
+:root {
+  /* Navy palette */
+  --navy-900: #0D0D24;
+  --navy-800: #161638;
+  --navy-700: #1C1C45;
+  --navy-600: #25254F;
+  --navy-500: #3F3F8A;
+  --navy-400: #5A5AC4;
+  --navy-300: #7575FF;
+
+  /* Brand accents */
+  --cyan:   #12CCFF;
+  --purple: #AF33FF;
+  --lime:   #81E70B;
+
+  /* Semantic */
+  --green:  #00E68A;
+  --red:    #FF4D6A;
+  --amber:  #FFB020;
+
+  /* White alpha scale */
+  --white-92: rgba(255,255,255,0.92);
+  --white-75: rgba(255,255,255,0.75);
+  --white-55: rgba(255,255,255,0.55);
+  --white-35: rgba(255,255,255,0.35);
+  --white-15: rgba(255,255,255,0.15);
+  --white-08: rgba(255,255,255,0.08);
+  --white-05: rgba(255,255,255,0.05);
+  --white-03: rgba(255,255,255,0.03);
+
+  /* Typography */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Border radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.2);
+
+  /* Card gradient */
+  --card-gradient: linear-gradient(135deg, rgba(28,28,69,0.9), rgba(22,22,56,0.95));
+
+  /* Chart colors */
+  --chart-1: #12CCFF;
+  --chart-2: #AF33FF;
+  --chart-3: #00E68A;
+  --chart-4: #FFB020;
+  --chart-5: #FF4D6A;
+  --chart-6: #81E70B;
+  --chart-line: #12CCFF;
+}
+
+/* ==== BASE RESET ==== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ==== TYPOGRAPHY — Section headers ==== */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.section-subtitle {
+  font-size: 13px;
+  color: var(--white-75);
+  margin-bottom: 20px;
+}
+
+/* ==== STAT DISPLAY ==== */
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+/* ==== CARDS ==== */
+.card {
+  background: var(--card-gradient);
+  border: 1px solid var(--white-08);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+.card::before {
+  content: '';
+  position: absolute; top: -15px; right: -15px;
+  width: 0; height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 70px solid var(--white-03);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+/* ==== TABS ==== */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+}
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.tab-btn:hover { color: var(--white-75); }
+.tab-btn.active { color: var(--white-92); }
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+}
+
+/* ==== TABLES ==== */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.data-table th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--white-08);
+}
+.data-table td {
+  font-size: 13px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--white-05);
+  color: var(--white-75);
+}
+.data-table tr:hover td { background: var(--white-03); }
+
+/* ==== BUTTONS ==== */
+.btn-primary {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-family: var(--font);
+}
+.btn-primary:hover { opacity: 0.9; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--white-75);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+.btn-secondary:hover { border-color: var(--white-35); color: var(--white-92); }
+
+/* ==== FORMS ==== */
+.input-field {
+  background: var(--white-05);
+  border: 1px solid var(--white-15);
+  border-radius: var(--r-md);
+  padding: 10px 16px;
+  color: var(--white-92);
+  font-size: 13px;
+  width: 100%;
+  transition: border-color 0.2s;
+  font-family: var(--font);
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+.input-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ==== NAVIGATION ==== */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: var(--white-55);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.nav-item:hover { color: var(--white-75); background: var(--white-05); }
+.nav-item.active {
+  color: var(--white-92);
+  background: linear-gradient(90deg, rgba(18,204,255,0.12), transparent);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+  border-radius: 0 2px 2px 0;
+}
+
+/* ==== LAYOUT GRIDS ==== */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+/* ==== UTILITY CLASSES ==== */
+.text-profit { color: var(--green); }
+.text-loss { color: var(--red); }
+.text-warning { color: var(--amber); }
+.text-muted { color: var(--white-55); }
+.text-cyan { color: var(--cyan); }
+.text-purple { color: var(--purple); }
+
+/* ==== PERIOD PILLS ==== */
+.period-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--r-full);
+  border: 1px solid var(--white-15);
+  background: transparent;
+  color: var(--white-55);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+.period-pill:hover { border-color: var(--white-35); color: var(--white-75); }
+.period-pill.active {
+  background: var(--cyan);
+  color: var(--navy-900);
+  border-color: var(--cyan);
+}
